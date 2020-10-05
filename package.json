@@ -8,9 +8,7 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@vue/composition-api": "^1.0.0-beta.15",
     "module-alias": "^2.2.2",
-    "vue": "^2.6.12",
     "vue-demi": "latest"
   },
   "devDependencies": {
