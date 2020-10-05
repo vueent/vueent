@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "outDir": "../dist/tests",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["*"],
+      "@/package": ["../package.json"]
+    },
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["../node_modules"],
+  "references": [{ "path": "../" }]
+}

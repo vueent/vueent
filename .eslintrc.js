@@ -3,14 +3,8 @@ module.exports = {
   env: {
     node: true
   },
-  extends: [
-    'plugin:vue/essential',
-    'eslint:recommended',
-    '@vue/typescript/recommended',
-    '@vue/prettier',
-    '@vue/prettier/@typescript-eslint'
-  ],
-  plugins: ['prettier'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/eslint-recommended', 'plugin:@typescript-eslint/recommended'],
+  plugins: ['prettier', '@typescript-eslint'],
   parserOptions: {
     ecmaVersion: 2020
   },
@@ -36,8 +30,10 @@ module.exports = {
     // disable the rule for all files
     '@typescript-eslint/no-use-before-define': [2, { functions: false, classes: true }],
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-console': 'off',
-    // 'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   },
   overrides: [

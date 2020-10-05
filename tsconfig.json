@@ -1,26 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
+    "outDir": "./dist/",
+    "rootDir": ".",
+    "target": "es2018",
+    "module": "commonjs",
     "strict": true,
-    "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "declaration": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "types": ["webpack-env", "mocha", "chai"],
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "composite": true,
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
-  "exclude": ["node_modules"]
+  "files": ["package.json"]
 }

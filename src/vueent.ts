@@ -1,4 +1,4 @@
-import { onBeforeMount, onBeforeUnmount, onUnmounted } from '@vue/composition-api';
+import { onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue-demi';
 
 import { Controller } from './controller';
 import { Service } from './service';
