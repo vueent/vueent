@@ -29,10 +29,10 @@ module.exports = {
     ],
     // disable the rule for all files
     '@typescript-eslint/no-use-before-define': [2, { functions: false, classes: true }],
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/ban-types': 'off',
+    // '@typescript-eslint/no-explicit-any': 'off',
+    // '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    'no-console': 'off',
+    // '@typescript-eslint/explicit-function-return-type': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   },

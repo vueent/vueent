@@ -1,9 +1,14 @@
 import { isRef, ref, unref, computed } from 'vue-demi';
 
+export interface Option<T> {
+  get: () => T;
+  set: (value: T) => void;
+}
+
 export function trackedData() {
   const values = new WeakMap();
 
-  function getter(inst: any) {
+  function getter<T extends Record<string, unknown>>(inst: T) {
     const value = values.get(inst);
 
     if (!isRef(value)) values.set(inst, ref(value));
@@ -11,7 +16,7 @@ export function trackedData() {
     return unref(values.get(inst));
   }
 
-  function setter(inst: any, value: any) {
+  function setter<T extends Record<string, unknown>>(inst: T, value: unknown) {
     const v = values.get(inst);
 
     isRef(v) ? (v.value = value) : values.set(inst, ref(value));
@@ -20,15 +25,15 @@ export function trackedData() {
   return { getter, setter };
 }
 
-export function tracked(target: object, propertyKey: string | symbol) {
+export function tracked<T extends Record<string, unknown>>(target: T, propertyKey: string | symbol) {
   const { getter, setter } = trackedData();
 
   Reflect.defineProperty(target, propertyKey, {
-    get() {
+    get(this: T) {
       return getter(this);
     },
 
-    set(value: any) {
+    set(this: T, value: unknown) {
       setter(this, value);
     },
 
@@ -40,7 +45,7 @@ export function tracked(target: object, propertyKey: string | symbol) {
 export function calculatedData() {
   const values = new WeakMap();
 
-  function getter(inst: any) {
+  function getter<T extends Record<string, unknown>>(inst: T) {
     const value = values.get(inst);
 
     if (!isRef(value)) values.set(inst, computed(value));
@@ -48,7 +53,7 @@ export function calculatedData() {
     return unref(values.get(inst));
   }
 
-  function setter(inst: any, value: any) {
+  function setter<T extends Record<string, unknown>, U>(inst: T, value: Option<U>['get']) {
     const v = values.get(inst);
 
     if (!isRef(v)) values.set(inst, computed(value));
@@ -57,15 +62,15 @@ export function calculatedData() {
   return { getter, setter };
 }
 
-export function calculated(target: object, propertyKey: string | symbol) {
+export function calculated<T extends Record<string, unknown>, U>(target: T, propertyKey: string | symbol) {
   const { getter, setter } = calculatedData();
 
   Reflect.defineProperty(target, propertyKey, {
-    get() {
+    get(this: T) {
       return getter(this);
     },
 
-    set(value: any) {
+    set(this: T, value: Option<U>['get']) {
       setter(this, value);
     },
 

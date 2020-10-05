@@ -15,7 +15,7 @@ export abstract class Controller {
 }
 
 export function inject<T extends Controller = Controller>(create: ControllerConstructor<T>) {
-  return function(target: object, propertyKey: string | symbol) {
+  return function(target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
         return useVueent().getController(create);

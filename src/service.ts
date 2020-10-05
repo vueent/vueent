@@ -3,7 +3,7 @@ import { useVueent, ServiceConstructor } from './vueent';
 export abstract class Service {}
 
 export function inject<T extends Service = Service>(create: ServiceConstructor<T>) {
-  return function(target: object, propertyKey: string | symbol) {
+  return function(target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
         return useVueent().getService(create);
