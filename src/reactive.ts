@@ -5,35 +5,37 @@ export interface Option<T> {
   set: (value: T) => void;
 }
 
+export type Instance = Record<string, unknown>;
+
 export function trackedData() {
   const values = new WeakMap();
 
-  function getter<T extends Record<string, unknown>>(inst: T) {
-    const value = values.get(inst);
+  function getter(inst: unknown) {
+    const value = values.get(inst as Instance);
 
-    if (!isRef(value)) values.set(inst, ref(value));
+    if (!isRef(value)) values.set(inst as Instance, ref(value));
 
-    return unref(values.get(inst));
+    return unref(values.get(inst as Instance));
   }
 
-  function setter<T extends Record<string, unknown>>(inst: T, value: unknown) {
-    const v = values.get(inst);
+  function setter(inst: unknown, value: unknown) {
+    const v = values.get(inst as Instance);
 
-    isRef(v) ? (v.value = value) : values.set(inst, ref(value));
+    isRef(v) ? (v.value = value) : values.set(inst as Instance, ref(value));
   }
 
   return { getter, setter };
 }
 
-export function tracked<T extends Record<string, unknown>>(target: T, propertyKey: string | symbol) {
+export function tracked(target: unknown, propertyKey: string | symbol) {
   const { getter, setter } = trackedData();
 
-  Reflect.defineProperty(target, propertyKey, {
-    get(this: T) {
+  Reflect.defineProperty(target as Instance, propertyKey, {
+    get(this: Instance) {
       return getter(this);
     },
 
-    set(this: T, value: unknown) {
+    set(this: Instance, value: unknown) {
       setter(this, value);
     },
 
@@ -45,32 +47,32 @@ export function tracked<T extends Record<string, unknown>>(target: T, propertyKe
 export function calculatedData() {
   const values = new WeakMap();
 
-  function getter<T extends Record<string, unknown>>(inst: T) {
-    const value = values.get(inst);
+  function getter(inst: unknown) {
+    const value = values.get(inst as Instance);
 
-    if (!isRef(value)) values.set(inst, computed(value));
+    if (!isRef(value)) values.set(inst as Instance, computed(value));
 
-    return unref(values.get(inst));
+    return unref(values.get(inst as Instance));
   }
 
-  function setter<T extends Record<string, unknown>, U>(inst: T, value: Option<U>['get']) {
-    const v = values.get(inst);
+  function setter<T>(inst: unknown, value: Option<T>['get']) {
+    const v = values.get(inst as Instance);
 
-    if (!isRef(v)) values.set(inst, computed(value));
+    if (!isRef(v)) values.set(inst as Instance, computed(value));
   }
 
   return { getter, setter };
 }
 
-export function calculated<T extends Record<string, unknown>, U>(target: T, propertyKey: string | symbol) {
+export function calculated<T>(target: unknown, propertyKey: string | symbol) {
   const { getter, setter } = calculatedData();
 
-  Reflect.defineProperty(target, propertyKey, {
-    get(this: T) {
+  Reflect.defineProperty(target as Instance, propertyKey, {
+    get(this: Instance) {
       return getter(this);
     },
 
-    set(this: T, value: Option<U>['get']) {
+    set(this: Instance, value: Option<T>['get']) {
       setter(this, value);
     },
 
