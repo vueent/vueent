@@ -28,6 +28,6 @@ export function register<T extends Controller = Controller>(create: ControllerCo
   useVueent().registerController(create);
 }
 
-export function use<T extends Controller = Controller>(create: ControllerConstructor<T>) {
-  return useVueent().getController(create);
+export function use<T extends Controller = Controller>(create: ControllerConstructor<T>, ...params: unknown[]) {
+  return useVueent().getController(create, ...params);
 }

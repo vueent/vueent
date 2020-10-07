@@ -16,6 +16,6 @@ export function register<T extends Service = Service>(create: ServiceConstructor
   useVueent().registerService(create);
 }
 
-export function use<T extends Service = Service>(create: ServiceConstructor<T>) {
-  return useVueent().getService(create);
+export function use<T extends Service = Service>(create: ServiceConstructor<T>, ...params: unknown[]) {
+  return useVueent().getService(create, ...params);
 }
