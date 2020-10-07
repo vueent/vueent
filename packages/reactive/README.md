@@ -1,6 +1,6 @@
 # @vueent/reactive
 
-This library is a part of _VueentT_ project, but it can be used independently. It is a set of decorators which allows to use `ref` and `computed` as class properties and forget about checks like this:
+This library is a part of [_VueentT_](https://github.com/vueent/vueent) project, but it can be used independently. It is a set of decorators which allows to use `ref` and `computed` as class properties and forget about checks like this:
 
 ```ts
 const value = isRef(this.field) ? this.field.value : this.field)

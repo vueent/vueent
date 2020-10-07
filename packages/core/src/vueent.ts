@@ -53,8 +53,6 @@ export class Vueent {
     onUnmounted(() => {
       controller.instance?.destroy();
       controller.instance = undefined;
-
-      console.info(this._controllers);
     });
 
     return controller.instance as T;
