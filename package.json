@@ -1,7 +1,8 @@
 {
-  "name": "root",
+  "name": "vueent",
   "version": "0.0.1",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "publish": "lerna publish --conventional-commits",
     "publish:from-package": "lerna publish from-package",
