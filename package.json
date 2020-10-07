@@ -1,34 +1,44 @@
 {
-  "name": "vueent",
+  "name": "root",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "rimraf ./dist && tsc --build src",
-    "test:unit": "mocha",
-    "lint": "eslint src/**/*.ts"
+    "publish": "lerna publish --conventional-commits",
+    "publish:from-package": "lerna publish from-package",
+    "changed": "lerna changed",
+    "build": "lerna run build --parallel",
+    "version": "lerna version --conventional-commits",
+    "release": "yarn run lerna:build && yarn run lerna:publish",
+    "release:dry": "yarn run lerna:build && yarn run lerna:version --no-push --no-git-tag-version",
+    "test:unit": "jest",
+    "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },
-  "dependencies": {
-    "vue-demi": "latest"
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "@vueent/docs/**"
+    ]
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.2",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
     "@typescript-eslint/parser": "^3.10.1",
+    "@vue/composition-api": "^1.0.0-beta.15",
     "bili": "^5.0.5",
     "eslint": "^7.7.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.3.0",
     "jest": "^26.5.0",
+    "lerna": "^3.22.1",
     "lint-staged": "^10.4.0",
+    "lodash": "^4.17.20",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
-    "rollup-plugin-typescript2": "^0.27.3",
     "ts-jest": "^26.4.1",
-    "typescript": "^4.0.3"
-  },
-  "peerDependencies": {
-    "@vue/composition-api": "^1.0.0-beta.14",
-    "vue": "^2.6.0 || >=3.0.0-rc.0"
+    "typescript": "^4.0.3",
+    "vue": "^2.6.0"
   }
 }

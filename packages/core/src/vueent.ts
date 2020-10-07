@@ -1,10 +1,7 @@
 import { onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue-demi';
 
-import { Controller } from './controller';
-import { Service } from './service';
-
-export type ServiceConstructor<T extends Service = Service> = new (...args: unknown[]) => T;
-export type ControllerConstructor<T extends Controller = Controller> = new (...args: unknown[]) => T;
+import { Controller, Constructor as ControllerConstructor, Params as ControllerParams } from './controller';
+import { Service, Constructor as ServiceConstructor, Params as ServiceParams } from './service';
 
 export interface ServiceRegistry<T extends Service = Service> {
   create: ServiceConstructor;
@@ -32,7 +29,7 @@ export class Vueent {
     this._controllers.push({ create, instance: undefined });
   }
 
-  public getService<T extends Service = Service>(create: ServiceConstructor<T>, ...params: unknown[]) {
+  public getService<T extends Service = Service>(create: ServiceConstructor<T>, ...params: ServiceParams<T>) {
     const service = this._services.find(s => s.create === create);
 
     if (!service) throw new Error('Service with that name is not registered');
@@ -42,7 +39,7 @@ export class Vueent {
     return service.instance as T;
   }
 
-  public getController<T extends Controller = Controller>(create: ControllerConstructor<T>, ...params: unknown[]) {
+  public getController<T extends Controller = Controller>(create: ControllerConstructor<T>, ...params: ControllerParams) {
     const index = this._controllers.findIndex(s => s.create === create);
 
     if (index === -1) throw new Error('Controller with that name is not registered');

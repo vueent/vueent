@@ -1,29 +1,31 @@
 # vueent
 
 ## Project setup
-```
-npm install
+
+```sh
+yarn install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### Build for production
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
+```sh
+yarn run build
 ```
 
 ### Lints and fixes files
+
 ```
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Run your unit tests
+
+```sh
+yarn run test:unit
+```
+
+### Publish
+
+```sh
+yarn run publish
+```

@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.bundle.json",
+  "compilerOptions": {
+    "newLine": "LF"
+  },
+  "include": ["src/**/*.ts"]
+}

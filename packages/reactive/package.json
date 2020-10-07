@@ -1,0 +1,45 @@
+{
+  "name": "@vueent/reactive",
+  "description": "Typescript decorators for Vue.js Composition API",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "keywords": [
+    "vueent",
+    "vue",
+    "composition-api",
+    "reactive",
+    "typescript",
+    "decorator"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf ./dist && bili",
+    "test:unit": "jest",
+    "test:ext": "jest --collect-coverage",
+    "lint": "eslint src/**/*.ts,tests/**/*.ts",
+    "prepare": "yarn run build",
+    "prepublishOnly": "yarn build && yarn test:ext"
+  },
+  "dependencies": {
+    "vue-demi": "latest"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.2",
+    "bili": "^5.0.5",
+    "rimraf": "^3.0.2",
+    "rollup-plugin-typescript2": "^0.27.3",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3"
+  },
+  "peerDependencies": {
+    "@vue/composition-api": "^1.0.0-beta.14",
+    "vue": "^2.6.0 || >=3.0.0-0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

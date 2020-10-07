@@ -1,15 +1,30 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "rootDir": ".",
-    "target": "es2018",
-    "module": "commonjs",
+    "baseUrl": ".",
+    "target": "es2020",
+    "module": "esnext",
     "strict": true,
     "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
     "resolveJsonModule": true,
-    "composite": true,
-    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
+    "noStrictGenericChecks": true,
+    "paths": {
+      "@vueent/core": ["packages/core/src"],
+      "@vueent/core/*": ["packages/core/src/*"],
+      "@vueent/mix-models/*": ["packages/mix-models/src/*"],
+      "@vueent/reactive": ["packages/reactive/src"],
+      "@tests/reactive": ["packages/reactive/tests"],
+      "@tests/reactive/*": ["packages/reactive/tests/*"]
+    },
+    "lib": ["es2020"]
   },
-  "files": ["package.json"]
+  "exclude": ["node_modules", "dist"]
 }
