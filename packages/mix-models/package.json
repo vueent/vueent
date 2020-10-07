@@ -1,7 +1,7 @@
 {
   "name": "@vueent/mix-models",
   "description": "Vueent mixin-based models",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "repository": "https://github.com/vueent/vueent",
   "license": "MIT",
@@ -29,8 +29,8 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
-    "@types/node": "^14.11.2",
     "@types/lodash": "^4.14.161",
+    "@types/node": "^14.11.2",
     "bili": "^5.0.5",
     "rimraf": "^3.0.2",
     "rollup-plugin-typescript2": "^0.27.3",
@@ -39,8 +39,8 @@
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-beta.14",
-    "vue": "^2.6.0 || >=3.0.0-0",
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "vue": "^2.6.0 || >=3.0.0-0"
   },
   "publishConfig": {
     "access": "public"
