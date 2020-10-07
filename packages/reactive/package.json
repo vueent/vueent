@@ -4,6 +4,14 @@
   "version": "0.0.3",
   "private": true,
   "license": "MIT",
+  "homepage": "https://github.com/vueent/vueent/tree/main/packages/reactive",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:vueent/vueent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vueent/vueent/issues"
+  },
   "keywords": [
     "vueent",
     "vue",

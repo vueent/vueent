@@ -3,6 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "license": "MIT",
+  "homepage": "https://github.com/vueent/vueent",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:vueent/vueent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vueent/vueent/issues"
+  },
   "scripts": {
     "publish": "lerna publish --conventional-commits",
     "publish:from-package": "lerna publish from-package",
