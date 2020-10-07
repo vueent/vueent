@@ -26,9 +26,9 @@ npm install -D @vueent/<package_name>
 
 VueenT consists of three independent parts that can be used separately:
 
-- [`@vueent/reactive`](./packages/reactive/README) - typescript decorators which allows to use `ref` and `computed` properties transparently inside of classes
-- [`@vueent/core`](./packages/core/README) - a small library that integrates controllers and services patterns to the application
-- [`@vueent/mix-models`](./packages/mix-models/README) - a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations
+- [`@vueent/reactive`](./packages/reactive) - typescript decorators which allows to use `ref` and `computed` properties transparently inside of classes
+- [`@vueent/core`](./packages/core) - a small library that integrates controllers and services patterns to the application
+- [`@vueent/mix-models`](./packages/mix-models) - a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations
 
 ## Usage
 
