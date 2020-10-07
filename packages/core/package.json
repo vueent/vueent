@@ -1,7 +1,7 @@
 {
   "name": "@vueent/core",
   "description": "Vueent core library",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "repository": "https://github.com/vueent/vueent",
   "license": "MIT",
