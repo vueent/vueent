@@ -3,7 +3,5 @@
   "compilerOptions": {
     // Configuration for build.
     "newLine": "LF"
-  },
-  "include": ["packages/*/src/"],
-  "exclude": ["packages/*tests/**/*.test.ts", "packages/*tests/**/*.spec.ts"]
+  }
 }

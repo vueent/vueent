@@ -17,11 +17,13 @@
     "resolveJsonModule": true,
     "noStrictGenericChecks": true,
     "paths": {
-      "@vueent/core": ["packages/core/src"],
+      "@vueent/*": ["packages/*/src"],
+      "@tests/*": ["packages/*/tests"],
       "@vueent/core/*": ["packages/core/src/*"],
+      "@tests/core/*": ["packages/core/tests/*"],
       "@vueent/mix-models/*": ["packages/mix-models/src/*"],
-      "@vueent/reactive": ["packages/reactive/src"],
-      "@tests/reactive": ["packages/reactive/tests"],
+      "@tests/mix-models/*": ["packages/mix-models/tests/*"],
+      "@vueent/reactive/*": ["packages/reactive/src/*"],
       "@tests/reactive/*": ["packages/reactive/tests/*"]
     },
     "lib": ["es2020"]
