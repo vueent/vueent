@@ -11,7 +11,7 @@
     "release": "yarn run build && yarn run publish",
     "release:dry": "yarn run build && yarn run version --no-push --no-git-tag-version",
     "test:unit": "jest",
-    "test": "jyarn run test:unit",
+    "test": "yarn run test:unit",
     "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },
   "workspaces": {
