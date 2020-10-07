@@ -31,3 +31,7 @@ yarn run test
 ```sh
 yarn run publish
 ```
+
+## LICENSE
+
+[MIT](./LICENSE)

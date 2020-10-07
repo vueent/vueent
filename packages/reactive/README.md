@@ -1,10 +1,18 @@
 # @vueent/reactive
 
-VueenT's reactive library is aset of decorators which allows to use `ref` and `computed` as class properties and forget about checks like `const value = isRef(this.field) ? this.field.value : this.field)`.
+This library is a part of _VueentT_ project, but it can be used independently. It is a set of decorators which allows to use `ref` and `computed` as class properties and forget about checks like this:
 
-[![Coverage Status](https://coveralls.io/repos/github/vueent/reactive/badge.svg?branch=main)](https://coveralls.io/github/vueent/reactive?branch=main) [![Build Status](https://travis-ci.org/vueent/reactive.svg?branch=main)](https://travis-ci.org/vueent/reactive) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvueent%2Freactive.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvueent%2Freactive?ref=badge_shield)
+```ts
+const value = isRef(this.field) ? this.field.value : this.field)
+```
 
-## Example
+## Installation
+
+```sh
+npm install -D @vueent/reactive
+```
+
+## Usage example
 
 ```ts
 import { tracked, calculated } from '@vueent/reactive';
@@ -70,3 +78,7 @@ class YourClass {
   }
 }
 ```
+
+# LICENSE
+
+[MIT](./LICENSE)
