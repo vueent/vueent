@@ -8,8 +8,8 @@
     "changed": "lerna changed",
     "build": "lerna run build --parallel",
     "version": "lerna version --conventional-commits",
-    "release": "yarn run lerna:build && yarn run lerna:publish",
-    "release:dry": "yarn run lerna:build && yarn run lerna:version --no-push --no-git-tag-version",
+    "release": "yarn run build && yarn run publish",
+    "release:dry": "yarn run build && yarn run version --no-push --no-git-tag-version",
     "test:unit": "jest",
     "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },
