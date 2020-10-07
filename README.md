@@ -1,5 +1,7 @@
 # vueent
 
+[![Build Status](https://travis-ci.com/vueent/vueent.svg?branch=main)](https://travis-ci.com/vueent/vueent) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+
 ## Project setup
 
 ```sh
@@ -18,10 +20,10 @@ yarn run build
 npm run lint
 ```
 
-### Run your unit tests
+### Run tests
 
 ```sh
-yarn run test:unit
+yarn run test
 ```
 
 ### Publish
