@@ -1,5 +1,5 @@
 import { ComputedRef, computed, reactive } from 'vue-demi';
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 import { ValidationRule } from './interfaces';
 import { Provider } from './provider';

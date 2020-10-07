@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { reactive, computed } from 'vue-demi';
 
 import { Constructor } from '@vueent/mix-models/model';
