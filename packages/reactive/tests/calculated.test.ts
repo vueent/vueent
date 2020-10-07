@@ -1,18 +1,6 @@
-import VueCompositionApi from '@vue/composition-api';
-import { Vue, isVue2, createApp, defineComponent } from 'vue-demi';
+import { tracked, calculated } from '@vueent/reactive';
 
-import { tracked, calculated } from '../src';
-
-if (isVue2) Vue.use(VueCompositionApi);
-
-createApp(
-  defineComponent({
-    name: 'App',
-    render(createElement: Function) {
-      return createElement('div', this.$slots.default);
-    }
-  })
-);
+import './vue-vm';
 
 function randomInt(max: number) {
   return Math.floor(Math.random() * Math.floor(max));
@@ -124,15 +112,4 @@ test('calculated property should not be initialized reinitialized on the access'
   expected = num * 2;
 
   expect(instance.mul).toBe(expected);
-});
-
-test('tracked property should be a ref when it is not defined', () => {
-  class Calculable {
-    @tracked num!: number;
-  }
-
-  const instance = new Calculable();
-  const expected = undefined;
-
-  expect(instance.num).toBe(expected);
 });
