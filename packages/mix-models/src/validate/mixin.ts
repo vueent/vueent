@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import { reactive, computed } from 'vue-demi';
 
-import { Constructor } from '../model';
+import { Constructor } from '@vueent/mix-models/model';
 
 import { Pattern, AnyPattern, ObjectPattern, isPattern, isArrayPatternUnsafe } from './interfaces';
 import { Validation, ValidationInterface, ValidationBase } from './validation';
