@@ -23,10 +23,10 @@
     "build": "rimraf ./dist && bili",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
-    "lint": "eslint src/**/*.ts,tests/**/*.ts",
     "fill:dist": "sh fill-dist.sh",
-    "prepublishOnly": "yarn build && yarn test:ext && yarn run fill:dist",
-    "prepare": "yarn run build"
+    "prepublishOnly": "yarn run build && yarn test:ext && yarn run fill:dist",
+    "prepare": "yarn run build",
+    "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {
     "vue-demi": "latest"
