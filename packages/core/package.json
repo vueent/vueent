@@ -20,7 +20,7 @@
     "typescript"
   ],
   "scripts": {
-    "build": "rimraf ./dist && bili",
+    "build": "rimraf ./dist && tsc --build",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
     "fill:dist": "sh fill-dist.sh",
