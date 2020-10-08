@@ -20,12 +20,16 @@
     "model",
     "mix-models"
   ],
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
-    "build": "rimraf ./dist && tsc --build",
+    "build": "rimraf ./dist && bili",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
-    "fill:dist": "sh fill-dist.sh",
-    "prepublishOnly": "yarn build && yarn test:ext && yarn run fill:dist",
+    "prepublishOnly": "yarn build && yarn test:ext",
     "prepare": "yarn run build",
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },

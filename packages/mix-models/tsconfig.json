@@ -1,9 +1,5 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src/**/*.ts", "tests/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
-  "compilerOptions": {
-    "outDir": "dist/",
-    "newLine": "LF"
-  }
+  "exclude": ["node_modules", "dist"]
 }
