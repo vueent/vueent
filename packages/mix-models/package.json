@@ -2,7 +2,6 @@
   "name": "@vueent/mix-models",
   "description": "Vueent mixin-based models",
   "version": "0.0.8",
-  "private": true,
   "license": "MIT",
   "homepage": "https://github.com/vueent/vueent/tree/main/packages/mix-models",
   "repository": {
@@ -29,8 +28,7 @@
     "build": "rimraf ./dist && bili",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
-    "prepublishOnly": "yarn build && yarn test:ext",
-    "prepare": "yarn run build",
+    "prepublishOnly": "npm build && npm test:ext",
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {

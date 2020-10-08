@@ -1,7 +1,6 @@
 {
   "name": "vueent",
   "version": "0.0.1",
-  "private": true,
   "license": "MIT",
   "homepage": "https://github.com/vueent/vueent",
   "repository": {
@@ -12,15 +11,16 @@
     "url": "https://github.com/vueent/vueent/issues"
   },
   "scripts": {
+    "lerna:bootstrap": "lerna bootstrap --hoist --ignore-prepublish",
     "lerna:publish": "lerna publish --conventional-commits",
     "lerna:publish:from-package": "lerna publish from-package",
     "lerna:changed": "lerna changed",
     "lerna:build": "lerna run build --parallel",
     "lerna:version": "lerna version --conventional-commits",
-    "release": "yarn run build && yarn run publish",
-    "release:dry": "yarn run build && yarn run version --no-push --no-git-tag-version",
+    "release": "npm run build && npm run publish",
+    "release:dry": "npm run build && npm run version --no-push --no-git-tag-version",
     "test:unit": "jest --verbose",
-    "test": "yarn run test:unit",
+    "test": "npm run test:unit",
     "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },
   "workspaces": {

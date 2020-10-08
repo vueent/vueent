@@ -28,8 +28,7 @@
     "build": "rimraf ./dist && bili",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
-    "prepublishOnly": "yarn build && yarn test:ext",
-    "prepare": "yarn run build",
+    "prepublishOnly": "npm build && npm test:ext",
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {
