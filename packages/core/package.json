@@ -27,7 +27,7 @@
     "build": "rimraf ./dist && bili",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
-    "prepublishOnly": "npm build && npm test:ext",
+    "prepublishOnly": "npm run build && npm test:ext",
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {
