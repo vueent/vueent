@@ -2,15 +2,15 @@ import { computed, reactive } from 'vue-demi';
 
 import { Constructor } from './model';
 
-export type createFunc<T> = (data: T) => Promise<T | unknown> | T | unknown;
-export type updateFunc<T> = (id: unknown, data: T) => Promise<T | unknown> | T | unknown;
-export type destroyFunc<T> = (id: unknown, data: T) => Promise<void> | void;
+export type CreateFunc<T> = (data: T) => Promise<T | unknown> | T | unknown;
+export type UpdateFunc<T> = (id: unknown, data: T) => Promise<T | unknown> | T | unknown;
+export type DestroyFunc<T> = (id: unknown, data: T) => Promise<void> | void;
 
 export interface SaveOptions<T extends object> {
   mixinType: 'save';
-  create?: createFunc<T>;
-  update?: updateFunc<T>;
-  destroy?: destroyFunc<T>;
+  create?: CreateFunc<T>;
+  update?: UpdateFunc<T>;
+  destroy?: DestroyFunc<T>;
 }
 
 export interface SaveFlags {
@@ -31,9 +31,9 @@ export interface Save {
 
 export interface SavePrivate<T extends object> extends Save {
   readonly _saveFlags: SaveFlags;
-  readonly create: createFunc<T>;
-  readonly update: updateFunc<T>;
-  readonly destroy: destroyFunc<T>;
+  readonly _create: CreateFunc<T>;
+  readonly _update: UpdateFunc<T>;
+  readonly _destroy: DestroyFunc<T>;
 
   processSavedInstance(resp?: T | unknown): void;
 }
@@ -44,9 +44,9 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
   return function(parent: TBase) {
     return class extends parent implements SavePrivate<T> {
       readonly _saveFlags: SaveFlags;
-      readonly create: createFunc<T>;
-      readonly update: updateFunc<T>;
-      readonly destroy: destroyFunc<T>;
+      readonly _create: CreateFunc<T>;
+      readonly _update: UpdateFunc<T>;
+      readonly _destroy: DestroyFunc<T>;
 
       get creating() {
         return this._saveFlags.creating;
@@ -69,9 +69,9 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
 
         const options = args.slice(3).find(arg => arg?.mixinType === 'save') as SaveOptions<T> | undefined;
 
-        this.create = options?.create ?? dummy;
-        this.update = options?.update ?? dummy;
-        this.destroy = options?.destroy ?? dummy;
+        this._create = options?.create ?? dummy;
+        this._update = options?.update ?? dummy;
+        this._destroy = options?.destroy ?? dummy;
 
         const saving = computed(() => this._saveFlags.creating || this._saveFlags.updating || this._saveFlags.destroying);
 
@@ -98,7 +98,7 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
           this.beforeDestroy();
 
           try {
-            await this.destroy((this.data as Record<string, unknown>)[this.idKey], this.data);
+            await this._destroy((this.data as Record<string, unknown>)[this.idKey], this.data);
           } catch (e) {
             this._saveFlags.destroying = false;
             throw e;
@@ -115,7 +115,7 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
             let savedInstance;
 
             try {
-              savedInstance = await this.create(this.data as T);
+              savedInstance = await this._create(this.data as T);
             } catch (e) {
               this._saveFlags.creating = false;
               throw e;
@@ -132,7 +132,7 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
             let savedInstance;
 
             try {
-              savedInstance = await this.update((this.data as Record<string, unknown>)[this.idKey], this.data as T);
+              savedInstance = await this._update((this.data as Record<string, unknown>)[this.idKey], this.data as T);
             } catch (e) {
               this._saveFlags.updating = false;
               throw e;
