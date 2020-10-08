@@ -1,7 +1,7 @@
 {
   "name": "@vueent/mix-models",
   "description": "Vueent mixin-based models",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "MIT",
   "homepage": "https://github.com/vueent/vueent/tree/main/packages/mix-models",
   "repository": {
