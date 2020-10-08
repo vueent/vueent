@@ -19,16 +19,14 @@
     "reactive",
     "typescript"
   ],
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "rimraf ./dist && bili",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
     "lint": "eslint src/**/*.ts,tests/**/*.ts",
-    "prepare": "yarn run build",
-    "prepublishOnly": "yarn build && yarn test:ext"
+    "fill:dist": "sh fill-dist.sh",
+    "prepublishOnly": "yarn build && yarn test:ext && yarn run fill:dist",
+    "prepare": "yarn run build"
   },
   "dependencies": {
     "vue-demi": "latest"

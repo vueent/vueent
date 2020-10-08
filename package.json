@@ -12,7 +12,7 @@
     "url": "https://github.com/vueent/vueent/issues"
   },
   "scripts": {
-    "lerna:publish": "lerna publish --conventional-commits",
+    "lerna:publish": "lerna publish --conventional-commits --contents dist",
     "lerna:publish:from-package": "lerna publish from-package",
     "lerna:changed": "lerna changed",
     "lerna:build": "lerna run build --parallel",
