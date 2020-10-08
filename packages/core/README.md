@@ -48,8 +48,7 @@ export default defineComponent({ setup });
 
 ```ts
 // file: app.ts
-import { Controller } from '@vueent/core';
-import { inject as service } from '@vueent/core/service';
+import { Controller, injectService as service } from '@vueent/core';
 
 import { ClickerService } from '@/services/clicker';
 
