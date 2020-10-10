@@ -86,9 +86,9 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
       processSavedInstance(resp?: T | unknown): void {
         if (resp === undefined) return;
         else if (typeof resp === 'object') {
-          this.internal.data = resp as T;
+          this._internal.data = resp as T;
         } else {
-          (this.data as Record<string, unknown>)[this.idKey] = resp; // due to https://github.com/microsoft/TypeScript/issues/31661
+          (this.data as Record<string, unknown>)[this._idKey] = resp; // due to https://github.com/microsoft/TypeScript/issues/31661
         }
       }
 
@@ -98,15 +98,16 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
           this.beforeDestroy();
 
           try {
-            await this._destroy((this.data as Record<string, unknown>)[this.idKey], this.data);
+            await this._destroy((this.data as Record<string, unknown>)[this._idKey], this.data);
           } catch (e) {
             this._saveFlags.destroying = false;
+            this._flags.deleted = false;
             throw e;
           }
 
           this.afterDestroy();
           this._saveFlags.destroying = false;
-          this.flags.destroyed = true;
+          this._flags.destroyed = true;
         } else {
           if (this.new) {
             this._saveFlags.creating = true;
@@ -124,7 +125,7 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
             this.processSavedInstance(savedInstance);
             this.afterCreate();
             this._saveFlags.creating = false;
-            this.flags.new = false;
+            this._flags.new = false;
           } else {
             this._saveFlags.updating = true;
             this.beforeSave();
@@ -132,7 +133,7 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
             let savedInstance;
 
             try {
-              savedInstance = await this._update((this.data as Record<string, unknown>)[this.idKey], this.data as T);
+              savedInstance = await this._update((this.data as Record<string, unknown>)[this._idKey], this.data as T);
             } catch (e) {
               this._saveFlags.updating = false;
               throw e;
@@ -143,7 +144,7 @@ export function mixSave<T extends object, TBase extends Constructor<T>>() {
             this._saveFlags.updating = false;
           }
 
-          this.flags.dirty = false;
+          this._flags.dirty = false;
         }
       }
 

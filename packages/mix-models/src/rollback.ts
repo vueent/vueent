@@ -32,7 +32,7 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
       }
 
       updateOriginal() {
-        this._original = cloneDeep(this.internal.data) as T;
+        this._original = cloneDeep(this._internal.data) as T;
       }
 
       afterCreate() {
@@ -53,18 +53,18 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
         if (customMask) {
           const maskArray = flattenKeys(customMask);
           for (const mask of maskArray) {
-            set(this.internal.data, mask, get(this._original, mask));
+            set(this._internal.data, mask, get(this._original, mask));
           }
         } else if (this._maskPaths) {
           for (const mask of this._maskPaths) {
-            set(this.internal.data, mask, get(this._original, mask));
+            set(this._internal.data, mask, get(this._original, mask));
           }
         } else {
-          this.internal.data = cloneDeep(this._original);
+          this._internal.data = cloneDeep(this._original);
         }
 
-        this.flags.locked = true;
-        this.flags.dirty = false;
+        this._flags.locked = true;
+        this._flags.dirty = false;
 
         this.afterRollback();
       }

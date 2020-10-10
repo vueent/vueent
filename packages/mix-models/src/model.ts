@@ -23,47 +23,47 @@ export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>
 const unmix = () => undefined;
 
 export abstract class BaseModel<T extends object> {
-  readonly flags: ModelFlags;
-  readonly idKey: string;
-  readonly internal: { data: T };
+  readonly _flags: ModelFlags;
+  readonly _idKey: string;
+  readonly _internal: { data: T };
 
   get dirty(): boolean {
-    return this.flags.dirty;
+    return this._flags.dirty;
   }
 
   get new(): boolean {
-    return this.flags.new;
+    return this._flags.new;
   }
 
   get deleted(): boolean {
-    return this.flags.deleted;
+    return this._flags.deleted;
   }
 
   get destroyed(): boolean {
-    return this.flags.destroyed;
+    return this._flags.destroyed;
   }
 
   get data(): T {
-    return this.internal.data;
+    return this._internal.data;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(idKey: string, data: T, react = true, ...options: any[]) {
-    this.flags = reactive({
+    this._flags = reactive({
       dirty: false,
       new: true,
       deleted: false,
       destroyed: false,
       locked: false
     });
-    this.idKey = idKey;
-    this.internal = react ? (reactive({ data }) as { data: T }) : { data };
+    this._idKey = idKey;
+    this._internal = react ? (reactive({ data }) as { data: T }) : { data };
 
     watch(
-      () => this.internal,
+      () => this._internal,
       () => {
-        if (this.flags.locked) this.flags.locked = false;
-        else if (!this.flags.dirty) this.flags.dirty = true;
+        if (this._flags.locked) this._flags.locked = false;
+        else if (!this._flags.dirty) this._flags.dirty = true;
       },
       { deep: true }
     );
@@ -102,7 +102,7 @@ export abstract class BaseModel<T extends object> {
   }
 
   delete(): void {
-    this.flags.deleted = true;
+    this._flags.deleted = true;
   }
 
   hasMixin(mixin: Function): boolean {
