@@ -1,4 +1,4 @@
-import { BaseModel, RollbackPrivate, SavePrivate, SaveOptions, mix, mixRollback, mixSave } from '@vueent/mix-models';
+import { BaseModel, RollbackPrivate, SavePrivate, SaveOptions, mix, mixRollback, mixSave, mixValidate } from '@vueent/mix-models';
 
 import './vue-vm';
 
@@ -64,4 +64,13 @@ test('dirty flag should be resetted after saving', async () => {
   instance.rollback();
 
   expect(instance.dirty).toBe(false);
+});
+
+test('base model has no mixins', () => {
+  const instance = new DataModel('id', { name: '', official: { first: '', last: '' } });
+
+  expect(instance.hasMixin(BaseModel)).toBe(false);
+  expect(instance.hasMixin(mixSave)).toBe(false);
+  expect(instance.hasMixin(mixRollback)).toBe(false);
+  expect(instance.hasMixin(mixValidate)).toBe(false);
 });

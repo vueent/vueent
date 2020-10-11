@@ -3,8 +3,6 @@ export function flattenKeys(arg: Record<string, unknown>, prefix = ''): string[]
   const dot = prefix === '' ? '' : '.';
 
   for (const key in arg) {
-    if (!Reflect.has(arg, key)) continue;
-
     const item = arg[key];
     const path = prefix + (Number.isInteger(parseInt(key, 10)) ? `[${key}]` : dot + key);
 
