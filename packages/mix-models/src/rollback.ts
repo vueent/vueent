@@ -1,4 +1,6 @@
-import { cloneDeep, get, set } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
+import set from 'lodash/set';
 
 import { Constructor } from './model';
 import { flattenKeys } from './flatten-keys';
@@ -50,6 +52,8 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
         this.beforeRollback();
 
+        this._flags.locked = true;
+
         if (customMask) {
           const maskArray = flattenKeys(customMask);
           for (const mask of maskArray) {
@@ -63,8 +67,8 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
           this._internal.data = cloneDeep(this._original);
         }
 
-        this._flags.locked = true;
         this._flags.dirty = false;
+        this._flags.locked = false;
 
         this.afterRollback();
       }

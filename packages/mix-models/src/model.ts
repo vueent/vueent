@@ -16,7 +16,7 @@ export interface Base<T extends object> {
   readonly destroyed: boolean;
   readonly data: T;
 
-  delete: () => void;
+  delete(): void;
 }
 
 export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>;
@@ -73,10 +73,9 @@ export abstract class BaseModel<T extends object> {
     watch(
       () => this._internal,
       () => {
-        if (this._flags.locked) this._flags.locked = false;
-        else if (!this._flags.dirty) this._flags.dirty = true;
+        if (!this._flags.locked && !this._flags.dirty) this._flags.dirty = true;
       },
-      { deep: true }
+      { deep: true, flush: 'sync' }
     );
   }
 
