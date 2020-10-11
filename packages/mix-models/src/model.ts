@@ -9,6 +9,7 @@ export interface ModelFlags {
 }
 
 export interface Base<T extends object> {
+  readonly uid: string;
   readonly dirty: boolean;
   readonly new: boolean;
   readonly deleted: boolean;
@@ -20,9 +21,18 @@ export interface Base<T extends object> {
 
 export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>;
 
+/**
+ * Global uid counter.
+ *
+ * This counter provides a unique id for each model instance.
+ */
+let globalUid = 0;
+
 const unmix = () => undefined;
 
 export abstract class BaseModel<T extends object> {
+  readonly uid: string;
+
   readonly _flags: ModelFlags;
   readonly _idKey: string;
   readonly _internal: { data: T };
@@ -49,6 +59,7 @@ export abstract class BaseModel<T extends object> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(idKey: string, data: T, react = true, ...options: any[]) {
+    this.uid = String(++globalUid);
     this._flags = reactive({
       dirty: false,
       new: true,
