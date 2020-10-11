@@ -22,5 +22,6 @@ pnpm-debug.log*
 *.sw?
 
 # tests
+/coverage
 /packages/*/coverage
 
