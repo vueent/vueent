@@ -26,7 +26,7 @@ export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>
  *
  * This counter provides a unique id for each model instance.
  */
-let globalUid = 0;
+let globalUidCounter = 0n;
 
 const unmix = () => undefined;
 
@@ -59,7 +59,7 @@ export abstract class BaseModel<T extends object> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(idKey: string, data: T, react = true, ...options: any[]) {
-    this.uid = String(++globalUid);
+    this.uid = String(++globalUidCounter);
     this._flags = reactive({
       dirty: false,
       new: true,
