@@ -28,7 +28,7 @@ test('calculated property must have a getter', () => {
 
   try {
     class Calculable {
-      @tracked num = 1;
+      num = 1;
       @calculated set mul(value: number) {
         console.log(value);
       }
@@ -112,4 +112,34 @@ test('calculated property should not be initialized reinitialized on the access'
   expected = num * 2;
 
   expect(instance.mul).toBe(expected);
+});
+
+test('calculated property should be lazy', () => {
+  class Calculable {
+    @tracked num = 2;
+    calculationsCount = 0;
+
+    @calculated get mul() {
+      ++this.calculationsCount;
+      return this.num * 2;
+    }
+  }
+
+  const instance = new Calculable();
+
+  instance.num = 3;
+
+  let result = instance.mul;
+
+  expect(instance.mul).toBe(6);
+  expect(instance.mul).toBe(result);
+  expect(instance.calculationsCount).toBe(1);
+
+  instance.num = 2;
+
+  result = instance.mul;
+
+  expect(instance.mul).toBe(4);
+  expect(instance.mul).toBe(result);
+  expect(instance.calculationsCount).toBe(2);
 });
