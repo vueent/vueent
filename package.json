@@ -20,6 +20,7 @@
     "release": "npm run build && npm run publish",
     "release:dry": "npm run build && npm run version --no-push --no-git-tag-version",
     "test:unit": "jest --verbose",
+    "test:ext": "jest --collect-coverage",
     "test": "npm run test:unit",
     "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },
