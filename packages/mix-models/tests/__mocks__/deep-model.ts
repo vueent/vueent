@@ -45,19 +45,20 @@ export const rollbackMask = {
 
 export const validations: Pattern = {
   id: (v: unknown) => v === undefined || typeof v === 'number' || 'invalid id',
-  email: (v: string) => emailRegex.test(v) || 'invalid e-mail',
+  email: (v?: string) => (v !== undefined && v.length > 0 && emailRegex.test(v)) || 'invalid e-mail',
   human: {
     $sub: {
-      firstName: (v: string) => nameRegex.test(v) || 'invalid first name',
-      lastName: (v: string) => nameRegex.test(v) || 'invalid last name',
-      patronymic: (v: string) => nameRegex.test(v) || 'invalid patronymic'
+      firstName: (v?: string) => (v !== undefined && nameRegex.test(v)) || 'invalid first name',
+      lastName: (v?: string) => (v !== undefined && nameRegex.test(v)) || 'invalid last name',
+      patronymic: (v?: string) => (v !== undefined && nameRegex.test(v)) || 'invalid patronymic'
     },
     $self: (v: unknown) => v !== undefined || 'invalid human'
   },
   phones: {
     $each: {
-      value: (v: string) => phoneRegex.test(v) || 'invalid phone'
-    }
+      value: (v?: string) => (v !== undefined && phoneRegex.test(v)) || 'invalid phone'
+    },
+    $self: (v: unknown) => (Array.isArray(v) && v.length > 0) || 'invalid phones'
   }
 };
 
