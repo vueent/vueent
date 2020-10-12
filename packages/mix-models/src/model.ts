@@ -20,8 +20,17 @@ export interface Base<T extends object> {
   readonly destroyed: boolean;
   readonly data: T;
 
+  beforeCreate(): void;
+  afterCreate(): void;
+  beforeSave(): void;
+  afterSave(): void;
+  beforeDestroy(): void;
+  afterDestroy(): void;
+  beforeRollback(): void;
+  afterRollback(): void;
   delete(): void;
   destroy(): void;
+  hasMixin(mixin: Function): boolean;
 }
 
 export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>;

@@ -1,27 +1,12 @@
-import { BaseModel, RollbackPrivate, SavePrivate, SaveOptions, mix, mixRollback, mixSave, mixValidate } from '../src';
+import { BaseModel, SaveOptions, mixRollback, mixSave, mixValidate } from '../src';
+
+import { create as createDataModel, Data, DataModel } from './__mocks__/data-model';
+import { create as createDeepModel } from './__mocks__/deep-model';
 
 import './__mocks__/vue-vm';
 
-interface Data {
-  name: string;
-  official: {
-    first: string;
-    last: string;
-  };
-}
-
-class DataModel extends BaseModel<Data> {}
-
-interface Model extends DataModel, RollbackPrivate<Data>, SavePrivate<Data> {}
-
-class Model extends mix<Data, typeof DataModel>(DataModel, mixRollback(), mixSave()) {
-  constructor(initialData?: Data, saveOptions?: SaveOptions<Data>) {
-    super('name', initialData ?? { name: '', official: { first: '', last: '' } }, true, saveOptions);
-  }
-}
-
 test('dirty flag should be set after change and resetted with rollback', () => {
-  const instance = new Model();
+  const instance = createDataModel();
 
   instance.data.name = 'John';
 
@@ -45,7 +30,7 @@ test('dirty flag should be resetted after saving', async () => {
     create: (data: Data) => Promise.resolve(data)
   };
 
-  const instance = new Model(undefined, saveOptions);
+  const instance = createDataModel(undefined, true, saveOptions);
 
   expect(instance.dirty).toBe(false);
 
@@ -66,11 +51,17 @@ test('dirty flag should be resetted after saving', async () => {
   expect(instance.dirty).toBe(false);
 });
 
-test('base model has no mixins', () => {
-  const instance = new DataModel('id', { name: '', official: { first: '', last: '' } });
+test('the base model has no mixins', () => {
+  const instance = new DataModel('name', { name: '', official: { first: '', last: '' } });
 
   expect(instance.hasMixin(BaseModel)).toBe(false);
   expect(instance.hasMixin(mixSave)).toBe(false);
   expect(instance.hasMixin(mixRollback)).toBe(false);
   expect(instance.hasMixin(mixValidate)).toBe(false);
+});
+
+test('a model with mixins should propagate mixin check requests throw the prototypes list', () => {
+  const instance = createDeepModel();
+
+  expect(instance.hasMixin(mixRollback)).toBe(true);
 });

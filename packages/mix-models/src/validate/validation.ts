@@ -52,6 +52,8 @@ export interface Props {
 
 export interface ValidationBase {
   readonly children?: Children;
+  readonly anyChildDirty: boolean;
+  readonly selfDirty: boolean;
   readonly dirty: boolean;
   readonly anyChildInvalid: boolean;
   readonly selfInvalid: boolean;
@@ -82,13 +84,6 @@ export class Validation implements ValidationInterface {
   private _autoTouch = false;
   private _cachedValue: unknown;
   private _stopWatcher: WatchStopHandle;
-
-  public get pathSuffix(): string {
-    const { path } = this._props;
-    const { length } = path;
-
-    return length ? path[length - 1] : '';
-  }
 
   public get anyChildDirty(): boolean {
     return Boolean(this._props.anyChildDirty);
@@ -210,7 +205,6 @@ export class Validation implements ValidationInterface {
     this._props.anyChildInvalid = (anyChildInvalid as unknown) as boolean;
     this.inspect();
     this._autoTouch = autoTouch;
-
     this._stopWatcher = watch(
       () => get(this._provider.data, this._props.fullPath),
       () => this.inspect(),
@@ -245,7 +239,6 @@ export class Validation implements ValidationInterface {
 
   public destroy() {
     this._stopWatcher();
-
     this.forEachChild(this._props.children, child => child.destroy());
   }
 
@@ -275,11 +268,17 @@ export class Validation implements ValidationInterface {
     if (selfDirty !== this._props.selfDirty) this._props.selfDirty = selfDirty;
     if (selfInvalid !== this._props.selfInvalid) this._props.selfInvalid = selfInvalid;
     if (message !== this._props.message) this._props.message = message;
+    if (actualValue !== this._cachedValue) this._cachedValue = actualValue;
   }
 
   private validate(value: unknown) {
-    if (this._provider.locked)
-      return { selfDirty: this._props.selfDirty, selfInvalid: this._props.selfInvalid, message: this._props.message };
+    if (this._provider.locked) {
+      return {
+        selfDirty: this._props.selfDirty,
+        selfInvalid: this._props.selfInvalid,
+        message: this._props.message
+      };
+    }
 
     const { _props } = this;
     const result = this._check(value);
@@ -294,7 +293,11 @@ export class Validation implements ValidationInterface {
     } else if (this._autoTouch && value !== this._cachedValue) selfDirty = true;
     else selfDirty = this._props.selfDirty;
 
-    return { selfDirty, selfInvalid: result !== true, message: typeof result === 'string' ? result : '' };
+    return {
+      selfDirty,
+      selfInvalid: result !== true,
+      message: typeof result === 'string' ? result : ''
+    };
   }
 
   private forEachChild(children: Children | undefined, callbackfn: ValidationForEachCallbackFunc) {
@@ -359,11 +362,11 @@ export class Validation implements ValidationInterface {
 
   private removeObsoleteChildren(actualValue: unknown[]) {
     const children = this._props.children as ValidationInterface[];
+    const diff = this._length - actualValue.length;
+    const offset = this._length - diff;
+    const updated = (this._props.children as ValidationInterface[]).slice(0, offset);
 
-    children.slice(this._length - actualValue.length - 1).forEach(child => child.destroy());
-
-    const updated = (this._props.children as ValidationInterface[]).slice(0, this._length - actualValue.length);
-
+    children.slice(offset).forEach(child => child.destroy());
     this._length = updated.length;
 
     return updated;
