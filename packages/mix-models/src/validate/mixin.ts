@@ -1,13 +1,13 @@
 import get from 'lodash/get';
 import { reactive, computed } from 'vue-demi';
 
-import { Constructor } from '@vueent/mix-models/model';
+import { Options, Constructor } from '../model';
 
 import { Pattern, AnyPattern, ObjectPattern, isPattern, isArrayPatternUnsafe } from './interfaces';
 import { Validation, ValidationInterface, ValidationBase } from './validation';
 import { Provider } from './provider';
 
-export interface ValidateOptions {
+export interface ValidateOptions extends Options {
   readonly mixinType: 'validate';
   readonly validations?: ValidationInterface;
   readonly autoTouch?: boolean;
@@ -96,8 +96,12 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
         this._validationProps.locked = true;
         this._validationProps.validations.reset();
         this._validationProps.locked = false;
-
         super.afterRollback();
+      }
+
+      destroy() {
+        this.validations.destroy();
+        super.destroy();
       }
 
       initValidations(

@@ -1,4 +1,4 @@
-import { ComputedRef, computed, reactive } from 'vue-demi';
+import { WatchStopHandle, ComputedRef, computed, reactive, watch } from 'vue-demi';
 import get from 'lodash/get';
 
 import { ValidationRule } from './interfaces';
@@ -7,13 +7,6 @@ import { Provider } from './provider';
 export type Children = Record<string, ValidationInterface> | ValidationInterface[];
 
 type ValidationForEachCallbackFunc = (value: ValidationInterface, key: string | number, source: Children) => void;
-
-export interface ValidationResult {
-  readonly children?: Children;
-  readonly selfInvalid: boolean;
-  readonly selfDirty: boolean;
-  readonly message: string;
-}
 
 export interface Props {
   anyChildDirty?: boolean;
@@ -37,9 +30,9 @@ export interface Props {
   path: string[];
 
   /**
-   * Computed current data property value.
+   * Current data property value.
    */
-  readonly actualValue: unknown;
+  actualValue: unknown;
 
   /**
    * Computed full data property path.
@@ -51,10 +44,10 @@ export interface Props {
    */
   readonly dirtyMessage: string;
 
-  /**
-   * Computed validation result.
-   */
-  readonly result: ValidationResult;
+  children?: Children;
+  selfInvalid: boolean;
+  selfDirty: boolean;
+  message: string;
 }
 
 export interface ValidationBase {
@@ -75,6 +68,7 @@ export interface ValidationInterface extends ValidationBase {
 
   updatePath(index: number, section: string): void;
   checkValue(someValue: unknown): boolean;
+  destroy(): void;
 }
 
 export class Validation implements ValidationInterface {
@@ -85,12 +79,9 @@ export class Validation implements ValidationInterface {
   private _childrenAvailable = false;
   private _childrenTypeArray = false;
   private _defined: boolean;
-  private _autoTouch: boolean;
+  private _autoTouch = false;
   private _cachedValue: unknown;
-  private _cachedChildren?: Children;
-  private _cachedSelfDirty = false;
-  private _cachedSelfInvalid = false;
-  private _cachedMessage = '';
+  private _stopWatcher: WatchStopHandle;
 
   public get pathSuffix(): string {
     const { path } = this._props;
@@ -104,7 +95,7 @@ export class Validation implements ValidationInterface {
   }
 
   public get selfDirty(): boolean {
-    return this._props.result.selfDirty;
+    return this._props.selfDirty;
   }
 
   public get dirty(): boolean {
@@ -122,7 +113,7 @@ export class Validation implements ValidationInterface {
    * Sets to `true` if self check rule is invalid.
    */
   public get selfInvalid(): boolean {
-    return this._props.result.selfInvalid;
+    return this._props.selfInvalid;
   }
 
   /**
@@ -136,7 +127,7 @@ export class Validation implements ValidationInterface {
    * Error message.
    */
   public get message(): string {
-    return this._props.result.message;
+    return this._props.message;
   }
 
   public get dirtyMessage(): string {
@@ -144,18 +135,17 @@ export class Validation implements ValidationInterface {
   }
 
   public get children() {
-    return this._props.result.children;
+    return this._props.children;
   }
 
   /**
    * Children shortcut.
    */
   public get c() {
-    return this._props.result.children;
+    return this._props.children;
   }
 
   constructor(provider: Provider, path: string[], autoTouch: boolean, validate?: ValidationRule, children?: Children) {
-    this._cachedChildren = children;
     this._childrenAvailable = children !== undefined;
     this._provider = provider;
     this._check = validate ? validate : () => true;
@@ -168,23 +158,26 @@ export class Validation implements ValidationInterface {
     let anyChildInvalid: ComputedRef<boolean> | undefined = undefined;
     let anyChildDirty: ComputedRef<boolean> | undefined = undefined;
 
-    const dirty = computed(() => this._props.result.selfDirty || Boolean(this._props.anyChildDirty));
+    const dirty = computed(() => this._props.selfDirty || Boolean(this._props.anyChildDirty));
     const invalid = computed(
-      () => this._props.result.selfInvalid || (this._props.actualValue !== undefined && Boolean(this._props.anyChildInvalid))
+      () => this._props.selfInvalid || (this._props.actualValue !== undefined && Boolean(this._props.anyChildInvalid))
     );
 
     this._props = reactive({
-      anyChildDirty: (anyChildDirty as unknown) as boolean,
+      anyChildDirty,
+      selfDirty: false,
       dirty: (dirty as unknown) as boolean,
-      anyChildInvalid: (anyChildInvalid as unknown) as boolean,
+      anyChildInvalid,
+      selfInvalid: false,
       invalid: (invalid as unknown) as boolean,
       touched: false,
       resetted: false,
-      result: (computed(() => this.inspect()) as unknown) as ValidationResult,
       path,
       actualValue: (actualValue as unknown) as boolean,
       fullPath: (fullPath as unknown) as string,
-      dirtyMessage: (computed(() => (this._props.dirty && this._props.result.message) || '') as unknown) as string
+      dirtyMessage: (computed(() => (this._props.dirty && this._props.message) || '') as unknown) as string,
+      children,
+      message: ''
     });
 
     this._defined = actualValue.value !== undefined;
@@ -215,21 +208,26 @@ export class Validation implements ValidationInterface {
 
     this._props.anyChildDirty = (anyChildDirty as unknown) as boolean;
     this._props.anyChildInvalid = (anyChildInvalid as unknown) as boolean;
-    this._autoTouch = false;
-    this._props.result; // force computing
+    this.inspect();
     this._autoTouch = autoTouch;
+
+    this._stopWatcher = watch(
+      () => get(this._provider.data, this._props.fullPath),
+      () => this.inspect(),
+      { flush: 'sync' }
+    );
   }
 
   public touch() {
     this._props.touched = true;
-    this.forEachChild(this._cachedChildren, child => child.touch());
-    this._props.result;
+    this.forEachChild(this._props.children, child => child.touch());
+    this.inspect();
   }
 
   public reset() {
     this._props.resetted = true;
-    this.forEachChild(this._cachedChildren, child => child.reset());
-    this._props.result;
+    this.forEachChild(this._props.children, child => child.reset());
+    this.inspect();
   }
 
   public updatePath(index: number, section: string) {
@@ -238,16 +236,22 @@ export class Validation implements ValidationInterface {
     if (path[index] === undefined || path[index] === section) return;
 
     path.splice(index, 1, section);
-    this.forEachChild(this._cachedChildren, child => child.updatePath(index, section));
+    this.forEachChild(this._props.children, child => child.updatePath(index, section));
   }
 
   public checkValue(someValue: unknown) {
     return this._cachedValue === someValue;
   }
 
+  public destroy() {
+    this._stopWatcher();
+
+    this.forEachChild(this._props.children, child => child.destroy());
+  }
+
   private inspect() {
     const { actualValue } = this._props;
-    let children: Children | undefined = this._cachedChildren;
+    let children: Children | undefined = this._props.children;
 
     if (this._childrenAvailable) {
       const { _childrenTypeArray } = this;
@@ -267,17 +271,15 @@ export class Validation implements ValidationInterface {
 
     const { selfDirty, selfInvalid, message } = this.validate(actualValue);
 
-    if (children !== this._cachedChildren) this._cachedChildren = children;
-    if (selfDirty !== this._cachedSelfDirty) this._cachedSelfDirty = selfDirty;
-    if (selfInvalid !== this._cachedSelfInvalid) this._cachedSelfInvalid = selfInvalid;
-    if (message !== this._cachedMessage) this._cachedMessage = message;
-
-    return { children, selfDirty, selfInvalid, message };
+    if (children !== this._props.children) this._props.children = children;
+    if (selfDirty !== this._props.selfDirty) this._props.selfDirty = selfDirty;
+    if (selfInvalid !== this._props.selfInvalid) this._props.selfInvalid = selfInvalid;
+    if (message !== this._props.message) this._props.message = message;
   }
 
   private validate(value: unknown) {
     if (this._provider.locked)
-      return { selfDirty: this._cachedSelfDirty, selfInvalid: this._cachedSelfInvalid, message: this._cachedMessage };
+      return { selfDirty: this._props.selfDirty, selfInvalid: this._props.selfInvalid, message: this._props.message };
 
     const { _props } = this;
     const result = this._check(value);
@@ -290,7 +292,7 @@ export class Validation implements ValidationInterface {
       _props.touched = false;
       selfDirty = true;
     } else if (this._autoTouch && value !== this._cachedValue) selfDirty = true;
-    else selfDirty = this._cachedSelfDirty;
+    else selfDirty = this._props.selfDirty;
 
     return { selfDirty, selfInvalid: result !== true, message: typeof result === 'string' ? result : '' };
   }
@@ -319,7 +321,7 @@ export class Validation implements ValidationInterface {
   private updateChildrenArray(actualValue: unknown[]) {
     const { _provider } = this;
     const { path } = this._props;
-    const children = this._cachedChildren as ValidationInterface[];
+    const children = this._props.children as ValidationInterface[];
 
     const missed: number[] = [];
     const kept: number[] = [];
@@ -341,6 +343,8 @@ export class Validation implements ValidationInterface {
       }
     }
 
+    children.forEach((child, i) => !kept.includes(i) && child.destroy());
+
     if (missed.length) {
       // generating missed children
       const providedChildren = _provider.createChildren(true, path, missed) as ValidationInterface[];
@@ -354,7 +358,11 @@ export class Validation implements ValidationInterface {
   }
 
   private removeObsoleteChildren(actualValue: unknown[]) {
-    const updated = (this._cachedChildren as ValidationInterface[]).slice(0, this._length - actualValue.length);
+    const children = this._props.children as ValidationInterface[];
+
+    children.slice(this._length - actualValue.length - 1).forEach(child => child.destroy());
+
+    const updated = (this._props.children as ValidationInterface[]).slice(0, this._length - actualValue.length);
 
     this._length = updated.length;
 
@@ -362,7 +370,7 @@ export class Validation implements ValidationInterface {
   }
 
   private appendChildren() {
-    const children = this._cachedChildren as ValidationInterface[];
+    const children = this._props.children as ValidationInterface[];
     const appendix = this._provider.createChildren(true, this._props.path, this._length);
     const updated = Array.isArray(appendix) ? [...children, ...appendix] : [...children];
 

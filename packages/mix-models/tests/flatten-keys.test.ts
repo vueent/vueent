@@ -1,4 +1,4 @@
-import { flattenKeys } from '@vueent/mix-models';
+import { flattenKeys } from '../src/flatten-keys';
 
 test('deep structure with an array of objects should be processed correctly', () => {
   const input = {

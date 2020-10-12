@@ -1,4 +1,8 @@
-import { reactive, watch } from 'vue-demi';
+import { WatchStopHandle, reactive, watch } from 'vue-demi';
+
+export interface Options {
+  mixinType: string;
+}
 
 export interface ModelFlags {
   dirty: boolean;
@@ -17,6 +21,7 @@ export interface Base<T extends object> {
   readonly data: T;
 
   delete(): void;
+  destroy(): void;
 }
 
 export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>;
@@ -34,6 +39,7 @@ export abstract class BaseModel<T extends object> {
   readonly uid: string;
 
   readonly _flags: ModelFlags;
+  readonly _stopBaseWatcher: WatchStopHandle;
   readonly _idKey: string;
   readonly _internal: { data: T };
 
@@ -60,6 +66,7 @@ export abstract class BaseModel<T extends object> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(idKey: string, data: T, react = true, ...options: any[]) {
     this.uid = String(++globalUidCounter);
+
     this._flags = reactive({
       dirty: false,
       new: true,
@@ -67,10 +74,11 @@ export abstract class BaseModel<T extends object> {
       destroyed: false,
       locked: false
     });
-    this._idKey = idKey;
-    this._internal = react ? (reactive({ data }) as { data: T }) : { data };
 
-    watch(
+    this._idKey = idKey;
+    this._internal = react ? reactive({ data }) : { data };
+
+    this._stopBaseWatcher = watch(
       () => this._internal,
       () => {
         if (!this._flags.locked && !this._flags.dirty) this._flags.dirty = true;
@@ -113,6 +121,10 @@ export abstract class BaseModel<T extends object> {
 
   delete(): void {
     this._flags.deleted = true;
+  }
+
+  destroy(): void {
+    this._stopBaseWatcher();
   }
 
   hasMixin(mixin: Function): boolean {

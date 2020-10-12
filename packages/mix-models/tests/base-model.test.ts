@@ -1,6 +1,6 @@
-import { BaseModel, RollbackPrivate, SavePrivate, SaveOptions, mix, mixRollback, mixSave, mixValidate } from '@vueent/mix-models';
+import { BaseModel, RollbackPrivate, SavePrivate, SaveOptions, mix, mixRollback, mixSave, mixValidate } from '../src';
 
-import './vue-vm';
+import './__mocks__/vue-vm';
 
 interface Data {
   name: string;

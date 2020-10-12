@@ -1,12 +1,12 @@
 import { computed, reactive } from 'vue-demi';
 
-import { Constructor } from './model';
+import { Options, Constructor } from './model';
 
 export type CreateFunc<T> = (data: T) => Promise<T | unknown> | T | unknown;
 export type UpdateFunc<T> = (id: unknown, data: T) => Promise<T | unknown> | T | unknown;
 export type DestroyFunc<T> = (id: unknown, data: T) => Promise<void> | void;
 
-export interface SaveOptions<T extends object> {
+export interface SaveOptions<T extends object> extends Options {
   mixinType: 'save';
   create?: CreateFunc<T>;
   update?: UpdateFunc<T>;
