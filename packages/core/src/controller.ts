@@ -14,7 +14,7 @@ export abstract class Controller {
   }
 }
 
-export type Constructor<T extends Controller = Controller> = new (...args: unknown[]) => T;
+export type Constructor<T extends Controller = Controller> = new (...args: any[]) => T;
 
 export type Params<T extends Controller = Controller> = ConstructorParameters<Constructor<T>>;
 

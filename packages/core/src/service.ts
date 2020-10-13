@@ -2,7 +2,7 @@ import { useVueent } from './vueent';
 
 export abstract class Service {}
 
-export type Constructor<T extends Service = Service> = new (...args: unknown[]) => T;
+export type Constructor<T extends Service = Service> = new (...args: any[]) => T;
 
 export type Params<T extends Service = Service> = ConstructorParameters<Constructor<T>>;
 
