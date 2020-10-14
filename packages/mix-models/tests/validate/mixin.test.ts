@@ -1,4 +1,5 @@
 import { mixValidate } from '../../src/validate';
+import { mixRollback } from '../../src/rollback';
 
 import { create as createSimpleModel } from '../__mocks__/simple-model';
 import { create as createDeepModel } from '../__mocks__/deep-model';
@@ -10,6 +11,22 @@ test('model should confirm an existence of Validate mixin', () => {
   const instance = createSimpleModel();
 
   expect(instance.hasMixin(mixValidate)).toBe(true);
+});
+
+test('model should confirm an existence of Rollback mixin', () => {
+  const instance = createSimpleModel();
+
+  expect(instance.hasMixin(mixRollback)).toBe(true);
+});
+
+test('has mixin should return false if mixin doesn`t exist', () => {
+  const instance = createSimpleModel();
+
+  expect(
+    instance.hasMixin(() => {
+      console.log('empty');
+    })
+  ).toBe(false);
 });
 
 test('touch should work after reset', () => {
