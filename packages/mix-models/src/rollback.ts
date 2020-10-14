@@ -4,9 +4,10 @@ import set from 'lodash/set';
 
 import { Constructor } from './model';
 import { flattenKeys } from './flatten-keys';
+import { isArray } from 'lodash';
 
 export type RollbackMask = {
-  [key: string]: RollbackMask | boolean;
+  [key: string]: RollbackMask | boolean | unknown[];
 };
 
 export interface Rollback {
@@ -56,7 +57,14 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
         if (customMask) {
           const maskArray = flattenKeys(customMask);
+          // console.log('mask array: ', maskArray);
           for (const mask of maskArray) {
+            // const field = get(this._original, mask);
+            // console.log('mask: ', mask, 'field: ', field);
+            // if (isArray(field)) {
+            //   for (let item of field) {
+            //   }
+            // }
             set(this._internal.data, mask, get(this._original, mask));
           }
         } else if (this._maskPaths) {

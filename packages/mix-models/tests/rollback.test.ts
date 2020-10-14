@@ -1,5 +1,5 @@
-import { create as createDataModel, Data, DataModel } from './__mocks__/data-model';
-import { BaseModel, SaveOptions, mixRollback, mixSave, mixValidate } from '../src';
+import { create as createDataModel, Data } from './__mocks__/data-model';
+import { SaveOptions } from '../src';
 
 import './__mocks__/vue-vm';
 
