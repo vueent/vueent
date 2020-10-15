@@ -17,14 +17,14 @@ import { phoneRegex } from './deep-model';
 
 export interface Data {
   id?: string;
-  phones: { number: string }[];
+  phones: { number: { tel: string }[] }[];
 }
 
 export class DataModel extends BaseModel<Data> {}
 
 export const rollbackMask = {
   id: true,
-  phones: true
+  phones: { $array: true, number: true }
 };
 
 export const validations: Pattern = {

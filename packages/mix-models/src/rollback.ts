@@ -21,6 +21,7 @@ export interface RollbackPrivate<T extends object> extends Rollback {
   _maskPaths?: string[];
 
   updateOriginal(): void;
+  recursivePathFinder(mask: string[], result: string[]): void;
 }
 
 export function mixRollback<T extends object, TBase extends Constructor<T>>(initialMask?: RollbackMask) {
@@ -57,19 +58,33 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
         if (customMask) {
           const maskArray = flattenKeys(customMask);
-          // console.log('mask array: ', maskArray);
+
           for (const mask of maskArray) {
-            // const field = get(this._original, mask);
-            // console.log('mask: ', mask, 'field: ', field);
-            // if (isArray(field)) {
-            //   for (let item of field) {
-            //   }
-            // }
-            set(this._internal.data, mask, get(this._original, mask));
+            const temp = mask.split('.');
+
+            if (temp.find(val => val === '[]')) {
+              const paths = this.recursivePathFinder(temp);
+
+              for (const path of paths) {
+                set(this._internal.data, path, get(this._original, path));
+              }
+            } else {
+              set(this._internal.data, mask, get(this._original, mask));
+            }
           }
         } else if (this._maskPaths) {
           for (const mask of this._maskPaths) {
-            set(this._internal.data, mask, get(this._original, mask));
+            const temp = mask.split('.');
+
+            if (temp.find(val => val === '[]')) {
+              const paths = this.recursivePathFinder(temp);
+
+              for (const path of paths) {
+                set(this._internal.data, path, get(this._original, path));
+              }
+            } else {
+              set(this._internal.data, mask, get(this._original, mask));
+            }
           }
         } else {
           this._internal.data = cloneDeep(this._original);
@@ -83,6 +98,32 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
       hasMixin(mixin: Function): boolean {
         return mixin === mixRollback || super.hasMixin(mixin);
+      }
+
+      recursivePathFinder(mask: string[], result: string[] = [], path = ''): string[] {
+        const arrayPosition = mask.findIndex(value => value === '[]');
+
+        if (arrayPosition > -1) {
+          path += mask.splice(0, arrayPosition).join();
+          mask.splice(0, 1);
+
+          const el = get(this._internal.data, path);
+
+          if (!isArray(el)) return result;
+
+          for (let i = 0; i < el.length; i++) {
+            const localPath = `${path}[${i}].`;
+            const localMask = cloneDeep(mask);
+
+            if (mask.find(val => val === '[]')) {
+              this.recursivePathFinder(localMask, result, localPath);
+            } else {
+              result.push(`${localPath}${mask}`);
+            }
+          }
+        }
+
+        return result;
       }
     };
   };
