@@ -17,7 +17,10 @@ import { phoneRegex } from './deep-model';
 
 export interface Data {
   id?: string;
-  phones: { number: { tel: string }[] }[];
+  phones: {
+    number: { tel: string }[];
+    name: string;
+  }[];
 }
 
 export class DataModel extends BaseModel<Data> {}

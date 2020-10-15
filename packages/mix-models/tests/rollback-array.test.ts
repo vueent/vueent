@@ -10,24 +10,54 @@ test('after rollback the model data should be reverted to the previous saved sta
   };
 
   const instance = createDeepArrayModel(
-    { id: '1', phones: [{ number: [{ tel: '12312' }] }, { number: [{ tel: '12352112' }] }] },
+    {
+      id: '1',
+      phones: [
+        { number: [{ tel: '12312' }], name: 'Someone' },
+        { number: [{ tel: '12352112' }], name: 'Somehow' }
+      ]
+    },
     true,
     saveOptions
   );
 
-  expect(instance.data).toEqual({ id: '1', phones: [{ number: [{ tel: '12312' }] }, { number: [{ tel: '12352112' }] }] });
+  expect(instance.data).toEqual({
+    id: '1',
+    phones: [
+      { number: [{ tel: '12312' }], name: 'Someone' },
+      { number: [{ tel: '12352112' }], name: 'Somehow' }
+    ]
+  });
 
   instance.data.phones[0].number[0].tel = '231';
 
-  expect(instance.data).toEqual({ id: '1', phones: [{ number: [{ tel: '231' }] }, { number: [{ tel: '12352112' }] }] });
+  expect(instance.data).toEqual({
+    id: '1',
+    phones: [
+      { number: [{ tel: '231' }], name: 'Someone' },
+      { number: [{ tel: '12352112' }], name: 'Somehow' }
+    ]
+  });
 
-  instance.rollback({ phones: { $array: true, number: { $array: true, tel: true } } });
+  instance.rollback({ phones: { $array: true, number: { $array: true, tel: true }, name: true } });
 
-  expect(instance.data).toEqual({ id: '1', phones: [{ number: [{ tel: '12312' }] }, { number: [{ tel: '12352112' }] }] });
+  expect(instance.data).toEqual({
+    id: '1',
+    phones: [
+      { number: [{ tel: '12312' }], name: 'Someone' },
+      { number: [{ tel: '12352112' }], name: 'Somehow' }
+    ]
+  });
 
   instance.data.id = '2';
 
   instance.rollback();
 
-  expect(instance.data).toEqual({ id: '1', phones: [{ number: [{ tel: '12312' }] }, { number: [{ tel: '12352112' }] }] });
+  expect(instance.data).toEqual({
+    id: '1',
+    phones: [
+      { number: [{ tel: '12312' }], name: 'Someone' },
+      { number: [{ tel: '12352112' }], name: 'Somehow' }
+    ]
+  });
 });

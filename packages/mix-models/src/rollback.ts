@@ -87,7 +87,11 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
             }
           }
         } else {
-          this._internal.data = cloneDeep(this._original);
+          const keys = flattenKeys(this._original as Record<string, unknown>);
+
+          for (const key of keys) {
+            set(this._internal.data, key, get(this._original, key));
+          }
         }
 
         this._flags.dirty = false;
