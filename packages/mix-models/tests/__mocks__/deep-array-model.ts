@@ -21,6 +21,7 @@ export interface Data {
     number: { tel: string }[];
     name: string;
   }[];
+  items: Array<{ sub: { my: { values: number[] } } }>;
 }
 
 export class DataModel extends BaseModel<Data> {}
@@ -59,7 +60,7 @@ export class Model<ModelOptions extends Options> extends mix<Data, typeof DataMo
   mixValidate<Data, typeof DataModel, Validations>(validations)
 ) {
   constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
-    super('id', initialData ?? { id: undefined, phones: [] }, react, ...options);
+    super('id', initialData ?? { id: undefined, phones: [], items: [] }, react, ...options);
   }
 }
 
