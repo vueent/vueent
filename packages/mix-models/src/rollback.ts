@@ -103,6 +103,7 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
           const localMask = mask.slice(arrayPosition + 1);
           const pos = localMask.findIndex(val => val === '[]');
+          const suffix = localMask.join('.');
 
           for (let i = 0; i < el.length; i++) {
             const localPath = `${path}.[${i}].`;
@@ -110,7 +111,7 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
             if (pos > -1) {
               result.push(...this.recursivePathFinder(localMask, pos, localPath));
             } else {
-              result.push(`${localPath}${localMask}`);
+              result.push(`${localPath}${suffix}`);
             }
           }
         }

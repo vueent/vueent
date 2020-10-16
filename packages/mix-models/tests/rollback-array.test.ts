@@ -31,7 +31,8 @@ test('after rollback the model data should be reverted to the previous saved sta
     items: [{ sub: { my: { values: [1, 2, 3, 4, 5] } } }]
   });
 
-  instance.data.items[0].sub.my.values[0] = 23;
+  // should use `splice`, because changes inside arrays of trivial types are not tracked
+  instance.data.items[0].sub.my.values.splice(0, 1, 23);
 
   expect(instance.data).toEqual({
     id: '1',
