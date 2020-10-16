@@ -10,7 +10,7 @@ export function flattenKeys(arg: Record<string, unknown>, prefix = ''): string[]
 
           for (const idx of index) {
             const item = arg[key];
-            const path = `${prefix}[${idx}].${key}`;
+            const path = `${prefix}.[${idx}].${key}`;
 
             if (typeof item === 'object') result.push(...flattenKeys(item as Record<string, unknown>, path));
             else result.push(path);
@@ -27,7 +27,7 @@ export function flattenKeys(arg: Record<string, unknown>, prefix = ''): string[]
   } else {
     for (const key in arg) {
       const item = arg[key];
-      const path = prefix + (Number.isInteger(parseInt(key, 10)) ? `[${key}]` : dot + key);
+      const path = prefix + (Number.isInteger(parseInt(key, 10)) ? `${dot}[${key}]` : dot + key);
 
       if (typeof item === 'object') result.push(...flattenKeys(item as Record<string, unknown>, path));
       else result.push(path);

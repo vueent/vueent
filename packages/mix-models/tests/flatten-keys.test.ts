@@ -19,14 +19,14 @@ test('deep structure with an array of objects should be processed correctly', ()
     'nick',
     'official.first',
     'official.last',
-    'phones[0].countryCode',
-    'phones[0].phoneNumber',
-    'phones[1].countryCode',
-    'phones[1].phoneNumber',
+    'phones.[0].countryCode',
+    'phones.[0].phoneNumber',
+    'phones.[1].countryCode',
+    'phones.[1].phoneNumber',
     'id',
-    'subjects[0].value',
-    'subjects[1].value',
-    'subjects[2].value'
+    'subjects.[0].value',
+    'subjects.[1].value',
+    'subjects.[2].value'
   ];
 
   const result = flattenKeys(input);
