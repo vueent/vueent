@@ -67,10 +67,10 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
               const paths = this.recursivePathFinder(temp, pos);
 
               for (const path of paths) {
-                set(this._internal.data, path, get(this._original, path));
+                set(this._internal.data, path, cloneDeep(get(this._original, path)));
               }
             } else {
-              set(this._internal.data, mask, get(this._original, mask));
+              set(this._internal.data, mask, cloneDeep(get(this._original, mask)));
             }
           }
         } else {
