@@ -5,9 +5,13 @@ import set from 'lodash/set';
 import { Constructor } from './model';
 import { flattenKeys } from './flatten-keys';
 
-export type RollbackMask = {
-  [key: string]: RollbackMask | boolean;
-};
+export type RollbackArrayMask = RollbackMask & { $array: boolean; $index?: number[] };
+
+export function isRollbackArrayMaskUnsafe(mask: RollbackMask | RollbackArrayMask): mask is RollbackArrayMask {
+  return '$array' in mask;
+}
+
+export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean | number[] };
 
 export interface Rollback {
   maskPaths?: string[];
@@ -20,6 +24,7 @@ export interface RollbackPrivate<T extends object> extends Rollback {
   _maskPaths?: string[];
 
   updateOriginal(): void;
+  recursivePathFinder(mask: string[], arrayPosition: number, path?: string): void;
 }
 
 export function mixRollback<T extends object, TBase extends Constructor<T>>(initialMask?: RollbackMask) {
@@ -54,14 +59,22 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
         this._flags.locked = true;
 
-        if (customMask) {
-          const maskArray = flattenKeys(customMask);
+        if (customMask || this._maskPaths) {
+          const maskArray = customMask ? flattenKeys(customMask) : (this._maskPaths as string[]);
+
           for (const mask of maskArray) {
-            set(this._internal.data, mask, get(this._original, mask));
-          }
-        } else if (this._maskPaths) {
-          for (const mask of this._maskPaths) {
-            set(this._internal.data, mask, get(this._original, mask));
+            const temp = mask.split('.');
+            const pos = temp.findIndex(val => val === '[]');
+
+            if (pos > -1) {
+              const paths = this.recursivePathFinder(temp, pos);
+
+              for (const path of paths) {
+                set(this._internal.data, path, cloneDeep(get(this._original, path)));
+              }
+            } else {
+              set(this._internal.data, mask, cloneDeep(get(this._original, mask)));
+            }
           }
         } else {
           this._internal.data = cloneDeep(this._original);
@@ -75,6 +88,34 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
       hasMixin(mixin: Function): boolean {
         return mixin === mixRollback || super.hasMixin(mixin);
+      }
+
+      recursivePathFinder(mask: string[], arrayPosition: number, path = ''): string[] {
+        const result: string[] = [];
+
+        if (arrayPosition > -1) {
+          path += mask.slice(0, arrayPosition).join('.');
+
+          const el = get(this._internal.data, path);
+
+          if (!Array.isArray(el)) return result;
+
+          const localMask = mask.slice(arrayPosition + 1);
+          const pos = localMask.findIndex(val => val === '[]');
+          const suffix = localMask.join('.');
+
+          for (let i = 0; i < el.length; i++) {
+            const localPath = `${path}.[${i}].`;
+
+            if (pos > -1) {
+              result.push(...this.recursivePathFinder(localMask, pos, localPath));
+            } else {
+              result.push(`${localPath}${suffix}`);
+            }
+          }
+        }
+
+        return result;
       }
     };
   };
