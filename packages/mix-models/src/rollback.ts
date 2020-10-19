@@ -4,11 +4,14 @@ import set from 'lodash/set';
 
 import { Constructor } from './model';
 import { flattenKeys } from './flatten-keys';
-import { isArray } from 'lodash';
 
-export type RollbackMask = {
-  [key: string]: RollbackMask | boolean | unknown[];
-};
+export type RollbackArrayMask = RollbackMask & { $array: boolean; $index?: number[] };
+
+export function isRollbackArrayMaskUnsafe(mask: RollbackMask | RollbackArrayMask): mask is RollbackArrayMask {
+  return '$array' in mask;
+}
+
+export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean };
 
 export interface Rollback {
   maskPaths?: string[];
@@ -95,7 +98,7 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
 
           const el = get(this._internal.data, path);
 
-          if (!isArray(el)) return result;
+          if (!Array.isArray(el)) return result;
 
           const localMask = mask.slice(arrayPosition + 1);
           const pos = localMask.findIndex(val => val === '[]');
