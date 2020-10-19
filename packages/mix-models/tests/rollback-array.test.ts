@@ -66,4 +66,26 @@ test('after rollback the model data should be reverted to the previous saved sta
     ],
     items: [{ sub: { my: { values: [1, 2, 3, 4, 5] } } }]
   });
+
+  instance.data.phones[0].name = 'Dan';
+
+  expect(instance.data).toEqual({
+    id: '1',
+    phones: [
+      { number: [{ tel: '12312' }], name: 'Dan' },
+      { number: [{ tel: '12352112' }], name: 'Somehow' }
+    ],
+    items: [{ sub: { my: { values: [1, 2, 3, 4, 5] } } }]
+  });
+
+  instance.rollback({ phones: { $array: true, $index: [0], name: true } });
+
+  expect(instance.data).toEqual({
+    id: '1',
+    phones: [
+      { number: [{ tel: '12312' }], name: 'Someone' },
+      { number: [{ tel: '12352112' }], name: 'Somehow' }
+    ],
+    items: [{ sub: { my: { values: [1, 2, 3, 4, 5] } } }]
+  });
 });

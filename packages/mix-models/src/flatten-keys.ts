@@ -7,14 +7,14 @@ export function flattenKeys(arg: RollbackMask | RollbackArrayMask, prefix = ''):
   if (isRollbackArrayMaskUnsafe(arg)) {
     for (const key in arg) {
       if (key !== '$array' && key !== '$index') {
-        if (arg.$index) {
+        if (Reflect.has(arg, '$index')) {
           const index = arg['$index'] as number[];
 
           for (const idx of index) {
-            const item = arg[key];
+            const item = arg.key;
             const path = `${prefix}.[${idx}].${key}`;
 
-            if (typeof item === 'object') result.push(...flattenKeys(item));
+            if (typeof item === 'object') result.push(...flattenKeys(item, path));
             else result.push(path);
           }
         } else {
