@@ -11,7 +11,7 @@ export function isRollbackArrayMaskUnsafe(mask: RollbackMask | RollbackArrayMask
   return '$array' in mask;
 }
 
-export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean };
+export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean | number[] };
 
 export interface Rollback {
   maskPaths?: string[];
