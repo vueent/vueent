@@ -14,14 +14,14 @@ export function flattenKeys(arg: RollbackMask | RollbackArrayMask, prefix = ''):
             const item = arg[key];
             const path = `${prefix}.[${idx}].${key}`;
 
-            if (typeof item === 'object' && !Array.isArray(item)) result.push(...flattenKeys(item, path));
+            if (typeof item === 'object') result.push(...flattenKeys(item, path));
             else result.push(path);
           }
         } else {
           const item = arg[key];
           const path = `${prefix}.[].${key}`;
 
-          if (typeof item === 'object' && !Array.isArray(item)) result.push(...flattenKeys(item, path));
+          if (typeof item === 'object') result.push(...flattenKeys(item, path));
           else result.push(path);
         }
       }
@@ -31,7 +31,7 @@ export function flattenKeys(arg: RollbackMask | RollbackArrayMask, prefix = ''):
       const item = arg[key];
       const path = prefix + (Number.isInteger(parseInt(key, 10)) ? `${dot}[${key}]` : dot + key);
 
-      if (typeof item === 'object' && !Array.isArray(item)) result.push(...flattenKeys(item, path));
+      if (typeof item === 'object') result.push(...flattenKeys(item, path));
       else result.push(path);
     }
   }

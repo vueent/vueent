@@ -11,7 +11,7 @@ export function isRollbackArrayMaskUnsafe(mask: RollbackMask | RollbackArrayMask
   return '$array' in mask;
 }
 
-export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean | number[] };
+export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean };
 
 export interface Rollback {
   maskPaths?: string[];
@@ -77,7 +77,11 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
             }
           }
         } else {
-          this._internal.data = cloneDeep(this._original);
+          const keys = flattenKeys(this._internal.data as RollbackMask);
+
+          for (const key of keys) {
+            set(this._internal.data, key, cloneDeep(get(this._original, key)));
+          }
         }
 
         this._flags.dirty = false;
