@@ -104,6 +104,28 @@ test('touch should work after reset for a complex model', () => {
   expect(instance.v.c.phones.c[1].c.value.dirtyMessage).toBe('');
 });
 
+test('touch should work after rollback with simple model', () => {
+  const instance = createSimpleModel();
+
+  instance.data.name = 'John';
+  instance.v.touch();
+
+  expect(instance.v.c.name.dirty).toBe(true);
+  expect(instance.v.c.name.invalid).toBe(false);
+
+  instance.rollback();
+
+  expect(instance.v.c.name.dirty).toBe(false);
+  expect(instance.v.c.name.invalid).toBe(true);
+  expect(instance.data.name).toBe('');
+
+  instance.data.name = 'Jane';
+  instance.v.touch();
+
+  expect(instance.v.c.name.dirty).toBe(true);
+  expect(instance.v.c.name.invalid).toBe(false);
+});
+
 test('touch should work after rollback', () => {
   const instance = createDeepModel();
 
