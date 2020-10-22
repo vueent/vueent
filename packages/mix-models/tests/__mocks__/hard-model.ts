@@ -17,7 +17,7 @@ import { phoneRegex } from './deep-model';
 
 export interface Data {
   id: string;
-  phones: string[];
+  phones?: string[];
   credentials: Credentials;
   documents: Document[];
   items: Item[];

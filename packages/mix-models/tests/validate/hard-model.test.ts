@@ -43,9 +43,27 @@ test('Validation should work with deep objects', () => {
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.dirty).toBe(false);
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.invalid).toBe(false);
 
-  instance.data.items[0].value[0] = { val: 'pls' };
+  instance.data.items[0].value.splice(0, 1, { val: 'pls' });
 
   instance.v.touch();
 
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.invalid).toBe(true);
+
+  instance.rollback({ items: { $array: true, $index: [0], value: true } });
+
+  expect(instance.data.items[0].value[0].val).toBe('large test');
+  expect(instance.v.c.items.c[0].c.value.c[0].c.val.invalid).toBe(false);
+  expect(instance.v.c.items.c[0].c.value.c[0].c.val.dirty).toBe(false);
+
+  instance.data.phones = undefined;
+
+  instance.v.touch();
+
+  expect(instance.v.c.phones.dirty).toBe(true);
+
+  instance.rollback();
+
+  instance.v.touch();
+
+  expect(instance.v.c.phones.c[0].dirty).toBe(true);
 });
