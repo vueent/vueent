@@ -9,7 +9,7 @@ import {
   mixValidate,
   ValidationBase,
   mix
-} from '../../src';
+} from '@vueent/mix-models';
 
 export interface Data {
   name: string;

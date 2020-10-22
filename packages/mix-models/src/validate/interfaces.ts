@@ -1,7 +1,7 @@
 import { Children } from './validation';
 import { Provider } from './provider';
 
-export type ValidationRule = (value: any) => boolean | string;
+export type ValidationRule = (value: any, data: unknown, path: string[]) => boolean | string;
 
 /**
  * A base pattern interface.
