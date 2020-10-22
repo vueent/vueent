@@ -173,8 +173,7 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
                 get(this.data, path.join('.')) !== undefined,
                 path
               );
-            } else if (typeof subPattern === 'function')
-              children[key] = new Validation(provider.bindContext(pattern), path, autoTouch, subPattern);
+            } else children[key] = new Validation(provider.bindContext(pattern), path, autoTouch, subPattern);
           }
 
           return children;
