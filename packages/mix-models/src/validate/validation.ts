@@ -281,7 +281,7 @@ export class Validation implements ValidationInterface {
     }
 
     const { _props } = this;
-    const result = this._check(value);
+    const result = this._check(value, this._provider.data, this._props.path);
     let selfDirty: boolean;
 
     if (_props.resetted) {
