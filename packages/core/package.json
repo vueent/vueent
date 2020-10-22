@@ -1,7 +1,7 @@
 {
   "name": "@vueent/core",
   "description": "Vueent core library",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "license": "MIT",
   "homepage": "https://github.com/vueent/vueent/tree/main/packages/core",
   "repository": {
@@ -25,6 +25,7 @@
   "module": "dist/index.es.js",
   "scripts": {
     "build": "rimraf ./dist && bili",
+    "test:clear": "jest --clearCache",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
     "prepublishOnly": "npm run build && npm run test:unit",

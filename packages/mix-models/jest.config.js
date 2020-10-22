@@ -1,5 +1,5 @@
 module.exports = {
-  rootDir: '../..',
+  rootDir: '.',
   name: '@vueent/mix-models',
   displayName: '@vueent/mix-models',
   testEnvironment: 'node',
@@ -10,7 +10,14 @@ module.exports = {
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/types/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    '@vueent/(.*)': '<rootDir>/packages/$1/src',
-    '@tests/(.*)': '<rootDir>/packages/$1/tests'
+    '@vueent/(.*)': '<rootDir>/../../packages/$1/src',
+    '@tests/(.*)': '<rootDir>/../../packages/$1/tests'
+  },
+  globals: {
+    'ts-jest': {
+      diagnostics: {
+        warnOnly: true
+      }
+    }
   }
 };

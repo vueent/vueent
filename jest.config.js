@@ -9,5 +9,12 @@ module.exports = {
   moduleNameMapper: {
     '@vueent/(.*)': '<rootDir>/packages/$1/src',
     '@tests/(.*)': '<rootDir>/packages/$1/tests'
+  },
+  globals: {
+    'ts-jest': {
+      diagnostics: {
+        warnOnly: true
+      }
+    }
   }
 };
