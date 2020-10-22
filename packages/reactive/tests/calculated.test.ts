@@ -1,6 +1,6 @@
 import { tracked, calculated } from '@vueent/reactive';
 
-import './vue-vm';
+import './__mocks__/vue-vm';
 
 function randomInt(max: number) {
   return Math.floor(Math.random() * Math.floor(max));
