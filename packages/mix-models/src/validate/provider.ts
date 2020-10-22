@@ -1,7 +1,7 @@
 import { ComputedRef, reactive } from 'vue-demi';
 
 import { AnyPattern, ChildrenValidationsInitializer } from './interfaces';
-import { ValidationInterface } from './validation';
+import { Children } from './validation';
 
 export interface Props {
   data: unknown;
@@ -36,11 +36,7 @@ export class Provider {
     this._childrenInitializer = childrenInitalizer;
   }
 
-  public createChildren(
-    defined: boolean,
-    path: string[],
-    applyOrOffset: number[] | number = 0
-  ): Record<string, ValidationInterface> | ValidationInterface[] {
+  public createChildren(defined: boolean, path: string[], applyOrOffset: number[] | number = 0): Children {
     return this._childrenInitializer(this, this.pattern, this._autoTouch, defined, path, applyOrOffset);
   }
 

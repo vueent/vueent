@@ -4,9 +4,9 @@ import get from 'lodash/get';
 import { ValidationRule } from './interfaces';
 import { Provider } from './provider';
 
-export type Children = Record<string, ValidationInterface> | ValidationInterface[];
+export type Children = Record<string, ValidationBase> | ValidationBase[];
 
-type ValidationForEachCallbackFunc = (value: ValidationInterface, key: string | number, source: Children) => void;
+type ValidationForEachCallbackFunc = (value: ValidationBase, key: string | number, source: Children) => void;
 
 export interface Props {
   anyChildDirty?: boolean;
@@ -60,20 +60,16 @@ export interface ValidationBase {
   readonly invalid: boolean;
   readonly message: string;
   readonly dirtyMessage: string;
+  readonly c?: Children;
 
   touch(): void;
   reset(): void;
-}
-
-export interface ValidationInterface extends ValidationBase {
-  readonly c?: Children;
-
   updatePath(index: number, section: string): void;
   checkValue(someValue: unknown): boolean;
   destroy(): void;
 }
 
-export class Validation implements ValidationInterface {
+export class Validation implements ValidationBase {
   private _props: Props;
   private _provider: Provider;
   private _check: ValidationRule;
@@ -181,11 +177,11 @@ export class Validation implements ValidationInterface {
     if (Array.isArray(children)) {
       this._length = actualValue.value?.length ?? 0;
       this._childrenTypeArray = true;
-      anyChildInvalid = computed(() => (this.children as ValidationInterface[]).some(child => child.invalid));
-      anyChildDirty = computed(() => (this.children as ValidationInterface[]).some(child => child.dirty));
+      anyChildInvalid = computed(() => (this.children as ValidationBase[]).some(child => child.invalid));
+      anyChildDirty = computed(() => (this.children as ValidationBase[]).some(child => child.dirty));
     } else if (typeof children === 'object') {
       anyChildInvalid = computed(() => {
-        const children = this.children as Record<string, ValidationInterface>;
+        const children = this.children as Record<string, ValidationBase>;
 
         for (const key in children) if (children[key]?.invalid) return true;
 
@@ -193,7 +189,7 @@ export class Validation implements ValidationInterface {
       });
 
       anyChildDirty = computed(() => {
-        const children = this.children as Record<string, ValidationInterface>;
+        const children = this.children as Record<string, ValidationBase>;
 
         for (const key in children) if (children[key]?.dirty) return true;
 
@@ -316,7 +312,7 @@ export class Validation implements ValidationInterface {
   private redefineChildren() {
     const children = this._provider.createChildren(true, this._props.path);
 
-    if (this._childrenTypeArray) this._length = (children as ValidationInterface[]).length;
+    if (this._childrenTypeArray) this._length = (children as ValidationBase[]).length;
 
     return children;
   }
@@ -324,11 +320,11 @@ export class Validation implements ValidationInterface {
   private updateChildrenArray(actualValue: unknown[]) {
     const { _provider } = this;
     const { path } = this._props;
-    const children = this._props.children as ValidationInterface[];
+    const children = this._props.children as ValidationBase[];
 
     const missed: number[] = [];
     const kept: number[] = [];
-    const updated: Array<ValidationInterface | undefined> = [];
+    const updated: Array<ValidationBase | undefined> = [];
 
     for (let i = 0; i < actualValue.length; ++i) {
       const v = actualValue[i];
@@ -350,21 +346,21 @@ export class Validation implements ValidationInterface {
 
     if (missed.length) {
       // generating missed children
-      const providedChildren = _provider.createChildren(true, path, missed) as ValidationInterface[];
+      const providedChildren = _provider.createChildren(true, path, missed) as ValidationBase[];
 
       for (let i = 0, j = 0; i < updated.length && j < providedChildren.length; ++i) {
         if (!updated[i]) updated[i] = providedChildren[j++];
       }
     }
 
-    return updated as ValidationInterface[];
+    return updated as ValidationBase[];
   }
 
   private removeObsoleteChildren(actualValue: unknown[]) {
-    const children = this._props.children as ValidationInterface[];
+    const children = this._props.children as ValidationBase[];
     const diff = this._length - actualValue.length;
     const offset = this._length - diff;
-    const updated = (this._props.children as ValidationInterface[]).slice(0, offset);
+    const updated = (this._props.children as ValidationBase[]).slice(0, offset);
 
     children.slice(offset).forEach(child => child.destroy());
     this._length = updated.length;
@@ -373,9 +369,9 @@ export class Validation implements ValidationInterface {
   }
 
   private appendChildren() {
-    const children = this._props.children as ValidationInterface[];
-    const appendix = this._provider.createChildren(true, this._props.path, this._length);
-    const updated = Array.isArray(appendix) ? [...children, ...appendix] : [...children];
+    const children = this._props.children as ValidationBase[];
+    const appendix = this._provider.createChildren(true, this._props.path, this._length) as ValidationBase[];
+    const updated = [...children, ...appendix];
 
     this._length = updated.length;
 

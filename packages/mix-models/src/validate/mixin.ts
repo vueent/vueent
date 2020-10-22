@@ -4,23 +4,23 @@ import { reactive, computed } from 'vue-demi';
 import { Options, Constructor } from '../model';
 
 import { Pattern, AnyPattern, ObjectPattern, isPattern, isArrayPatternUnsafe } from './interfaces';
-import { Validation, ValidationInterface, ValidationBase } from './validation';
+import { Children, Validation, ValidationBase } from './validation';
 import { Provider } from './provider';
 
 export interface ValidateOptions extends Options {
   readonly mixinType: 'validate';
-  readonly validations?: ValidationInterface;
+  readonly validations?: ValidationBase;
   readonly autoTouch?: boolean;
 }
 
 export interface ValidationProps {
   locked: boolean;
   autoTouch: boolean;
-  validations: ValidationInterface;
+  validations: ValidationBase;
 }
 
 export interface Validate<T extends ValidationBase = ValidationBase> {
-  readonly validations: ValidationInterface;
+  readonly validations: ValidationBase;
   readonly v: T;
 }
 
@@ -33,7 +33,7 @@ export interface ValidatePrivate<T extends ValidationBase = ValidationBase> exte
     autoTouch: boolean,
     defined: boolean,
     prefix?: string[]
-  ): ValidationInterface;
+  ): ValidationBase;
 
   initValidationChildren(
     provider: Provider,
@@ -42,7 +42,7 @@ export interface ValidatePrivate<T extends ValidationBase = ValidationBase> exte
     defined: boolean,
     prefix?: string[],
     offset?: number
-  ): Record<string, ValidationInterface> | ValidationInterface[];
+  ): Children;
 }
 
 export function mixValidate<T extends object, TBase extends Constructor<T>, U extends ValidationBase = ValidationBase>(
@@ -110,7 +110,7 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
         autoTouch: boolean,
         defined: boolean,
         prefix: string[] = []
-      ): ValidationInterface {
+      ): ValidationBase {
         const children = this.initValidationChildren(provider, pattern, autoTouch, defined, prefix);
 
         return new Validation(provider.bindContext(pattern), prefix, autoTouch, pattern.$self, children);
@@ -123,16 +123,16 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
         defined: boolean,
         prefix: string[] = [],
         applyOrOffset: number[] | number = 0
-      ): Record<string, ValidationInterface> | ValidationInterface[] {
+      ): Children {
         if (isArrayPatternUnsafe(pattern)) {
           // item is array
-          const children: ValidationInterface[] = [];
+          const children: ValidationBase[] = [];
 
           if (!defined) return children;
 
           const each = pattern.$each;
           const values: unknown[] = get(this.data, prefix.join('.'));
-          let createChild: (index: number) => ValidationInterface;
+          let createChild: (index: number) => ValidationBase;
 
           if (typeof each === 'function') {
             createChild = (i: number) => new Validation(provider.bindContext(pattern), [...prefix, `[${i}]`], autoTouch, each);
@@ -157,7 +157,7 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
           return children;
         } else {
           // item is object
-          const children: Record<string, ValidationInterface> = {};
+          const children: Record<string, ValidationBase> = {};
 
           const sub = pattern.$sub;
 

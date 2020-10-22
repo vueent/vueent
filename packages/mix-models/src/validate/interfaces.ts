@@ -26,15 +26,6 @@ export function isObjectPattern(inst: any): inst is ObjectPattern {
   return isUnknownPattern(sup) && isPattern(inst.$sub);
 }
 
-/**
- * Checks only for the `$sub` property existence.
- *
- * @param inst - pattern instance
- */
-export function isObjectPatternUnsafe(inst: UnknownPattern): inst is ObjectPattern {
-  return (inst as any).$sub !== undefined;
-}
-
 export interface ArrayPattern extends UnknownPattern {
   $each: Pattern | ArrayPattern | ValidationRule;
 }
