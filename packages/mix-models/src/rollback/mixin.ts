@@ -70,11 +70,7 @@ export function mixRollback<T extends object, TBase extends Constructor<T>>(init
             }
           }
         } else {
-          const keys = flattenKeys(this._internal.data as RollbackMask);
-
-          for (const key of keys) {
-            set(this._internal.data, key, cloneDeep(get(this._original, key)));
-          }
+          for (const key in this._original) this._internal.data[key] = cloneDeep(this._original[key]);
         }
 
         this._flags.dirty = false;
