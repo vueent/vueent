@@ -11,9 +11,9 @@ import {
   mixValidate,
   mix,
   Options
-} from '../../src';
+} from '@vueent/mix-models';
 
-import { phoneRegex } from './deep-model';
+import { phoneRegex } from './regular-expressions';
 
 export interface Data {
   id?: string;

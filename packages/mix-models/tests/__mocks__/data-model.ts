@@ -1,4 +1,15 @@
-import { BaseModel, Rollback, RollbackPrivate, Save, SavePrivate, mixRollback, mixSave, SaveOptions, mix, Base } from '../../src';
+import {
+  BaseModel,
+  Rollback,
+  RollbackPrivate,
+  Save,
+  SavePrivate,
+  mixRollback,
+  mixSave,
+  SaveOptions,
+  mix,
+  Base
+} from '@vueent/mix-models';
 
 export interface Data {
   name: string;
