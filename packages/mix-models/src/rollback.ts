@@ -5,10 +5,14 @@ import set from 'lodash/set';
 import { Constructor } from './model';
 import { flattenKeys } from './flatten-keys';
 
-export type RollbackArrayMask = RollbackMask & { $array: boolean; $index?: number[] };
+export type RollbackArrayMask = {
+  $array: boolean;
+  $index?: number[];
+  [key: string]: RollbackMask | RollbackArrayMask | boolean | number[] | undefined;
+};
 
 export function isRollbackArrayMaskUnsafe(mask: RollbackMask | RollbackArrayMask): mask is RollbackArrayMask {
-  return '$array' in mask;
+  return typeof mask['$array'] === 'boolean';
 }
 
 export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean };
