@@ -2,14 +2,18 @@ import { create as createHardModel } from '../__mocks__/hard-model';
 
 import '../__mocks__/vue-vm';
 
-test('Validation should work with deep objects', () => {
-  const instance = createHardModel({
+function makeHardModel() {
+  return createHardModel({
     id: '',
     credentials: { first: 'Dan', second: 'Borisov', last: 'Grigorevich' },
     phones: ['123456789'],
     documents: [{ id: '1', filename: '1.pdf' }],
     items: [{ value: [{ val: 'large test' }] }]
   });
+}
+
+test('Validation should work with deep objects', () => {
+  const instance = makeHardModel();
 
   expect(instance.v.dirty).toBe(false);
   expect(instance.v.c.id.dirty).toBe(false);
@@ -42,6 +46,10 @@ test('Validation should work with deep objects', () => {
   expect(instance.v.c.phones.c[0].dirty).toBe(false);
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.dirty).toBe(false);
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.invalid).toBe(false);
+});
+
+test('Validation should work with rollback with $index mask', () => {
+  const instance = makeHardModel();
 
   instance.data.items[0].value.splice(0, 1, { val: 'pls' });
 
@@ -54,6 +62,10 @@ test('Validation should work with deep objects', () => {
   expect(instance.data.items[0].value[0].val).toBe('large test');
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.invalid).toBe(false);
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.dirty).toBe(false);
+});
+
+test('Validation should work then we rollback model with undefined field', () => {
+  const instance = makeHardModel();
 
   instance.data.phones = undefined;
 
