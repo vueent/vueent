@@ -1,10 +1,8 @@
-import { mixValidate } from '../../src/validate';
-import { mixRollback } from '../../src/rollback';
+import { mixValidate, mixRollback } from '@vueent/mix-models';
 
 import { create as createSimpleModel } from '../__mocks__/simple-model';
 import { create as createDeepModel } from '../__mocks__/deep-model';
 import { create as createArrayModel } from '../__mocks__/array-model';
-
 import '../__mocks__/vue-vm';
 
 test('model should confirm an existence of Validate mixin', () => {

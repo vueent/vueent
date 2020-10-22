@@ -1,6 +1,6 @@
-import { create as createDataModel, Data } from './__mocks__/data-model';
-import { SaveOptions } from '../src';
+import { SaveOptions } from '@vueent/mix-models';
 
+import { create as createDataModel, Data } from './__mocks__/data-model';
 import './__mocks__/vue-vm';
 
 test('after rollback the model data should be reverted to the previous saved state', async () => {

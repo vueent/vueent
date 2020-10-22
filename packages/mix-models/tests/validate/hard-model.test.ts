@@ -1,5 +1,4 @@
 import { create as createHardModel } from '../__mocks__/hard-model';
-
 import '../__mocks__/vue-vm';
 
 function makeHardModel() {

@@ -1,8 +1,7 @@
-import { BaseModel, SaveOptions, mixRollback, mixSave, mixValidate } from '../src';
+import { BaseModel, SaveOptions, mixRollback, mixSave, mixValidate } from '@vueent/mix-models';
 
 import { create as createDataModel, Data, DataModel } from './__mocks__/data-model';
 import { create as createDeepModel } from './__mocks__/deep-model';
-
 import './__mocks__/vue-vm';
 
 test('dirty flag should be set after change and resetted with rollback', () => {
