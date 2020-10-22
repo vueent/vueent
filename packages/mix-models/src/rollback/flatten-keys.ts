@@ -1,4 +1,4 @@
-import { RollbackArrayMask, RollbackMask, isRollbackArrayMaskUnsafe } from './rollback';
+import { RollbackArrayMask, RollbackMask, isRollbackArrayMaskUnsafe } from './interfaces';
 
 export function flattenKeys(arg: RollbackMask | RollbackArrayMask, prefix = ''): string[] {
   const result: string[] = [];

@@ -2,20 +2,9 @@ import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import set from 'lodash/set';
 
-import { Constructor } from './model';
+import { Constructor } from '../model';
+import { RollbackMask } from './interfaces';
 import { flattenKeys } from './flatten-keys';
-
-export type RollbackArrayMask = {
-  $array: boolean;
-  $index?: number[];
-  [key: string]: RollbackMask | RollbackArrayMask | boolean | number[] | undefined;
-};
-
-export function isRollbackArrayMaskUnsafe(mask: RollbackMask | RollbackArrayMask): mask is RollbackArrayMask {
-  return typeof mask['$array'] === 'boolean';
-}
-
-export type RollbackMask = { [key: string]: RollbackMask | RollbackArrayMask | boolean };
 
 export interface Rollback {
   maskPaths?: string[];
