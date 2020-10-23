@@ -87,6 +87,6 @@ export type ChildrenValidationsInitializer = (
   pattern: AnyPattern,
   autoTouch: boolean,
   defined: boolean,
-  prefix?: string[],
+  prefix: string[],
   applyOrOffset?: number[] | number
 ) => Children;

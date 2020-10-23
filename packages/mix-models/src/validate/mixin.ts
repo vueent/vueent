@@ -40,7 +40,7 @@ export interface ValidatePrivate<T extends ValidationBase = ValidationBase> exte
     pattern: AnyPattern,
     autoTouch: boolean,
     defined: boolean,
-    prefix?: string[],
+    prefix: string[],
     offset?: number
   ): Children;
 }
@@ -123,7 +123,7 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
         pattern: AnyPattern,
         autoTouch: boolean,
         defined: boolean,
-        prefix: string[] = [],
+        prefix: string[],
         applyOrOffset: number[] | number = 0
       ): Children {
         if (isArrayPatternUnsafe(pattern)) {
