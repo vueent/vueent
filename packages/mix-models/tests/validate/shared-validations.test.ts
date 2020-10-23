@@ -4,7 +4,7 @@ import { create as createWrapperModel } from '../__mocks__/wrapper-model';
 import { create as createSimpleModel } from '../__mocks__/simple-model';
 import '../__mocks__/vue-vm';
 
-test('model should accept extenral validations', () => {
+test('model should accept external validations', () => {
   const wrapper = createWrapperModel();
   const simple = createSimpleModel(toRef(wrapper.data, 'child'), true, wrapper.v.c.child);
 
