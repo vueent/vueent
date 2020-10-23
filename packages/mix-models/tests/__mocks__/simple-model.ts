@@ -1,3 +1,5 @@
+import { Ref } from 'vue-demi';
+
 import {
   Base,
   BaseModel,
@@ -8,7 +10,9 @@ import {
   ValidatePrivate,
   mixValidate,
   ValidationBase,
-  mix
+  mix,
+  Options,
+  ValidateOptions
 } from '@vueent/mix-models';
 
 export interface Data {
@@ -29,18 +33,22 @@ export class DataModel extends BaseModel<Data> {}
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
+export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model extends mix<Data, typeof DataModel>(
+export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(
   DataModel,
   mixRollback(),
   mixValidate<Data, typeof DataModel, Validations>(validations)
 ) {
-  constructor(initialData?: Data, react = true) {
-    super('name', initialData ?? { name: '' }, react);
+  constructor(initialData?: Data | Ref<Data>, react = true, ...options: ModelOptions[]) {
+    super('name', initialData ?? { name: '' }, react, ...options);
   }
 }
 
-export function create(basicData?: Data, react = true): ModelType {
-  return new Model(basicData, react);
+export function create(basicData?: Data | Ref<Data>, react = true, validations?: ValidationBase): ModelType {
+  const options: ValidateOptions[] = [];
+
+  if (validations) options.push({ mixinType: 'validate', validations });
+
+  return new Model(basicData, react, ...options);
 }
