@@ -3,7 +3,7 @@ import { reactive, computed } from 'vue-demi';
 
 import { Options, Constructor } from '../model';
 
-import { Pattern, AnyPattern, ObjectPattern, isPattern, isArrayPatternUnsafe } from './interfaces';
+import { Pattern, AnyPattern, ObjectPattern, asPattern, isArrayPatternUnsafe } from './interfaces';
 import { Children, Validation, ValidationBase } from './validation';
 import { Provider } from './provider';
 
@@ -78,7 +78,9 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
           return;
         } else if (!pattern) throw new Error('Pattern or predefined validations should be set');
 
-        if (!isPattern(pattern)) throw new Error('Unsupported pattern format');
+        pattern = asPattern(pattern);
+
+        if (!pattern) throw new Error('Unsupported pattern format');
 
         const objectPattern: ObjectPattern = { $sub: pattern };
         const provider = new Provider(

@@ -60,7 +60,7 @@ export interface ValidationBase {
   readonly invalid: boolean;
   readonly message: string;
   readonly dirtyMessage: string;
-  readonly c?: Children;
+  readonly c?: unknown;
 
   touch(): void;
   reset(): void;
