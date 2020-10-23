@@ -20,29 +20,33 @@ export interface ObjectPattern extends UnknownPattern {
   $sub: Pattern;
 }
 
-export function isObjectPattern(inst: any): inst is ObjectPattern {
+export function asObjectPattern(inst: any, leafSet: Set<unknown>): ObjectPattern | undefined {
   const sup = inst;
 
-  return isUnknownPattern(sup) && isPattern(inst.$sub);
-}
+  if (!isUnknownPattern(sup) || inst?.$sub === undefined) return undefined;
 
-/**
- * Checks only for the `$sub` property existence.
- *
- * @param inst - pattern instance
- */
-export function isObjectPatternUnsafe(inst: UnknownPattern): inst is ObjectPattern {
-  return (inst as any).$sub !== undefined;
+  if (leafSet.has(inst.$sub)) return inst as ObjectPattern;
+
+  leafSet.add(inst.$sub);
+
+  if (asPattern(inst.$sub, leafSet)) return inst as ObjectPattern;
 }
 
 export interface ArrayPattern extends UnknownPattern {
   $each: Pattern | ArrayPattern | ValidationRule;
 }
 
-export function isArrayPattern(inst: any): inst is ArrayPattern {
+export function asArrayPattern(inst: any, leafSet: Set<unknown>): ArrayPattern | undefined {
   const sup = inst;
 
-  return isUnknownPattern(sup) && (typeof inst.$each === 'function' || isPattern(inst.$each) || isArrayPattern(inst.$each));
+  if (!isUnknownPattern(sup) || inst?.$each === undefined) return undefined;
+  else if (typeof inst.$each === 'function') return inst as ArrayPattern;
+
+  if (leafSet.has(inst.$each)) return inst as ArrayPattern;
+
+  leafSet.add(inst.$each);
+
+  if (asPattern(inst.$each, leafSet) || asArrayPattern(inst.$each, leafSet)) return inst as ArrayPattern;
 }
 
 /**
@@ -60,16 +64,22 @@ export interface Pattern {
   [key: string]: ValidationRule | AnyPattern;
 }
 
-export function isPattern(inst: any): inst is Pattern {
-  if (!inst || typeof inst !== 'object') return false;
+export function asPattern(inst: any, leafSet?: Set<unknown>): Pattern | undefined {
+  if (!inst || typeof inst !== 'object') return undefined;
+
+  if (!leafSet) leafSet = new Set<unknown>();
 
   for (const key in inst) {
     const value = inst[key];
 
-    if (typeof value !== 'function' && !isObjectPattern(value) && !isArrayPattern(value)) return false;
+    if (leafSet.has(value) || typeof value === 'function') continue;
+
+    leafSet.add(value);
+
+    if (!asObjectPattern(value, leafSet) && !asArrayPattern(value, leafSet)) return undefined;
   }
 
-  return true;
+  return inst as Pattern;
 }
 
 export type ChildrenValidationsInitializer = (
@@ -77,6 +87,6 @@ export type ChildrenValidationsInitializer = (
   pattern: AnyPattern,
   autoTouch: boolean,
   defined: boolean,
-  prefix?: string[],
+  prefix: string[],
   applyOrOffset?: number[] | number
 ) => Children;

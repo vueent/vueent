@@ -1,4 +1,4 @@
-import { WatchStopHandle, reactive, watch } from 'vue-demi';
+import { WatchStopHandle, Ref, reactive, watch } from 'vue-demi';
 
 export interface Options {
   mixinType: string;
@@ -73,7 +73,7 @@ export abstract class BaseModel<T extends object> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(idKey: string, data: T, react = true, ...options: any[]) {
+  constructor(idKey: string, data: T | Ref<T>, react = true, ...options: any[]) {
     this.uid = String(++globalUidCounter);
 
     this._flags = reactive({
@@ -85,7 +85,7 @@ export abstract class BaseModel<T extends object> {
     });
 
     this._idKey = idKey;
-    this._internal = react ? reactive({ data }) : { data };
+    this._internal = react ? reactive({ data: data as T }) : { data: data as T };
 
     this._stopBaseWatcher = watch(
       () => this._internal,

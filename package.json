@@ -22,6 +22,7 @@
     "test:clear": "jest --clearCache",
     "test:unit": "jest --verbose",
     "test:ext": "jest --collect-coverage",
+    "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand",
     "test": "npm run test:unit",
     "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },

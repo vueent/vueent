@@ -28,6 +28,7 @@
     "test:clear": "jest --clearCache",
     "test:unit": "jest",
     "test:ext": "jest --collect-coverage",
+    "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand",
     "prepublishOnly": "npm run build && npm run test:unit",
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },

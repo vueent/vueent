@@ -1,6 +1,6 @@
-import { create as createDeepArrayModel, Data } from './__mocks__/deep-array-model';
-import { SaveOptions } from '../src';
+import { SaveOptions } from '@vueent/mix-models';
 
+import { create as createDeepArrayModel, Data } from './__mocks__/deep-array-model';
 import './__mocks__/vue-vm';
 
 test('after rollback the model data should be reverted to the previous saved state', async () => {

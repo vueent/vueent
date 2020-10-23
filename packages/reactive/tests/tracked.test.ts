@@ -1,6 +1,6 @@
 import { tracked } from '@vueent/reactive';
 
-import './vue-vm';
+import './__mocks__/vue-vm';
 
 test('tracked property should be a ref when it is not defined', () => {
   class Calculable {
