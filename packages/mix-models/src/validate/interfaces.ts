@@ -23,7 +23,7 @@ export interface ObjectPattern extends UnknownPattern {
 export function asObjectPattern(inst: any, leafSet: Set<unknown>): ObjectPattern | undefined {
   const sup = inst;
 
-  if (!isUnknownPattern(sup)) return undefined;
+  if (!isUnknownPattern(sup) || inst?.$sub === undefined) return undefined;
 
   if (leafSet.has(inst.$sub)) return inst as ObjectPattern;
 
@@ -39,7 +39,7 @@ export interface ArrayPattern extends UnknownPattern {
 export function asArrayPattern(inst: any, leafSet: Set<unknown>): ArrayPattern | undefined {
   const sup = inst;
 
-  if (!isUnknownPattern(sup)) return undefined;
+  if (!isUnknownPattern(sup) || inst?.$each === undefined) return undefined;
   else if (typeof inst.$each === 'function') return inst as ArrayPattern;
 
   if (leafSet.has(inst.$each)) return inst as ArrayPattern;
