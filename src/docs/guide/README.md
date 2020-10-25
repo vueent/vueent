@@ -30,7 +30,7 @@ yarn add --dev @vueent/core @vueent/reactive @vueent/mix-models
 </code-block>
 </code-group>
 
-# Prerequirements
+## Prerequirements
 
 This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) and [lodash](https://lodash.com/) (only for Mix Models) peer dependencies, it means that your have to add this dependencies into your project (`package.json`) manually.
 
