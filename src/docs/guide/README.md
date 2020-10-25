@@ -1,12 +1,4 @@
-# vueent
-
-<p align="center">
-  <img src="docs/.vuepress/public/img/logo.png">
-</p>
-
-_VueenT_ is a library which may help to create a scalable Vue application.
-
-[![Build Status](https://travis-ci.com/vueent/vueent.svg?branch=main)](https://travis-ci.com/vueent/vueent) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+# Introduction
 
 ## Motivation
 
@@ -24,20 +16,36 @@ Although VueenT offers its own version of the file structure for projects, it is
 
 ## Installation
 
-```sh
-npm install --save-dev @vueent/<package_name>
+<code-group>
+<code-block title="NPM" active>
+```bash
+npm install --save-dev @vueent/core @vueent/reactive @vueent/mix-models
 ```
+</code-block>
 
-VueenT consists of three independent parts that can be used separately:
+<code-block title="YARN">
+```bash
+yarn add --dev @vueent/core @vueent/reactive @vueent/mix-models
+```
+</code-block>
+</code-group>
 
-- [`@vueent/reactive`](./packages/reactive) - typescript decorators which allows to use `ref` and `computed` properties transparently inside of classes
-- [`@vueent/core`](./packages/core) - a small library that integrates controllers and services patterns to the application
-- [`@vueent/mix-models`](./packages/mix-models) - a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations
+# Prerequirements
 
-## Usage
+This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) and [lodash](https://lodash.com/) (only for Mix Models) peer dependencies, it means that your have to add this dependencies into your project (`package.json`) manually.
 
-## Toubleshooting
+## Packages
 
-## LICENSE
+VueenT consists of three independent parts that can be used separately.
 
-[MIT](./LICENSE)
+### Reactive
+
+[`@vueent/reactive`](./reactive) is a couple of typescript decorators which allows to use `ref` and `computed` properties transparently inside of classes.
+
+### Core
+
+[`@vueent/core`](./core) is a small library that integrates controllers and services patterns to the application.
+
+### Mix Models
+
+[`@vueent/mix-models`](./mix-models) is a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations.

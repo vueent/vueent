@@ -1,14 +1,22 @@
-# @vueent/core
+# Core
 
-A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: a `Vueent` instance, abstract `Controller` and `Service` classes.
+This is a small library that integrates controllers and services patterns to the application. The package provides three main elements: a `Vueent` instance, abstract `Controller` and `Service` classes.
 
 ## Installation
 
-```sh
-npm install -D @vueent/core
+<code-group>
+<code-block title="NPM" active>
+```bash
+npm install --save-dev @vueent/core
 ```
+</code-block>
 
-This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+<code-block title="YARN">
+```bash
+yarn add --dev @vueent/core
+```
+</code-block>
+</code-group>
 
 ## Usage
 
@@ -16,9 +24,9 @@ You may create a `Vueent` instance directly using `useVueent()` call, but it's n
 
 Let's write a simple example:
 
-```html
+```vue
 <!-- file: app.vue -->
-<!-- section: template -->
+<template>
 <div>
   <div>Started at: {{ timestamp }}</div>
   <div>Button clicks: {{ counter }}</div>
@@ -26,18 +34,17 @@ Let's write a simple example:
     <button type="button" @click="increment">Increment</button>
   </div>
 </div>
-```
+</template>
 
-```ts
-// file: app.vue
-// section: script
+<script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useController } from '@vueent/core';
 
 import AppController from './app';
 
 function setup() {
-  const controller = useController(AppController, new Date().getTime()); // creating a controller instance with parameters.
+  // creating a controller instance with parameters.
+  const controller = useController(AppController, new Date().getTime());
 
   const increment = () => controller.increment();
   const counter = computed(() => controller.counter);
@@ -50,16 +57,22 @@ function setup() {
 }
 
 export default defineComponent({ setup });
+</script>
 ```
 
 ```ts
 // file: app.ts
-import { Controller, registerController, injectService as service } from '@vueent/core';
+import {
+  Controller,
+  registerController,
+  injectService as service
+} from '@vueent/core';
 
 import ClickerService from '@/services/clicker';
 
 export default class AppController extends Controller {
-  @service(ClickerService) private readonly clicker!: ClickerService; // lazy service injection
+  // lazy service injection
+  @service(ClickerService) private readonly clicker!: ClickerService;
 
   public readonly date: number;
 
@@ -111,7 +124,3 @@ export default class ClickerService extends Service {
 
 registerService(ClickerService);
 ```
-
-## LICENSE
-
-[MIT](./LICENSE)

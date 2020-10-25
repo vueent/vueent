@@ -1,6 +1,6 @@
-# @vueent/reactive
+# Reactive
 
-This library is a part of [_VueentT_](https://github.com/vueent/vueent) project, but it can be used independently. It is a set of decorators which allows to use `ref` and `computed` as class properties and forget about checks like this:
+This package it can be used independently. It is a set of decorators which allows to use `ref` and `computed` as class properties and forget about checks like this:
 
 ```ts
 const value = isRef(this.field) ? this.field.value : this.field);
@@ -8,11 +8,19 @@ const value = isRef(this.field) ? this.field.value : this.field);
 
 ## Installation
 
-```sh
-npm install -D @vueent/reactive
+<code-group>
+<code-block title="NPM" active>
+```bash
+npm install --save-dev @vueent/reactive
 ```
+</code-block>
 
-This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+<code-block title="YARN">
+```bash
+yarn add --dev @vueent/reactive
+```
+</code-block>
+</code-group>
 
 ## Usage
 
@@ -100,7 +108,3 @@ myObj.my.factor = 4;
 
 console.log(myObj.my.mul); // 8 - everything works fine
 ```
-
-# LICENSE
-
-[MIT](./LICENSE)
