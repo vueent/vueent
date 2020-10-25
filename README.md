@@ -1,10 +1,10 @@
 # vueent
 
 <p align="center">
-  <img src="docs/.vuepress/public/img/logo.png">
+  <img src="src/docs/.vuepress/public/img/logo.png">
 </p>
 
-_VueenT_ is a library which may help to create a scalable Vue application.
+_VueenT_ is a library which may help to create a scalable Vue application. See the [documentation](https://vueent.github.io/vueent/) for more information.
 
 [![Build Status](https://travis-ci.com/vueent/vueent.svg?branch=main)](https://travis-ci.com/vueent/vueent) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
