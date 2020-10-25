@@ -8,6 +8,8 @@ A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that inte
 npm install -D @vueent/core
 ```
 
+This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+
 ## Usage
 
 You may create a `Vueent` instance directly using `useVueent()` call, but it's not necessary, it will be created automatically after the first `useController()` or `useService()` call. `onBeforeMount`, `onBeforeUnmount`, and `onUnmounted` hooks are automatically connected to `init`, `reset`, `destroy` methods of Controller.

@@ -1,5 +1,9 @@
 # vueent
 
+<p align="center">
+  <img src="docs/.vuepress/public/img/logo.png">
+</p>
+
 _VueenT_ is a library which may help to create a scalable Vue application.
 
 [![Build Status](https://travis-ci.com/vueent/vueent.svg?branch=main)](https://travis-ci.com/vueent/vueent) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
@@ -16,12 +20,12 @@ In the future, maybe, we'll replace a Vue 3/Vue Composition API dependency with 
 
 ## Non-goals
 
-Create a yet another all-in-one framework based on Vue.
+Although VueenT offers its own version of the file structure for projects, it is not the goal to enforce any strict structure. The creation of yet another all-in-one framework based on Vue is not the VueenT's goal too.
 
 ## Installation
 
 ```sh
-npm install -D @vueent/<package_name>
+npm install --save-dev @vueent/<package_name>
 ```
 
 VueenT consists of three independent parts that can be used separately:

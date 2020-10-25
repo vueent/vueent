@@ -24,8 +24,8 @@
     "test:ext": "jest --collect-coverage",
     "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand",
     "test": "npm run test:unit",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
+    "docs:dev": "vuepress dev src/docs",
+    "docs:build": "vuepress build --dest ./docs src/docs",
     "lint": "eslint packages/*/src/**/*.ts packages/*/tests/**/*.ts"
   },
   "workspaces": {

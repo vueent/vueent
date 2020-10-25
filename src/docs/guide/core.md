@@ -1,12 +1,22 @@
-# @vueent/core
+# Core
 
-A small library (part of [_VueenT_](../../)) that integrates controllers and services patterns to the application. The package provides three main elements: a `Vueent` instance, abstract `Controller` and `Service` classes.
+This is a small library that integrates controllers and services patterns to the application. The package provides three main elements: a `Vueent` instance, abstract `Controller` and `Service` classes.
 
 ## Installation
 
-```sh
-npm install -D @vueent/core
+<code-group>
+<code-block title="NPM" active>
+```bash
+npm install --save-dev @vueent/core
 ```
+</code-block>
+
+<code-block title="YARN">
+```bash
+yarn add --dev @vueent/core
+```
+</code-block>
+</code-group>
 
 ## Usage
 
