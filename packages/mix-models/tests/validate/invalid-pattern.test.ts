@@ -85,17 +85,17 @@ test('pattern checker should break the chain when the $each argument is already 
       validations.items = items;
 
       return validations;
+    })(),
+
+    (() => {
+      const validations: Pattern = {};
+      const child: any = {};
+
+      child.$sub = validations;
+      validations.child = child;
+
+      return validations;
     })()
-    // won't work until there is support for recursive data
-    // (() => {
-    //   const validations: Pattern = {};
-    //   const child: any = {};
-
-    //   child.$sub = validations;
-    //   validations.child = child;
-
-    //   return validations;
-    // })()
   ];
 
   patterns.forEach(validations => {
