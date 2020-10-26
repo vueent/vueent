@@ -161,6 +161,8 @@ export function mixValidate<T extends object, TBase extends Constructor<T>, U ex
           // item is object
           const children: Record<string, ValidationBase> = {};
 
+          if (!defined) return children;
+
           const sub = pattern.$sub;
 
           for (const key in sub) {
