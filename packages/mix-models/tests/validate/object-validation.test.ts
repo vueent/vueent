@@ -2,7 +2,7 @@ import { create as createObjectModel } from '../__mocks__/object-model';
 
 import '../__mocks__/vue-vm';
 
-test('blabla call stack exceeded', () => {
+test('validation should correctly work with recursive data', () => {
   const instance = createObjectModel();
 
   instance.v.touch();
