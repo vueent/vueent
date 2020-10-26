@@ -3,7 +3,7 @@
   "description": "Typescript decorators for Vue.js Composition API",
   "version": "0.0.15",
   "license": "MIT",
-  "homepage": "https://github.com/vueent/vueent/tree/main/packages/reactive",
+  "homepage": "https://vueent.github.io/vueent/guide/reactive",
   "repository": {
     "type": "git",
     "url": "git@github.com:vueent/vueent.git"

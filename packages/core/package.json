@@ -3,7 +3,7 @@
   "description": "Vueent core library",
   "version": "0.0.15",
   "license": "MIT",
-  "homepage": "https://github.com/vueent/vueent/tree/main/packages/core",
+  "homepage": "https://vueent.github.io/vueent/guide/core",
   "repository": {
     "type": "git",
     "url": "git@github.com:vueent/vueent.git"
