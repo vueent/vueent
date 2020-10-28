@@ -3,8 +3,8 @@ import { reactive, computed } from 'vue-demi';
 
 import { Options, Constructor } from '../model';
 
-import { Pattern, AnyPattern, ObjectPattern, asPattern, isArrayPatternUnsafe } from './interfaces';
-import { Children, Validation, ValidationBase } from './validation';
+import { ValidationBase, Pattern, AnyPattern, ObjectPattern, asPattern, isArrayPatternUnsafe } from './interfaces';
+import { Children, Validation } from './validation';
 import { Provider } from './provider';
 
 export interface ValidateOptions extends Options {

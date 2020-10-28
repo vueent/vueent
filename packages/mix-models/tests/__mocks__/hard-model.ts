@@ -1,8 +1,7 @@
 import {
   Base,
   BaseModel,
-  Pattern,
-  ValidationBase,
+  PatternAssert,
   RollbackPrivate,
   mixRollback,
   Rollback,
@@ -43,7 +42,7 @@ export interface Credentials {
 
 export class DataModel extends BaseModel<Data> {}
 
-export const validations: Pattern = {
+export const validations = {
   id: (v: string) => v.length > 0 || 'invalid id',
   phones: {
     $each: (v?: string) => (v !== undefined && phoneRegex.test(v)) || 'invalid phone',
@@ -73,58 +72,7 @@ export const validations: Pattern = {
   }
 };
 
-export interface PhonesValidation extends ValidationBase {
-  readonly c: ValidationBase[];
-}
-
-export interface CredentialsValidation extends ValidationBase {
-  readonly c: {
-    first: ValidationBase;
-    second: ValidationBase;
-    last: ValidationBase;
-  };
-}
-
-export interface DocumentsValidation extends ValidationBase {
-  readonly c: DocumentValidation[];
-}
-
-export interface DocumentValidation extends ValidationBase {
-  readonly c: {
-    id: ValidationBase;
-    filename: ValidationBase;
-  };
-}
-
-export interface ValueValidation extends ValidationBase {
-  readonly c: {
-    val: ValidationBase;
-  };
-}
-
-export interface ValuesValidation extends ValidationBase {
-  readonly c: ValueValidation[];
-}
-
-export interface ItemValidation extends ValidationBase {
-  readonly c: {
-    value: ValuesValidation;
-  };
-}
-
-export interface ItemsValidation extends ValidationBase {
-  readonly c: ItemValidation[];
-}
-
-export interface Validations extends ValidationBase {
-  readonly c: {
-    id: ValidationBase;
-    phones: PhonesValidation;
-    credentials: CredentialsValidation;
-    documents: DocumentsValidation;
-    items: ItemsValidation;
-  };
-}
+export type Validations = PatternAssert<typeof validations>;
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 

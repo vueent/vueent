@@ -3,6 +3,25 @@ import { Provider } from './provider';
 
 export type ValidationRule = (value: any, data: unknown, path: string[]) => boolean | string;
 
+export interface ValidationBase {
+  readonly children?: Children;
+  readonly anyChildDirty: boolean;
+  readonly selfDirty: boolean;
+  readonly dirty: boolean;
+  readonly anyChildInvalid: boolean;
+  readonly selfInvalid: boolean;
+  readonly invalid: boolean;
+  readonly message: string;
+  readonly dirtyMessage: string;
+  readonly c?: unknown;
+
+  touch(): void;
+  reset(): void;
+  updatePath(index: number, section: string): void;
+  checkValue(someValue: unknown): boolean;
+  destroy(): void;
+}
+
 /**
  * A base pattern interface.
  *
@@ -90,3 +109,29 @@ export type ChildrenValidationsInitializer = (
   prefix: string[],
   applyOrOffset?: number[] | number
 ) => Children;
+
+export type ObjectPatternAssert<T extends ObjectPattern> = PatternAssert<T['$sub']>;
+
+export type ArrayPatternAssert<T extends ArrayPattern> = T['$each'] extends Record<string, unknown>
+  ? ValidationBase & {
+      readonly c: Array<
+        T['$each'] extends ArrayPattern
+          ? ArrayPatternAssert<T['$each']>
+          : T['$each'] extends Pattern
+          ? PatternAssert<T['$each']>
+          : never
+      >;
+    }
+  : ValidationBase & { readonly c: ValidationBase[] };
+
+export type PatternAssert<T extends Pattern> = ValidationBase & {
+  readonly c: {
+    [K in keyof T]: T[K] extends Record<string, unknown>
+      ? T[K] extends ObjectPattern
+        ? ObjectPatternAssert<T[K]>
+        : T[K] extends ArrayPattern
+        ? ArrayPatternAssert<T[K]>
+        : never
+      : ValidationBase;
+  };
+};

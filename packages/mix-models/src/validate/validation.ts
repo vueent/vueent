@@ -1,7 +1,7 @@
 import { WatchStopHandle, ComputedRef, computed, reactive, watch } from 'vue-demi';
 import get from 'lodash/get';
 
-import { ValidationRule } from './interfaces';
+import { ValidationRule, ValidationBase } from './interfaces';
 import { Provider } from './provider';
 
 export type Children = Record<string, ValidationBase> | ValidationBase[];
@@ -48,25 +48,6 @@ export interface Props {
   selfInvalid: boolean;
   selfDirty: boolean;
   message: string;
-}
-
-export interface ValidationBase {
-  readonly children?: Children;
-  readonly anyChildDirty: boolean;
-  readonly selfDirty: boolean;
-  readonly dirty: boolean;
-  readonly anyChildInvalid: boolean;
-  readonly selfInvalid: boolean;
-  readonly invalid: boolean;
-  readonly message: string;
-  readonly dirtyMessage: string;
-  readonly c?: unknown;
-
-  touch(): void;
-  reset(): void;
-  updatePath(index: number, section: string): void;
-  checkValue(someValue: unknown): boolean;
-  destroy(): void;
 }
 
 export class Validation implements ValidationBase {
