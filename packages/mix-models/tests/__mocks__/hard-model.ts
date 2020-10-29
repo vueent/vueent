@@ -17,14 +17,15 @@ import { phoneRegex } from './regular-expressions';
 export interface Data {
   id: string;
   phones?: string[];
-  credentials: Credentials;
-  documents: Document[];
+  phone?: string;
+  credentials?: Credentials;
+  documents?: Document[];
   items: Item[];
 }
 
 export interface Document {
   id: string;
-  filename: string;
+  filename?: string;
 }
 
 export interface Item {
@@ -48,6 +49,7 @@ export const validations = {
     $each: (v?: string) => (v !== undefined && phoneRegex.test(v)) || 'invalid phone',
     $self: (v: unknown) => (Array.isArray(v) && v.length > 0) || 'invalid phones'
   },
+  phone: (v?: string) => (v !== undefined && v.length > 0) || 'invalid id',
   credentials: {
     $sub: {
       first: (v: string) => v.length > 0 || 'invalid first name',
@@ -72,7 +74,7 @@ export const validations = {
   }
 };
 
-export type Validations = PatternAssert<typeof validations>;
+export type Validations = PatternAssert<typeof validations, Data>;
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 

@@ -14,11 +14,13 @@ function makeHardModel() {
 test('Validation should work with deep objects', () => {
   const instance = makeHardModel();
 
+  instance.v.c.documents.c[0].c.filename;
+
   expect(instance.v.dirty).toBe(false);
   expect(instance.v.c.id.dirty).toBe(false);
   expect(instance.v.c.credentials.c.first.dirty).toBe(false);
   expect(instance.v.c.documents.c[0].c.filename.dirty).toBe(false);
-  expect(instance.v.c.phones.c[0].dirty).toBe(false);
+  expect(instance.v.c.phones?.c[0].dirty).toBe(false);
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.dirty).toBe(false);
 
   instance.v.touch();
@@ -27,7 +29,7 @@ test('Validation should work with deep objects', () => {
   expect(instance.v.c.id.dirty).toBe(true);
   expect(instance.v.c.credentials.c.first.dirty).toBe(true);
   expect(instance.v.c.documents.c[0].c.filename.dirty).toBe(true);
-  expect(instance.v.c.phones.c[0].dirty).toBe(true);
+  expect(instance.v.c.phones?.c[0].dirty).toBe(true);
   expect(instance.v.c.items.c[0].c.value.c[0].c.val.dirty).toBe(true);
 
   instance.data.items[0].value[0].val = '';

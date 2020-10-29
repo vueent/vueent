@@ -110,28 +110,64 @@ export type ChildrenValidationsInitializer = (
   applyOrOffset?: number[] | number
 ) => Children;
 
-export type ObjectPatternAssert<T extends ObjectPattern> = PatternAssert<T['$sub']>;
+export type ObjectPatternAssert<T extends ObjectPattern, D> = PatternAssert<T['$sub'], D>;
 
-export type ArrayPatternAssert<T extends ArrayPattern> = T['$each'] extends Record<string, unknown>
+export type ArrayPatternAssert<T extends ArrayPattern, D> = T['$each'] extends Record<string, unknown>
   ? ValidationBase & {
       readonly c: Array<
         T['$each'] extends ArrayPattern
-          ? ArrayPatternAssert<T['$each']>
+          ? ArrayPatternAssert<T['$each'], D>
           : T['$each'] extends Pattern
-          ? PatternAssert<T['$each']>
+          ? PatternAssert<T['$each'], D>
           : never
       >;
     }
-  : ValidationBase & { readonly c: ValidationBase[] };
+  : undefined | (ValidationBase & { readonly c: ValidationBase[] });
 
-export type PatternAssert<T extends Pattern> = ValidationBase & {
-  readonly c: {
-    [K in keyof T]: T[K] extends Record<string, unknown>
-      ? T[K] extends ObjectPattern
-        ? ObjectPatternAssert<T[K]>
-        : T[K] extends ArrayPattern
-        ? ArrayPatternAssert<T[K]>
-        : never
-      : ValidationBase;
-  };
+interface data {
+  phone?: string;
+}
+
+type t = undefined;
+
+type test = t extends {} ? never : boolean;
+
+const val = {
+  $each: (v: string) => v !== undefined || 'invalid phone'
 };
+
+type aaa = typeof val;
+
+type s = { id: string; filename: string }[];
+
+type ta = PatternAssert<aaa, s>;
+
+export type PatternAssert<T extends Pattern, D> = D extends {}
+  ? D extends Array<unknown>
+    ? ValidationBase & {
+        readonly c: {
+          [K in keyof T]: T[K] extends Record<string, unknown>
+            ? T[K] extends ObjectPattern
+              ? ObjectPatternAssert<T[K], D>
+              : T[K] extends ArrayPattern
+              ? ArrayPatternAssert<T[K], D>
+              : never
+            : D extends {}
+            ? ValidationBase
+            : undefined | ValidationBase;
+        };
+      }
+    : ValidationBase & {
+        readonly c: {
+          [K in keyof T & keyof D]: T[K] extends Record<string, unknown>
+            ? T[K] extends ObjectPattern
+              ? ObjectPatternAssert<T[K], D[K]>
+              : T[K] extends ArrayPattern
+              ? ArrayPatternAssert<T[K], D[K]>
+              : never
+            : D[K] extends {}
+            ? ValidationBase
+            : undefined | ValidationBase;
+        };
+      }
+  : never;
