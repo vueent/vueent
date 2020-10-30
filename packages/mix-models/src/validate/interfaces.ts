@@ -110,82 +110,37 @@ export type ChildrenValidationsInitializer = (
   applyOrOffset?: number[] | number
 ) => Children;
 
-export type ObjectPatternAssert<T extends ObjectPattern, D> = ObjectAssert<T['$sub'], D>;
+type Conditional<C, T> = C extends undefined ? T | undefined : T;
 
-export type ArrayPatternAssert<T extends ArrayPattern, D> = ValidationBase & {
-  readonly c: Array<
-    D extends {}
-      ? T['$each'] extends ArrayPattern
-        ? ArrayPatternAssert<T['$each'], D>
-        : T['$each'] extends Pattern
-        ? ArrayAssert<T['$each'], D>
+type DataField<D, K extends keyof Exclude<D, undefined | null>> = Exclude<D, undefined | null> extends object
+  ? Exclude<D, undefined | null>[K]
+  : never;
+
+type DataItem<D> = Exclude<D, undefined> extends Array<unknown> ? Exclude<D, undefined>[number] : never;
+
+export type ArrayItemPatternAssert<T, D> = T extends ArrayPattern
+  ? ArrayPatternAssert<T, D>
+  : T extends Pattern
+  ? PatternAssert<T, D>
+  : never;
+
+export type ObjectPatternAssert<T extends ObjectPattern, D> = PatternAssert<T['$sub'], D>;
+
+export type ArrayPatternAssert<T extends ArrayPattern, D> = T['$each'] extends ValidationRule
+  ? ValidationBase & { readonly c: Conditional<D, ValidationBase>[] }
+  : ValidationBase & { readonly c: Conditional<D, ArrayItemPatternAssert<T['$each'], DataItem<D>>>[] };
+
+export type PatternAssert<T extends Pattern, D> = ValidationBase & {
+  readonly c: {
+    [K in keyof T & keyof Exclude<D, undefined | null>]: Conditional<
+      D,
+      T[K] extends ObjectPattern
+        ? ObjectPatternAssert<T[K], DataField<D, K>>
+        : T[K] extends ArrayPattern
+        ? ArrayPatternAssert<T[K], DataField<D, K>>
+        : T[K] extends ValidationRule
+        ? ValidationBase
         : never
-      :
-          | undefined
-          | (T['$each'] extends ArrayPattern
-              ? ArrayPatternAssert<T['$each'], D>
-              : T['$each'] extends Pattern
-              ? ArrayAssert<T['$each'], D>
-              : ValidationBase)
-  >;
+    >;
+  };
 };
-
-export type PatternAssert<T extends Pattern, D> = D extends {}
-  ? ValidationBase & {
-      readonly c: {
-        [K in keyof T & keyof D]: T[K] extends Record<string, unknown>
-          ? T[K] extends ObjectPattern
-            ? ObjectPatternAssert<T[K], D[K]>
-            : T[K] extends ArrayPattern
-            ? ArrayPatternAssert<T[K], D[K]>
-            : never
-          : ValidationBase;
-      };
-    }
-  : never;
-
-export type ArrayAssert<T extends Pattern, D> = D extends {}
-  ? ValidationBase & {
-      readonly c: {
-        [K in keyof T]: T[K] extends Record<string, unknown>
-          ? T[K] extends ObjectPattern
-            ? ObjectPatternAssert<T[K], D>
-            : T[K] extends ArrayPattern
-            ? ArrayPatternAssert<T[K], D>
-            : never
-          : ValidationBase;
-      };
-    }
-  : never;
-
-export type ObjectAssert<T extends Pattern, D> = D extends {}
-  ? ValidationBase & {
-      readonly c: {
-        [K in keyof T & keyof D]: T[K] extends Record<string, unknown>
-          ? T[K] extends ObjectPattern
-            ? D extends {}
-              ? ObjectPatternAssert<T[K], D[K]>
-              : undefined | ObjectPatternAssert<T[K], D[K]>
-            : T[K] extends ArrayPattern
-            ? ArrayPatternAssert<T[K], D[K]>
-            : never
-          : D extends {}
-          ? ValidationBase
-          : undefined | ValidationBase;
-      };
-    }
-  : {
-      readonly c?: {
-        [K in keyof T & keyof D]: T[K] extends Record<string, unknown>
-          ? T[K] extends ObjectPattern
-            ? D extends {}
-              ? ObjectPatternAssert<T[K], D[K]>
-              : undefined | ObjectPatternAssert<T[K], D[K]>
-            : T[K] extends ArrayPattern
-            ? ArrayPatternAssert<T[K], D[K]>
-            : never
-          : D extends {}
-          ? ValidationBase
-          : undefined | ValidationBase;
-      };
-    };
