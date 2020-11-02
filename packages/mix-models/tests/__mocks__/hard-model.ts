@@ -12,13 +12,15 @@ import {
   Options
 } from '@vueent/mix-models';
 
+import { Data as Credentials } from './credentials-model';
+
 import { phoneRegex } from './regular-expressions';
 
 export interface Data {
   id: string;
   phones?: string[];
   phone?: string;
-  credentials?: Credentials;
+  credentials: Credentials;
   documents?: Document[];
   items: Item[];
 }
@@ -33,12 +35,6 @@ export interface Item {
 }
 export interface Value {
   val: string;
-}
-
-export interface Credentials {
-  first: string;
-  second: string;
-  last: string;
 }
 
 export class DataModel extends BaseModel<Data> {}
