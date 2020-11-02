@@ -27,7 +27,7 @@ export interface Data {
 
 export interface Document {
   id: string;
-  filename: string;
+  filename?: string;
 }
 
 export interface Item {
