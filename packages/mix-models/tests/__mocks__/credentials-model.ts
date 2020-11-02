@@ -12,8 +12,6 @@ import {
   Options
 } from '@vueent/mix-models';
 
-import { phoneRegex } from './regular-expressions';
-
 export interface Data {
   first: string;
   second: string;
