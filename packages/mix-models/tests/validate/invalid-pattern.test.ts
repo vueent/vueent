@@ -1,4 +1,4 @@
-import { mixValidate, Pattern, mix } from '@vueent/mix-models';
+import { validateMixin, Pattern } from '@vueent/mix-models';
 
 import { Data, DataModel } from '../__mocks__/recursive-model';
 import { create as createSimpleInvalidModel } from '../__mocks__/simple-invalid-model';
@@ -30,10 +30,10 @@ test("validate mixin should throw an error if pattern's format is unsupported", 
 });
 
 test('validate mixin should throw an error when the format of some validation rule is not supported', () => {
-  class Model extends mix<Data, typeof DataModel>(
-    DataModel,
-    mixValidate(({ name: () => true, items: 42 } as unknown) as Pattern)
-  ) {
+  class Model extends validateMixin<Data, DataModel, typeof DataModel>(DataModel, ({
+    name: () => true,
+    items: 42
+  } as unknown) as Pattern) {
     constructor() {
       super('', { name: '', items: [] });
     }
@@ -99,7 +99,7 @@ test('pattern checker should break the chain when the $each argument is already 
   ];
 
   patterns.forEach(validations => {
-    class Model extends mix<Data, typeof DataModel>(DataModel, mixValidate(validations)) {}
+    class Model extends validateMixin<Data, DataModel, typeof DataModel>(DataModel, validations) {}
 
     let error;
 

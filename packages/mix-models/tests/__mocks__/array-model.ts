@@ -1,17 +1,4 @@
-import {
-  Base,
-  BaseModel,
-  Pattern,
-  ValidationBase,
-  RollbackPrivate,
-  mixRollback,
-  Rollback,
-  ValidatePrivate,
-  Validate,
-  mixValidate,
-  mix,
-  Options
-} from '@vueent/mix-models';
+import { Base, BaseModel, ValidationBase, Rollback, Validate, Options, validateMixin, rollbackMixin } from '@vueent/mix-models';
 
 import { phoneRegex } from './regular-expressions';
 
@@ -25,15 +12,15 @@ export class DataModel extends BaseModel<Data> {}
 export const rollbackMask = {
   id: true,
   phones: true
-};
+} as const;
 
-export const validations: Pattern = {
+export const validations = {
   id: (v?: string) => (v !== undefined && v.length > 0) || 'invalid id',
   phones: {
     $each: (v?: string) => (v !== undefined && phoneRegex.test(v)) || 'invalid phone',
     $self: (v: unknown) => (Array.isArray(v) && v.length > 0) || 'invalid phones'
   }
-};
+} as const;
 
 export interface PhonesValidation extends ValidationBase {
   readonly c: ValidationBase[];
@@ -48,13 +35,12 @@ export interface Validations extends ValidationBase {
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
+// export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(
-  DataModel,
-  mixRollback(rollbackMask),
-  mixValidate<Data, typeof DataModel, Validations>(validations)
-) {
+class RollbackModel extends rollbackMixin<Data, DataModel, typeof DataModel>(DataModel, rollbackMask) {}
+class ValidateModel extends validateMixin<Data, RollbackModel, typeof RollbackModel, Validations>(RollbackModel, validations) {}
+
+export class Model<ModelOptions extends Options> extends ValidateModel {
   constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
     super('id', initialData ?? { id: undefined, phones: undefined }, react, ...options);
   }

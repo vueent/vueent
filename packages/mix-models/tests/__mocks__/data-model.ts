@@ -25,7 +25,7 @@ export type ModelType = Base<Data> & Rollback & Save;
 
 export interface Model extends DataModel, RollbackPrivate<Data>, SavePrivate<Data> {}
 
-export class Model extends mix<Data, typeof DataModel>(DataModel, mixRollback(), mixSave()) {
+export class Model extends mix<Data, DataModel, typeof DataModel>(DataModel, mixRollback(), mixSave()) {
   constructor(initialData?: Data, react = true, saveOptions?: SaveOptions<Data>) {
     super('name', initialData ?? { name: '', official: { first: '', last: '' } }, react, saveOptions);
   }

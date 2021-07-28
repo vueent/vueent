@@ -12,7 +12,8 @@ import {
   ValidationBase,
   mix,
   Options,
-  ValidateOptions
+  ValidateOptions,
+  PatternAssert
 } from '@vueent/mix-models';
 
 export interface Data {
@@ -21,13 +22,9 @@ export interface Data {
 
 export const validations = {
   name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
-};
+} as const;
 
-export interface Validations extends ValidationBase {
-  readonly c: {
-    name: ValidationBase;
-  };
-}
+export type Validations = PatternAssert<typeof validations, Data>;
 
 export class DataModel extends BaseModel<Data> {}
 
@@ -35,10 +32,10 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(
+export class Model<ModelOptions extends Options> extends mix<Data, DataModel, typeof DataModel>(
   DataModel,
   mixRollback(),
-  mixValidate<Data, typeof DataModel, Validations>(validations)
+  mixValidate(validations)
 ) {
   constructor(initialData?: Data | Ref<Data>, react = true, ...options: ModelOptions[]) {
     super('name', initialData ?? { name: '' }, react, ...options);

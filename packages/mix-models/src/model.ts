@@ -33,7 +33,9 @@ export interface Base<T extends object> {
   hasMixin(mixin: Function): boolean;
 }
 
-export type Constructor<T extends object> = new (...args: any[]) => BaseModel<T>;
+export type Constructor<D extends object, T extends BaseModel<D> = BaseModel<D>> = T extends BaseModel<D>
+  ? new (...args: any[]) => T
+  : never;
 
 /**
  * Global uid counter.
@@ -44,7 +46,7 @@ let globalUidCounter = 0n;
 
 const unmix = () => undefined;
 
-export abstract class BaseModel<T extends object> {
+export class BaseModel<T extends object> {
   readonly uid: string;
 
   readonly _flags: ModelFlags;

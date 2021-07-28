@@ -1,6 +1,6 @@
 import { computed, reactive } from 'vue-demi';
 
-import { Options, Constructor } from './model';
+import { Options, Constructor, BaseModel } from './model';
 
 export type CreateFunc<T> = (data: T) => Promise<T | unknown> | T | unknown;
 export type UpdateFunc<T> = (id: unknown, data: T) => Promise<T | unknown> | T | unknown;
@@ -40,117 +40,119 @@ export interface SavePrivate<T extends object> extends Save {
 
 const dummy = () => undefined;
 
-export function mixSave<T extends object, TBase extends Constructor<T>>() {
-  return function(parent: TBase) {
-    return class extends parent implements SavePrivate<T> {
-      readonly _saveFlags: SaveFlags;
-      readonly _create: CreateFunc<T>;
-      readonly _update: UpdateFunc<T>;
-      readonly _destroy: DestroyFunc<T>;
+export function saveMixin<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) {
+  return class extends parent implements SavePrivate<D> {
+    readonly _saveFlags: SaveFlags;
+    readonly _create: CreateFunc<D>;
+    readonly _update: UpdateFunc<D>;
+    readonly _destroy: DestroyFunc<D>;
 
-      get creating() {
-        return this._saveFlags.creating;
+    get creating() {
+      return this._saveFlags.creating;
+    }
+
+    get updating() {
+      return this._saveFlags.updating;
+    }
+
+    get destroying() {
+      return this._saveFlags.destroying;
+    }
+
+    get saving() {
+      return this._saveFlags.saving;
+    }
+
+    constructor(...args: any[]) {
+      super(...args);
+
+      const options = args.slice(3).find(arg => arg?.mixinType === 'save') as SaveOptions<D> | undefined;
+
+      this._create = options?.create ?? dummy;
+      this._update = options?.update ?? dummy;
+      this._destroy = options?.destroy ?? dummy;
+
+      const saving = computed(() => this._saveFlags.creating || this._saveFlags.updating || this._saveFlags.destroying);
+
+      this._saveFlags = reactive({
+        creating: false,
+        updating: false,
+        destroying: false,
+        saving: (saving as unknown) as boolean
+      });
+    }
+
+    processSavedInstance(resp?: T | unknown): void {
+      if (resp === undefined) return;
+      else if (typeof resp === 'object') {
+        this._internal.data = resp as D;
+      } else {
+        (this.data as Record<string, unknown>)[this._idKey] = resp; // due to https://github.com/microsoft/TypeScript/issues/31661
       }
+    }
 
-      get updating() {
-        return this._saveFlags.updating;
-      }
+    async save(): Promise<void> {
+      if (this.deleted) {
+        this._saveFlags.destroying = true;
+        this.beforeDestroy();
 
-      get destroying() {
-        return this._saveFlags.destroying;
-      }
-
-      get saving() {
-        return this._saveFlags.saving;
-      }
-
-      constructor(...args: any[]) {
-        super(...args);
-
-        const options = args.slice(3).find(arg => arg?.mixinType === 'save') as SaveOptions<T> | undefined;
-
-        this._create = options?.create ?? dummy;
-        this._update = options?.update ?? dummy;
-        this._destroy = options?.destroy ?? dummy;
-
-        const saving = computed(() => this._saveFlags.creating || this._saveFlags.updating || this._saveFlags.destroying);
-
-        this._saveFlags = reactive({
-          creating: false,
-          updating: false,
-          destroying: false,
-          saving: (saving as unknown) as boolean
-        });
-      }
-
-      processSavedInstance(resp?: T | unknown): void {
-        if (resp === undefined) return;
-        else if (typeof resp === 'object') {
-          this._internal.data = resp as T;
-        } else {
-          (this.data as Record<string, unknown>)[this._idKey] = resp; // due to https://github.com/microsoft/TypeScript/issues/31661
+        try {
+          await this._destroy((this.data as Record<string, unknown>)[this._idKey], this.data);
+        } catch (e) {
+          this._saveFlags.destroying = false;
+          this._flags.deleted = false;
+          throw e;
         }
-      }
 
-      async save(): Promise<void> {
-        if (this.deleted) {
-          this._saveFlags.destroying = true;
-          this.beforeDestroy();
+        this.afterDestroy();
+        this._saveFlags.destroying = false;
+        this._flags.destroyed = true;
+      } else {
+        if (this.new) {
+          this._saveFlags.creating = true;
+          this.beforeCreate();
+
+          let savedInstance;
 
           try {
-            await this._destroy((this.data as Record<string, unknown>)[this._idKey], this.data);
+            savedInstance = await this._create(this.data);
           } catch (e) {
-            this._saveFlags.destroying = false;
-            this._flags.deleted = false;
+            this._saveFlags.creating = false;
             throw e;
           }
 
-          this.afterDestroy();
-          this._saveFlags.destroying = false;
-          this._flags.destroyed = true;
+          this.processSavedInstance(savedInstance);
+          this.afterCreate();
+          this._saveFlags.creating = false;
+          this._flags.new = false;
         } else {
-          if (this.new) {
-            this._saveFlags.creating = true;
-            this.beforeCreate();
+          this._saveFlags.updating = true;
+          this.beforeSave();
 
-            let savedInstance;
+          let savedInstance;
 
-            try {
-              savedInstance = await this._create(this.data as T);
-            } catch (e) {
-              this._saveFlags.creating = false;
-              throw e;
-            }
-
-            this.processSavedInstance(savedInstance);
-            this.afterCreate();
-            this._saveFlags.creating = false;
-            this._flags.new = false;
-          } else {
-            this._saveFlags.updating = true;
-            this.beforeSave();
-
-            let savedInstance;
-
-            try {
-              savedInstance = await this._update((this.data as Record<string, unknown>)[this._idKey], this.data as T);
-            } catch (e) {
-              this._saveFlags.updating = false;
-              throw e;
-            }
-
-            this.processSavedInstance(savedInstance);
-            this.afterSave();
+          try {
+            savedInstance = await this._update((this.data as Record<string, unknown>)[this._idKey], this.data);
+          } catch (e) {
             this._saveFlags.updating = false;
+            throw e;
           }
 
-          this._flags.dirty = false;
+          this.processSavedInstance(savedInstance);
+          this.afterSave();
+          this._saveFlags.updating = false;
         }
-      }
 
-      hasMixin(mixin: Function): boolean {
-        return mixin === mixSave || super.hasMixin(mixin);
+        this._flags.dirty = false;
       }
-    };
+    }
+
+    hasMixin(mixin: Function): boolean {
+      return mixin === mixSave || super.hasMixin(mixin);
+    }
   };
+}
+
+export function mixSave<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>() {
+  return (parent: C) => saveMixin<D, T, C>(parent);
 }

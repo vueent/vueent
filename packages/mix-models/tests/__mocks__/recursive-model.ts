@@ -8,7 +8,6 @@ import {
   ValidatePrivate,
   mixValidate,
   ValidationBase,
-  Pattern,
   mix
 } from '@vueent/mix-models';
 
@@ -17,9 +16,16 @@ export interface Data {
   items: Data[];
 }
 
-export const validations: Pattern = {
-  name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
+type ValidationsPattern = {
+  name: (v: any) => boolean | string;
+  items: {
+    $each: ValidationsPattern;
+  };
 };
+
+export const validations = {
+  name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
+} as ValidationsPattern;
 
 validations.items = { $each: validations };
 
@@ -42,11 +48,7 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model extends mix<Data, typeof DataModel>(
-  DataModel,
-  mixRollback(),
-  mixValidate<Data, typeof DataModel, Validations>(validations)
-) {
+export class Model extends mix<Data, DataModel, typeof DataModel>(DataModel, mixRollback(), mixValidate(validations)) {
   constructor(initialData?: Data, react = true) {
     super('name', initialData ?? { name: '', items: [] }, react);
   }

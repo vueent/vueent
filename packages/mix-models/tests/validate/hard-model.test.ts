@@ -1,5 +1,5 @@
 import { create as createHardModel, Validations as HardValidations } from '../__mocks__/hard-model';
-import { create as createCredentialModel, Validations as CredentialValidations } from '../__mocks__/credentials-model';
+import { /*create as createCredentialModel,*/ Validations as CredentialValidations } from '../__mocks__/credentials-model';
 
 import '../__mocks__/vue-vm';
 
@@ -16,7 +16,7 @@ function makeHardModel() {
 test('Validation should work with deep objects', () => {
   const instance = makeHardModel();
 
-  const sInstance = createCredentialModel({ first: 'Dan', second: 'Vasilev', last: 'Grigoryevich' });
+  // const sInstance = createCredentialModel({ first: 'Dan', second: 'Vasilev', last: 'Grigoryevich' });
 
   const hV: HardValidations = instance.v;
 
