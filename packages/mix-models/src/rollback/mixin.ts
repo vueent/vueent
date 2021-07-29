@@ -118,3 +118,8 @@ export function rollbackMixin<D extends object, T extends BaseModel<D>, C extend
 export function mixRollback<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(initialMask?: RollbackMask) {
   return (parent: C) => rollbackMixin<D, T, C>(parent, initialMask);
 }
+
+export function mixRollback2(initialMask?: RollbackMask) {
+  return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) =>
+    rollbackMixin<D, T, C>(parent, initialMask);
+}

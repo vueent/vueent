@@ -200,3 +200,8 @@ export function mixValidate<
 >(pattern?: Pattern) {
   return (parent: C) => validateMixin<D, T, C, U>(parent, pattern);
 }
+
+export function mixValidate2<U extends ValidationBase = ValidationBase>(pattern?: Pattern) {
+  return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) =>
+    validateMixin<D, T, C, U>(parent, pattern);
+}

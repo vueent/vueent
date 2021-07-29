@@ -156,3 +156,7 @@ export function saveMixin<D extends object, T extends BaseModel<D>, C extends Co
 export function mixSave<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>() {
   return (parent: C) => saveMixin<D, T, C>(parent);
 }
+
+export function mixSave2() {
+  return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) => saveMixin<D, T, C>(parent);
+}
