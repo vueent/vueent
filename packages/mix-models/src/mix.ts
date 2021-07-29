@@ -2,7 +2,7 @@ import { BaseModel, Constructor } from './model';
 
 export function mix<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(
   root: C,
-  ...mixins: ((parent: C) => any)[]
+  ...mixins: ((parent: C) => C)[]
 ) {
   let result = root;
 

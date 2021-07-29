@@ -46,7 +46,7 @@ let globalUidCounter = 0n;
 
 const unmix = () => undefined;
 
-export class BaseModel<T extends object> {
+export abstract class BaseModel<T extends object> {
   readonly uid: string;
 
   readonly _flags: ModelFlags;
