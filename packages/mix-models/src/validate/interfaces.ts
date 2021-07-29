@@ -3,6 +3,25 @@ import { Provider } from './provider';
 
 export type ValidationRule = (value: any, data: unknown, path: string[]) => boolean | string;
 
+export interface ValidationBase {
+  readonly children?: Children;
+  readonly anyChildDirty: boolean;
+  readonly selfDirty: boolean;
+  readonly dirty: boolean;
+  readonly anyChildInvalid: boolean;
+  readonly selfInvalid: boolean;
+  readonly invalid: boolean;
+  readonly message: string;
+  readonly dirtyMessage: string;
+  readonly c?: unknown;
+
+  touch(): void;
+  reset(): void;
+  updatePath(index: number, section: string): void;
+  checkValue(someValue: unknown): boolean;
+  destroy(): void;
+}
+
 /**
  * A base pattern interface.
  *
@@ -90,3 +109,38 @@ export type ChildrenValidationsInitializer = (
   prefix: string[],
   applyOrOffset?: number[] | number
 ) => Children;
+
+type Conditional<C, T> = C extends undefined ? T | undefined : T;
+
+type DataField<D, K extends keyof Exclude<D, undefined | null>> = Exclude<D, undefined | null> extends object
+  ? Exclude<D, undefined | null>[K]
+  : never;
+
+type DataItem<D> = Exclude<D, undefined> extends Array<unknown> ? Exclude<D, undefined>[number] : never;
+
+export type ArrayItemPatternAssert<T, D> = T extends ArrayPattern
+  ? ArrayPatternAssert<T, D>
+  : T extends Pattern
+  ? PatternAssert<T, D>
+  : never;
+
+export type ObjectPatternAssert<T extends ObjectPattern, D> = PatternAssert<T['$sub'], D>;
+
+export type ArrayPatternAssert<T extends ArrayPattern, D> = T['$each'] extends ValidationRule
+  ? ValidationBase & { readonly c: Conditional<D, ValidationBase>[] }
+  : ValidationBase & { readonly c: Conditional<D, ArrayItemPatternAssert<T['$each'], DataItem<D>>>[] };
+
+export type PatternAssert<T extends Pattern, D> = ValidationBase & {
+  readonly c: {
+    [K in keyof T & keyof Exclude<D, undefined | null>]: Conditional<
+      D,
+      T[K] extends ObjectPattern
+        ? ObjectPatternAssert<T[K], DataField<D, K>>
+        : T[K] extends ArrayPattern
+        ? ArrayPatternAssert<T[K], DataField<D, K>>
+        : T[K] extends ValidationRule
+        ? ValidationBase
+        : never
+    >;
+  };
+};

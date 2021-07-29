@@ -1,52 +1,34 @@
-import {
-  Base,
-  BaseModel,
-  Rollback,
-  RollbackPrivate,
-  mixRollback,
-  Validate,
-  ValidatePrivate,
-  mixValidate,
-  ValidationBase,
-  Pattern,
-  mix
-} from '@vueent/mix-models';
+import { Base, BaseModel, Rollback, Validate, PatternAssert, rollbackMixin, validateMixin } from '@vueent/mix-models';
+import { rollbackMask } from './deep-model';
 
 export interface Data {
   name: string;
   items: Data[];
 }
 
-export const validations: Pattern = {
-  name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
+type ValidationsPattern = {
+  name: (v: any) => boolean | string;
+  items: {
+    $each: ValidationsPattern;
+  };
 };
+
+export const validations = {
+  name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
+} as ValidationsPattern;
 
 validations.items = { $each: validations };
 
-export interface ItemsValidations {
-  readonly c: Validations[];
-}
-
-export interface ChildrenValidations {
-  name: ValidationBase;
-  items: ItemsValidations;
-}
-
-export interface Validations extends ValidationBase {
-  readonly c: ChildrenValidations;
-}
+export type Validations = PatternAssert<typeof validations, Data>;
 
 export class DataModel extends BaseModel<Data> {}
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
+class ValidateModel extends validateMixin<Data, DataModel, typeof DataModel, Validations>(DataModel, validations) {}
+class RollbackModel extends rollbackMixin<Data, ValidateModel, typeof ValidateModel>(ValidateModel, rollbackMask) {}
 
-export class Model extends mix<Data, typeof DataModel>(
-  DataModel,
-  mixRollback(),
-  mixValidate<Data, typeof DataModel, Validations>(validations)
-) {
+export class Model extends RollbackModel {
   constructor(initialData?: Data, react = true) {
     super('name', initialData ?? { name: '', items: [] }, react);
   }

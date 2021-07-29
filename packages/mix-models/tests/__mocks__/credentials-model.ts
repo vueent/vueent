@@ -1,32 +1,32 @@
-import { Ref } from 'vue-demi';
-
 import {
   Base,
   BaseModel,
-  Rollback,
+  PatternAssert,
   RollbackPrivate,
   mixRollback,
-  Validate,
+  Rollback,
   ValidatePrivate,
+  Validate,
   mixValidate,
-  ValidationBase,
   mix,
-  Options,
-  ValidateOptions,
-  PatternAssert
+  Options
 } from '@vueent/mix-models';
 
 export interface Data {
-  name: string;
+  first: string;
+  second: string;
+  last: string;
 }
 
+export class DataModel extends BaseModel<Data> {}
+
 export const validations = {
-  name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
+  first: (v: string) => v.length > 0 || 'invalid first name',
+  second: (v: string) => v.length > 0 || 'invalid second name',
+  last: (v: string) => v.length > 0 || 'invalid last name'
 } as const;
 
 export type Validations = PatternAssert<typeof validations, Data>;
-
-export class DataModel extends BaseModel<Data> {}
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
@@ -37,15 +37,11 @@ export class Model<ModelOptions extends Options> extends mix<Data, DataModel, ty
   mixRollback(),
   mixValidate(validations)
 ) {
-  constructor(initialData?: Data | Ref<Data>, react = true, ...options: ModelOptions[]) {
-    super('name', initialData ?? { name: '' }, react, ...options);
+  constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
+    super('id', initialData ?? { first: '', second: '', last: '' }, react, ...options);
   }
 }
 
-export function create(basicData?: Data | Ref<Data>, react = true, validations?: ValidationBase): ModelType {
-  const options: ValidateOptions[] = [];
-
-  if (validations) options.push({ mixinType: 'validate', validations });
-
+export function create<ModelOptions extends Options>(basicData?: Data, react = true, ...options: ModelOptions[]): ModelType {
   return new Model(basicData, react, ...options);
 }

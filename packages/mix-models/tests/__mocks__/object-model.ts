@@ -1,7 +1,6 @@
 import {
   Base,
   BaseModel,
-  Pattern,
   ValidationBase,
   RollbackPrivate,
   mixRollback,
@@ -23,11 +22,18 @@ export class DataModel extends BaseModel<Data> {}
 export const rollbackMask = {
   id: true,
   internalData: true
+} as const;
+
+export type ValidationsPattern = {
+  id: (v?: string) => boolean | string;
+  internalData: {
+    $sub: ValidationsPattern;
+  };
 };
 
-export const validations: Pattern = {
+export const validations = {
   id: (v?: string) => (v !== undefined && v.length > 0) || 'invalid id'
-};
+} as ValidationsPattern;
 
 validations.internalData = { $sub: validations };
 
@@ -42,10 +48,10 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(
+export class Model<ModelOptions extends Options> extends mix<Data, DataModel, typeof DataModel>(
   DataModel,
   mixRollback(rollbackMask),
-  mixValidate<Data, typeof DataModel, Validations>(validations)
+  mixValidate(validations)
 ) {
   constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
     super('id', initialData ?? { id: undefined, internalData: { id: '2', internalData: undefined } }, react, ...options);

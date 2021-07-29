@@ -1,8 +1,7 @@
 import {
   Base,
   BaseModel,
-  Pattern,
-  ValidationBase,
+  PatternAssert,
   RollbackPrivate,
   mixRollback,
   Rollback,
@@ -13,19 +12,22 @@ import {
   Options
 } from '@vueent/mix-models';
 
+import { Data as Credentials } from './credentials-model';
+
 import { phoneRegex } from './regular-expressions';
 
 export interface Data {
   id: string;
   phones?: string[];
+  phone?: string;
   credentials: Credentials;
-  documents: Document[];
+  documents?: Document[];
   items: Item[];
 }
 
 export interface Document {
   id: string;
-  filename: string;
+  filename?: string;
 }
 
 export interface Item {
@@ -35,20 +37,15 @@ export interface Value {
   val: string;
 }
 
-export interface Credentials {
-  first: string;
-  second: string;
-  last: string;
-}
-
 export class DataModel extends BaseModel<Data> {}
 
-export const validations: Pattern = {
+export const validations = {
   id: (v: string) => v.length > 0 || 'invalid id',
   phones: {
     $each: (v?: string) => (v !== undefined && phoneRegex.test(v)) || 'invalid phone',
     $self: (v: unknown) => (Array.isArray(v) && v.length > 0) || 'invalid phones'
   },
+  phone: (v?: string) => (v !== undefined && v.length > 0) || 'invalid id',
   credentials: {
     $sub: {
       first: (v: string) => v.length > 0 || 'invalid first name',
@@ -71,69 +68,18 @@ export const validations: Pattern = {
       }
     }
   }
-};
+} as const;
 
-export interface PhonesValidation extends ValidationBase {
-  readonly c: ValidationBase[];
-}
-
-export interface CredentialsValidation extends ValidationBase {
-  readonly c: {
-    first: ValidationBase;
-    second: ValidationBase;
-    last: ValidationBase;
-  };
-}
-
-export interface DocumentsValidation extends ValidationBase {
-  readonly c: DocumentValidation[];
-}
-
-export interface DocumentValidation extends ValidationBase {
-  readonly c: {
-    id: ValidationBase;
-    filename: ValidationBase;
-  };
-}
-
-export interface ValueValidation extends ValidationBase {
-  readonly c: {
-    val: ValidationBase;
-  };
-}
-
-export interface ValuesValidation extends ValidationBase {
-  readonly c: ValueValidation[];
-}
-
-export interface ItemValidation extends ValidationBase {
-  readonly c: {
-    value: ValuesValidation;
-  };
-}
-
-export interface ItemsValidation extends ValidationBase {
-  readonly c: ItemValidation[];
-}
-
-export interface Validations extends ValidationBase {
-  readonly c: {
-    id: ValidationBase;
-    phones: PhonesValidation;
-    credentials: CredentialsValidation;
-    documents: DocumentsValidation;
-    items: ItemsValidation;
-  };
-}
+export type Validations = PatternAssert<typeof validations, Data>;
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(
+export class Model<ModelOptions extends Options> extends mix<Data, DataModel, typeof DataModel>(
   DataModel,
   mixRollback(),
-  mixValidate<Data, typeof DataModel, Validations>(validations)
+  mixValidate(validations)
 ) {
   constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
     super(
