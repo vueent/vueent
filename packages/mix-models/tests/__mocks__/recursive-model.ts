@@ -1,15 +1,5 @@
-import {
-  Base,
-  BaseModel,
-  Rollback,
-  RollbackPrivate,
-  mixRollback,
-  Validate,
-  ValidatePrivate,
-  mixValidate,
-  ValidationBase,
-  mix
-} from '@vueent/mix-models';
+import { Base, BaseModel, Rollback, Validate, PatternAssert, rollbackMixin, validateMixin } from '@vueent/mix-models';
+import { rollbackMask } from './deep-model';
 
 export interface Data {
   name: string;
@@ -29,26 +19,16 @@ export const validations = {
 
 validations.items = { $each: validations };
 
-export interface ItemsValidations {
-  readonly c: Validations[];
-}
-
-export interface ChildrenValidations {
-  name: ValidationBase;
-  items: ItemsValidations;
-}
-
-export interface Validations extends ValidationBase {
-  readonly c: ChildrenValidations;
-}
+export type Validations = PatternAssert<typeof validations, Data>;
 
 export class DataModel extends BaseModel<Data> {}
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
+class ValidateModel extends validateMixin<Data, DataModel, typeof DataModel, Validations>(DataModel, validations) {}
+class RollbackModel extends rollbackMixin<Data, ValidateModel, typeof ValidateModel>(ValidateModel, rollbackMask) {}
 
-export class Model extends mix<Data, DataModel, typeof DataModel>(DataModel, mixRollback(), mixValidate(validations)) {
+export class Model extends RollbackModel {
   constructor(initialData?: Data, react = true) {
     super('name', initialData ?? { name: '', items: [] }, react);
   }
