@@ -52,7 +52,7 @@ export function register<T extends Service = Service>(create: Constructor<T>) {
  *
  * @param create - service constructor
  * @param params - constructor parameters
- * @returns service instance
+ * @returns - service instance
  */
 export function use<T extends Service = Service>(create: Constructor<T>, ...params: Params<T>) {
   return useVueent().getService(create, ...params);

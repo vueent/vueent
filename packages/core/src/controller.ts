@@ -71,7 +71,7 @@ export function register<T extends Controller = Controller>(create: Constructor<
  *
  * @param create - controller constructor
  * @param params - constructor parameters
- * @returns controller instance
+ * @returns - controller instance
  */
 export function use<T extends Controller = Controller>(create: Constructor<T>, ...params: Params<T>) {
   return useVueent().getController(create, ...params);
