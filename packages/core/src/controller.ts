@@ -3,7 +3,7 @@ import { useVueent } from './vueent';
 /**
  * An abstract base controller class.
  *
- * Each controller is a singleton must extend the base controller or its descendant.
+ * Each controller is a singleton and must extend the base controller or its descendant.
  */
 export abstract class Controller {
   /**
@@ -51,7 +51,7 @@ export function inject<T extends Controller = Controller>(create: Constructor<T>
 }
 
 /**
- * Registers a controller in the vueent instance.
+ * Registers a controller in a vueent instance.
  *
  * This operation is necessary to access the controller instance via
  * {@link inject} decorator or {@link use} function.
@@ -67,9 +67,10 @@ export function register<T extends Controller = Controller>(create: Constructor<
  *
  * Due to the singleton nature of controllers, the function may instantiate the controller
  * if it hasn't already been instantiated.
+ * If the controller hasn't been instantiated yet, the parameters will be passed to its constructor.
  *
  * @param create - controller constructor
- * @param params - constructor params
+ * @param params - constructor parameters
  * @returns controller instance
  */
 export function use<T extends Controller = Controller>(create: Constructor<T>, ...params: Params<T>) {
