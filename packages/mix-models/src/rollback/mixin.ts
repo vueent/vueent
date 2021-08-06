@@ -6,47 +6,112 @@ import { Constructor, BaseModel } from '../model';
 import { RollbackMask } from './interfaces';
 import { flattenKeys } from './flatten-keys';
 
+/**
+ * Public interface of the `rollback` mixin.
+ */
 export interface Rollback {
+  /**
+   * A list of flatten keys of an object mask.
+   */
   maskPaths?: string[];
 
+  /**
+   * Reverts the original data state.
+   *
+   * @param mask - rollback mask
+   */
   rollback(mask?: RollbackMask): void;
 }
 
 export interface RollbackPrivate<T extends object> extends Rollback {
+  /**
+   * Previous data state.
+   */
   _original: T;
+
+  /**
+   * A list of flatten keys of an object mask.
+   */
   _maskPaths?: string[];
 
+  /**
+   * Rewrites the `_original` field with the current data value.
+   */
   updateOriginal(): void;
-  recursivePathFinder(mask: string[], arrayPosition: number, path?: string): void;
+
+  /**
+   * Matches the mask to the data and returns a list of real paths.
+   *
+   * @param mask - splitted path
+   * @param arrayPosition - position of array mark in the splitted path
+   * @param path - path prefix
+   * @returns - a list of subpaths
+   */
+  recursivePathFinder(mask: string[], arrayPosition: number, path?: string): string[];
 }
 
+/**
+ * Appends rollback mixin to the model class.
+ *
+ * @param parent - parent model class
+ * @param initialMask - initial rollback mask
+ * @returns - mixed model class
+ */
 export function rollbackMixin<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(
   parent: C,
   initialMask?: RollbackMask
 ) {
   return class extends parent implements RollbackPrivate<D> {
+    /**
+     * Previous data state.
+     */
     _original: D;
+
+    /**
+     * A list of flatten keys of an object mask.
+     */
     _maskPaths?: string[] = initialMask ? flattenKeys(initialMask) : undefined;
+
+    /**
+     * A list of flatten keys of an object mask.
+     */
+    get maskPaths() {
+      return this._maskPaths;
+    }
 
     constructor(...args: any[]) {
       super(...args);
       this._original = cloneDeep(args[1]);
     }
 
+    /**
+     * Rewrites the `_original` field with the current data value.
+     */
     updateOriginal() {
       this._original = cloneDeep(this._internal.data);
     }
 
+    /**
+     * Is called after creating an instance in storage.
+     */
     afterCreate() {
       this.updateOriginal();
       super.afterCreate();
     }
 
+    /**
+     * Is called after saving an existing instance to storage.
+     */
     afterSave() {
       this.updateOriginal();
       super.afterSave();
     }
 
+    /**
+     * Reverts the original data state.
+     *
+     * @param mask - rollback mask
+     */
     rollback(customMask?: RollbackMask) {
       if (!this.dirty) return;
 
@@ -81,10 +146,23 @@ export function rollbackMixin<D extends object, T extends BaseModel<D>, C extend
       this.afterRollback();
     }
 
+    /**
+     * Returns `true` if the model has a mixin.
+     *
+     * @param mixin - mixin function
+     */
     hasMixin(mixin: Function): boolean {
       return mixin === mixRollback || super.hasMixin(mixin);
     }
 
+    /**
+     * Matches the mask to the data and returns a list of real paths.
+     *
+     * @param mask - splitted path
+     * @param arrayPosition - position of array mark in the splitted path
+     * @param path - path prefix
+     * @returns - a list of subpaths
+     */
     recursivePathFinder(mask: string[], arrayPosition: number, path = ''): string[] {
       const result: string[] = [];
 
@@ -115,10 +193,24 @@ export function rollbackMixin<D extends object, T extends BaseModel<D>, C extend
   };
 }
 
+/**
+ * Returns a typed function that extends a model class with the rollback mixin.
+ *
+ * This function can be used my {@see mix} function.
+ *
+ * @param initialMask - initial rollback mask
+ * @returns - mixin function
+ */
 export function mixRollback<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(initialMask?: RollbackMask) {
   return (parent: C) => rollbackMixin<D, T, C>(parent, initialMask);
 }
 
+/**
+ * Returns a typed function that extends a model class with the rollback mixin.
+ *
+ * @param initialMask - initial rollback mask
+ * @returns - mixin function
+ */
 export function mixRollback2(initialMask?: RollbackMask) {
   return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) =>
     rollbackMixin<D, T, C>(parent, initialMask);

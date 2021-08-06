@@ -1,5 +1,14 @@
 import { RollbackArrayMask, RollbackMask, isRollbackArrayMaskUnsafe } from './interfaces';
 
+/**
+ * Returns a list of flatten keys of an object mask.
+ *
+ * The function parses an argument deeply and constructs full paths of each key.
+ *
+ * @param arg - rollback mask
+ * @param prefix - path prefix
+ * @returns - flatten keys
+ */
 export function flattenKeys(arg: RollbackMask | RollbackArrayMask, prefix = ''): string[] {
   const result: string[] = [];
   const dot = prefix === '' ? '' : '.';
