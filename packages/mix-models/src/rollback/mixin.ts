@@ -7,7 +7,7 @@ import { RollbackMask } from './interfaces';
 import { flattenKeys } from './flatten-keys';
 
 /**
- * Public interface of the `rollback` mixin.
+ * Public interface of `rollback` mixin.
  */
 export interface Rollback {
   /**
@@ -23,6 +23,9 @@ export interface Rollback {
   rollback(mask?: RollbackMask): void;
 }
 
+/**
+ * Private interface of `rollback` mixin.
+ */
 export interface RollbackPrivate<T extends object> extends Rollback {
   /**
    * Previous data state.
@@ -51,10 +54,10 @@ export interface RollbackPrivate<T extends object> extends Rollback {
 }
 
 /**
- * Appends rollback mixin to the model class.
+ * Appends `rollback` mixin to the model class.
  *
  * @param parent - parent model class
- * @param initialMask - initial rollback mask
+ * @param initialMask - initial rollback mask, @see {@link RollbackMask}
  * @returns - mixed model class
  */
 export function rollbackMixin<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(
@@ -194,11 +197,11 @@ export function rollbackMixin<D extends object, T extends BaseModel<D>, C extend
 }
 
 /**
- * Returns a typed function that extends a model class with the rollback mixin.
+ * Returns a typed function that extends a model class with `rollback` mixin.
  *
  * This function can be used my {@see mix} function.
  *
- * @param initialMask - initial rollback mask
+ * @param initialMask - initial rollback mask, @see {@link RollbackMask}
  * @returns - mixin function
  */
 export function mixRollback<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(initialMask?: RollbackMask) {
@@ -206,9 +209,9 @@ export function mixRollback<D extends object, T extends BaseModel<D>, C extends 
 }
 
 /**
- * Returns a typed function that extends a model class with the rollback mixin.
+ * Returns a typed function that extends a model class with `rollback` mixin.
  *
- * @param initialMask - initial rollback mask
+ * @param initialMask - initial rollback mask, @see {@link RollbackMask}
  * @returns - mixin function
  */
 export function mixRollback2(initialMask?: RollbackMask) {

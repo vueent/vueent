@@ -84,7 +84,7 @@ export interface SaveFlags {
 }
 
 /**
- * Public interface of the `save` mixin.
+ * Public interface of `save` mixin.
  */
 export interface Save {
   /**
@@ -121,6 +121,9 @@ export interface Save {
   save(): Promise<void>;
 }
 
+/**
+ * Private interface of `save` mixin.
+ */
 export interface SavePrivate<T extends object> extends Save {
   /**
    * Flags that indicate a state of mixin's operations.
@@ -164,7 +167,7 @@ export interface SavePrivate<T extends object> extends Save {
 const dummy = () => undefined;
 
 /**
- * Appends save mixin to the model class.
+ * Appends `save` mixin to the model class.
  *
  * @param parent - parent model class
  * @returns - mixed model class
@@ -342,7 +345,7 @@ export function saveMixin<D extends object, T extends BaseModel<D>, C extends Co
 }
 
 /**
- * Returns a typed function that extends a model class with the save mixin.
+ * Returns a typed function that extends a model class with `save` mixin.
  *
  * This function can be used my {@see mix} function.
  *
@@ -353,7 +356,7 @@ export function mixSave<D extends object, T extends BaseModel<D>, C extends Cons
 }
 
 /**
- * Returns a typed function that extends a model class with the save mixin.
+ * Returns a typed function that extends a model class with `save` mixin.
  *
  * @returns - mixin function
  */
