@@ -351,15 +351,6 @@ export function saveMixin<D extends object, C extends Constructor<D, BaseModel<D
  *
  * @returns - mixin function
  */
-export function mixSave<D extends object, C extends Constructor<D, BaseModel<D>>>() {
-  return (parent: C) => saveMixin<D, C>(parent);
-}
-
-/**
- * Returns a typed function that extends a model class with `save` mixin.
- *
- * @returns - mixin function
- */
-export function mixSave2() {
+export function mixSave() {
   return <D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C) => saveMixin<D, C>(parent);
 }

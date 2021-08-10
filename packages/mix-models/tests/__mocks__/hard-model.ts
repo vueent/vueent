@@ -1,4 +1,4 @@
-import { Base, BaseModel, PatternAssert, Rollback, Validate, Options, mixValidate2, mixRollback2 } from '@vueent/mix-models';
+import { Base, BaseModel, PatternAssert, Rollback, Validate, Options, mixValidate, mixRollback } from '@vueent/mix-models';
 
 import { Data as Credentials } from './credentials-model';
 
@@ -62,8 +62,8 @@ export type Validations = PatternAssert<typeof validations, Data>;
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-class M<ModelOptions extends Options> extends mixRollback2()(
-  mixValidate2<Validations>(validations)(class extends BaseModel<Data> {})
+class M<ModelOptions extends Options> extends mixRollback()(
+  mixValidate<Validations>(validations)(class extends BaseModel<Data> {})
 ) {
   constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
     super(

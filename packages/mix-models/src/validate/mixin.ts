@@ -314,18 +314,6 @@ export function validateMixin<
  * @param pattern - validation pattern, @see {@link Pattern}
  * @returns - mixin function
  */
-export function mixValidate<D extends object, C extends Constructor<D, BaseModel<D>>, U extends ValidationBase = ValidationBase>(
-  pattern?: Pattern
-) {
-  return (parent: C) => validateMixin<D, C, U>(parent, pattern);
-}
-
-/**
- * Returns a typed function that extends a model class with `validate` mixin.
- *
- * @param pattern - validation pattern, @see {@link Pattern}
- * @returns - mixin function
- */
-export function mixValidate2<U extends ValidationBase = ValidationBase>(pattern?: Pattern) {
+export function mixValidate<U extends ValidationBase = ValidationBase>(pattern?: Pattern) {
   return <D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C) => validateMixin<D, C, U>(parent, pattern);
 }
