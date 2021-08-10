@@ -1,44 +1,151 @@
 import { Children } from './validation';
 import { Provider } from './provider';
 
+/**
+ * A function type that checks a value from the data path and returns a result.
+ *
+ * @param value - checking data field
+ * @param data - model data
+ * @param path - field path
+ * @returns - validation result
+ */
 export type ValidationRule = (value: any, data: unknown, path: string[]) => boolean | string;
 
+/**
+ * Basic validation interface.
+ */
 export interface ValidationBase {
+  /**
+   * Children validations.
+   */
   readonly children?: Children;
+
+  /**
+   * A flag indicating that at least one of children has the {@link ValidationBase.dirty} flag.
+   */
   readonly anyChildDirty: boolean;
+
+  /**
+   * A flag indicating that the current data field is dirty.
+   */
   readonly selfDirty: boolean;
+
+  /**
+   * A flag indicating that the current data field or one of children is dirty.
+   */
   readonly dirty: boolean;
+
+  /**
+   * A flag indicating that at least on of children has the {@link ValidationBase.invalid} flag.
+   */
   readonly anyChildInvalid: boolean;
+
+  /**
+   * A flag indicating that validation of the current data field failed.
+   */
   readonly selfInvalid: boolean;
+
+  /**
+   * A flag indicating the validation of the current data field or one of children failed.
+   */
   readonly invalid: boolean;
+
+  /**
+   * Validation error text.
+   */
   readonly message: string;
+
+  /**
+   * Validation error text, which is specified only if the {@link ValidationBase.dirty} flag is set.
+   */
   readonly dirtyMessage: string;
+
+  /**
+   * Children shortcut. Typed children validations.
+   *
+   * This field is identical to {@link ValidationBase.children}, but uses a type, that should be send to the mixin function.
+   */
   readonly c?: unknown;
 
+  /**
+   * Mark the current data field as dirty.
+   */
   touch(): void;
+
+  /**
+   * Resets the current validation state to default values.
+   */
   reset(): void;
+
+  /**
+   * Updates a path of the current date field if it is moved.
+   *
+   * This method is called when the array items are moving.
+   * ATTENTION: This method should not be used manually.
+   *
+   * @internal
+   * @param index - index of the modified path section
+   * @param section - updated section value
+   */
   updatePath(index: number, section: string): void;
+
+  /**
+   * Compares the specified value with the cached value of the current data field.
+   *
+   * @param someValue - specified value
+   * @returns - check result
+   */
   checkValue(someValue: unknown): boolean;
+
+  /**
+   * Destroys the current validation instance and its children.
+   *
+   * This method stops data watchers.
+   */
   destroy(): void;
 }
 
 /**
  * A base pattern interface.
  *
- * The interface must not be used directly, just use `ValidationRule` instead.
+ * ATTENTION: This interface must not be used directly.
  */
 export interface UnknownPattern {
+  /**
+   * An object or array validation rule.
+   */
   $self?: ValidationRule;
 }
 
+/**
+ * Casts a variable to the {@link UnknownPattern} type if it has a correct `$self` field, or `undefined`.
+ *
+ * @param inst - variable
+ * @returns - checking result
+ */
 export function isUnknownPattern(inst: any): inst is UnknownPattern {
   return inst && typeof inst === 'object' && (inst.$self === undefined || typeof inst.$self === 'function');
 }
 
+/**
+ * An object pattern interface.
+ *
+ * ATTENTION: This interface must not be used directly.
+ */
 export interface ObjectPattern extends UnknownPattern {
+  /**
+   * A pattern of fields of the object.
+   */
   $sub: Pattern;
 }
 
+/**
+ * Casts a variable to the {@link ObjectPattern} type if it has correct subpatterns, or `undefined`.
+ *
+ * @param inst - variable
+ * @param leafSet - set of subpatterns
+ * @returns - checking result
+ */
 export function asObjectPattern(inst: any, leafSet: Set<unknown>): ObjectPattern | undefined {
   const sup = inst;
 
@@ -51,10 +158,25 @@ export function asObjectPattern(inst: any, leafSet: Set<unknown>): ObjectPattern
   if (asPattern(inst.$sub, leafSet)) return inst as ObjectPattern;
 }
 
+/**
+ * An array pattern interface.
+ *
+ * ATTENTION: This interface must not be used directly.
+ */
 export interface ArrayPattern extends UnknownPattern {
+  /**
+   * A pattern of elements of the array.
+   */
   $each: Pattern | ArrayPattern | ValidationRule;
 }
 
+/**
+ * Casts a variable to the {@link ArrayPattern} type if it has correct subpatterns, or `undefined`.
+ *
+ * @param inst - variable
+ * @param leafSet - set of subpatterns
+ * @returns - checking result
+ */
 export function asArrayPattern(inst: any, leafSet: Set<unknown>): ArrayPattern | undefined {
   const sup = inst;
 
@@ -69,20 +191,41 @@ export function asArrayPattern(inst: any, leafSet: Set<unknown>): ArrayPattern |
 }
 
 /**
- * Checks only for the `$each` property existence.
+ * Casts a variable to the {@link ArrayPattern} type if has a defined `$each` field.
  *
- * @param inst
+ * ATTENTION: Checks only for the `$each` property existence.
+ *
+ * @param inst - variable
+ * @returns - checking result
  */
 export function isArrayPatternUnsafe(inst: UnknownPattern): inst is ArrayPattern {
   return (inst as any).$each !== undefined;
 }
 
+/**
+ * A combination of {@link ObjectPattern} and {@link ArrayPattern} types.
+ */
 export type AnyPattern = ObjectPattern | ArrayPattern;
 
+/**
+ * Unified pattern interface.
+ *
+ * ATTENTION: Do not use with type directly if you want to use {@link PatternAssert}.
+ */
 export interface Pattern {
+  /**
+   * Subpatterns.
+   */
   [key: string]: ValidationRule | AnyPattern;
 }
 
+/**
+ * Casts a variable to the {@link Pattern} type if it has correct subpatterns, or `undefined`.
+ *
+ * @param inst - variable
+ * @param leafSet - set of subpatterns
+ * @returns - checking result
+ */
 export function asPattern(inst: any, leafSet?: Set<unknown>): Pattern | undefined {
   if (!inst || typeof inst !== 'object') return undefined;
 
@@ -101,6 +244,17 @@ export function asPattern(inst: any, leafSet?: Set<unknown>): Pattern | undefine
   return inst as Pattern;
 }
 
+/**
+ * A function that initializes child validations.
+ *
+ * @param provider - provider instance
+ * @param pattern - validation pattern
+ * @param autoTouch - set the `dirty` flag automatically when data changes
+ * @param defined - data field is defined
+ * @param prefix - data field path
+ * @param applyOrOffset - array index filter
+ * @returns - child validations
+ */
 export type ChildrenValidationsInitializer = (
   provider: Provider,
   pattern: AnyPattern,
@@ -130,6 +284,25 @@ export type ArrayPatternAssert<T extends ArrayPattern, D> = T['$each'] extends V
   ? ValidationBase & { readonly c: Conditional<D, ValidationBase>[] }
   : ValidationBase & { readonly c: Conditional<D, ArrayItemPatternAssert<T['$each'], DataItem<D>>>[] };
 
+/**
+ * This type generates validation type from the validations pattern object and the model data type.
+ *
+ * @example
+ * ```
+ * interface Data {
+ *   id: number;
+ *   name: string;
+ *   value: number;
+ * }
+ *
+ * const validations = {
+ *   name: (value: string) => value.length > 0,
+ *   value: (value: number) => value <= 100 && value > 10
+ * };
+ *
+ * type Validations = PatternAssert<typeof validations, Data>;
+ * ```
+ */
 export type PatternAssert<T extends Pattern, D> = ValidationBase & {
   readonly c: {
     [K in keyof T & keyof Exclude<D, undefined | null>]: Conditional<

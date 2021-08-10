@@ -1,5 +1,8 @@
 import { isRef, ref, unref, computed } from 'vue-demi';
 
+/**
+ * A unified interface of the class property.
+ */
 export interface Option {
   get: () => unknown;
   set: (value: unknown) => void;
@@ -7,6 +10,9 @@ export interface Option {
 
 type Instance = Record<string, unknown>;
 
+/**
+ * Returns a getter and a setter of the reactive property.
+ */
 export function trackedData() {
   const values = new WeakMap();
 
@@ -27,6 +33,14 @@ export function trackedData() {
   return { getter, setter };
 }
 
+/**
+ * Makes a class field a tracked property.
+ *
+ * A tracked property is a reactive property that can be tracked using calculated (computed) properties.
+ *
+ * @param target - class
+ * @param propertyKey - field name
+ */
 export function tracked(target: unknown, propertyKey: string | symbol) {
   const { getter, setter } = trackedData();
 
@@ -46,6 +60,11 @@ export function tracked(target: unknown, propertyKey: string | symbol) {
   });
 }
 
+/**
+ * Returns a getter and an optional setter of the calculated property.
+ *
+ * @param descriptor - a property descriptor
+ */
 export function calculatedAccessorsData(descriptor: PropertyDescriptor) {
   const values = new WeakMap();
 
@@ -84,6 +103,16 @@ export function calculatedAccessorsData(descriptor: PropertyDescriptor) {
   return { getter, setter: set ? setter : undefined };
 }
 
+/**
+ * Makes a class property a computed property.
+ *
+ * A calculated property differs with a pure property in that the calculated property
+ * is lazy and updates its internal value when its dependencies are changed.
+ *
+ * @param target
+ * @param propertyKey
+ * @param descriptor - property descriptor
+ */
 export function calculated(target: unknown, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
   const { getter, setter } = calculatedAccessorsData(descriptor);
 

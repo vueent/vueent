@@ -7,26 +7,80 @@ import { ValidationBase, Pattern, AnyPattern, ObjectPattern, asPattern, isArrayP
 import { Children, Validation } from './validation';
 import { Provider } from './provider';
 
+/**
+ * Save mixin options.
+ */
 export interface ValidateOptions extends Options {
+  /**
+   * Mixin name.
+   */
   readonly mixinType: 'validate';
+
+  /**
+   * Validations configuration.
+   */
   readonly validations?: ValidationBase;
+
+  /**
+   * Set the {@link ValidationBase.dirty} flag automatically when data changes.
+   */
   readonly autoTouch?: boolean;
 }
 
+/**
+ * Reactive properties which provided by validate mixin.
+ */
 export interface ValidationProps {
+  /**
+   * A flag indicating that the state is locked and should not be changed, e.g. {@link ValidationBase.dirty}.
+   */
   locked: boolean;
+
+  /**
+   * Set the {@link ValidationBase.dirty} flag automatically when data changes.
+   */
   autoTouch: boolean;
+
+  /**
+   * The base instance of {@link ValidationBase}.
+   */
   validations: ValidationBase;
 }
 
+/**
+ * Public interface of `validate` mixin.
+ */
 export interface Validate<T extends ValidationBase = ValidationBase> {
+  /**
+   * The base instance of {@link ValidationBase}.
+   */
   readonly validations: ValidationBase;
+
+  /**
+   * Typed shortcut of {@link Validate.validations} property.
+   */
   readonly v: T;
 }
 
+/**
+ * Private interface of `validate` mixin.
+ */
 export interface ValidatePrivate<T extends ValidationBase = ValidationBase> extends Validate<T> {
+  /**
+   * Reactive properties which provided by the mixin.
+   */
   readonly _validationProps: ValidationProps;
 
+  /**
+   * Initializes an instance of {@link Validate.validations}.
+   *
+   * @param provider - data provider
+   * @param pattern - validation pattern
+   * @param autoTouch - set the {@link ValidationBase.dirty} flag automatically when data changes
+   * @param defined - data field is defined
+   * @param prefix - path prefix
+   * @returns - root validation instance
+   */
   initValidations(
     provider: Provider,
     pattern: AnyPattern,
@@ -35,16 +89,34 @@ export interface ValidatePrivate<T extends ValidationBase = ValidationBase> exte
     prefix?: string[]
   ): ValidationBase;
 
+  /**
+   * Initializes child validations.
+   *
+   * @param provider - data provider
+   * @param pattern - validation pattern
+   * @param autoTouch - set the {@link ValidationBase.dirty} flag automatically when data changes
+   * @param defined - data field is defined
+   * @param prefix - path prefix
+   * @param applyOrOffset - array index filter
+   * @returns - child validations
+   */
   initValidationChildren(
     provider: Provider,
     pattern: AnyPattern,
     autoTouch: boolean,
     defined: boolean,
     prefix: string[],
-    offset?: number
+    applyOrOffset?: number
   ): Children;
 }
 
+/**
+ * Appends `validate` mixin to the model class.
+ *
+ * @param parent - parent model class
+ * @param pattern - validation pattern, @see {@link Pattern}
+ * @returns - mixed model class
+ */
 export function validateMixin<
   D extends object,
   T extends BaseModel<D>,
@@ -52,12 +124,21 @@ export function validateMixin<
   U extends ValidationBase = ValidationBase
 >(parent: C, pattern?: Pattern) {
   return class extends parent implements ValidatePrivate<U> {
+    /**
+     * Reactive properties which provided by the mixin.
+     */
     readonly _validationProps: ValidationProps;
 
+    /**
+     * The base instance of {@link ValidationBase}.
+     */
     get validations() {
       return this._validationProps.validations;
     }
 
+    /**
+     * Typed shortcut of {@link Validate.validations} property.
+     */
     get v(): U {
       return this._validationProps.validations as U;
     }
@@ -96,6 +177,9 @@ export function validateMixin<
       this._validationProps.validations = this.initValidations(provider, objectPattern, this._validationProps.autoTouch, true);
     }
 
+    /**
+     * Is called after rollback the model data.
+     */
     afterRollback() {
       this._validationProps.locked = true;
       this._validationProps.validations.reset();
@@ -103,11 +187,26 @@ export function validateMixin<
       super.afterRollback();
     }
 
+    /**
+     * Destroys the model data.
+     *
+     * The destroyed models should not be used, its data reactivity is lost.
+     */
     destroy() {
       this.validations.destroy();
       super.destroy();
     }
 
+    /**
+     * Initializes an instance of {@link Validate.validations}.
+     *
+     * @param provider - data provider
+     * @param pattern - validation pattern
+     * @param autoTouch - set the {@link ValidationBase.dirty} flag automatically when data changes
+     * @param defined - data field is defined
+     * @param prefix - path prefix
+     * @returns - root validation instance
+     */
     initValidations(
       provider: Provider,
       pattern: AnyPattern,
@@ -120,6 +219,17 @@ export function validateMixin<
       return new Validation(provider.bindContext(pattern), prefix, autoTouch, pattern.$self, children);
     }
 
+    /**
+     * Initializes child validations.
+     *
+     * @param provider - data provider
+     * @param pattern - validation pattern
+     * @param autoTouch - set the {@link ValidationBase.dirty} flag automatically when data changes
+     * @param defined - data field is defined
+     * @param prefix - path prefix
+     * @param applyOrOffset - array index filter
+     * @returns - child validations
+     */
     initValidationChildren(
       provider: Provider,
       pattern: AnyPattern,
@@ -186,12 +296,25 @@ export function validateMixin<
       }
     }
 
+    /**
+     * Returns `true` if the model has a mixin.
+     *
+     * @param mixin - mixin function
+     */
     hasMixin(mixin: Function): boolean {
       return mixin === mixValidate || super.hasMixin(mixin);
     }
   };
 }
 
+/**
+ * Returns a typed function that extends a model class with `validate` mixin.
+ *
+ * This function can be used my {@see mix} function.
+ *
+ * @param pattern - validation pattern, @see {@link Pattern}
+ * @returns - mixin function
+ */
 export function mixValidate<
   D extends object,
   T extends BaseModel<D>,
@@ -201,6 +324,12 @@ export function mixValidate<
   return (parent: C) => validateMixin<D, T, C, U>(parent, pattern);
 }
 
+/**
+ * Returns a typed function that extends a model class with `validate` mixin.
+ *
+ * @param pattern - validation pattern, @see {@link Pattern}
+ * @returns - mixin function
+ */
 export function mixValidate2<U extends ValidationBase = ValidationBase>(pattern?: Pattern) {
   return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) =>
     validateMixin<D, T, C, U>(parent, pattern);
