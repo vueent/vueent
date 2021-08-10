@@ -1,4 +1,4 @@
-import { mixValidate, mixRollback } from '@vueent/mix-models';
+import { validateMixin, rollbackMixin } from '@vueent/mix-models';
 
 import { create as createSimpleModel } from '../__mocks__/simple-model';
 import { create as createDeepModel } from '../__mocks__/deep-model';
@@ -8,13 +8,13 @@ import '../__mocks__/vue-vm';
 test('model should confirm an existence of Validate mixin', () => {
   const instance = createSimpleModel();
 
-  expect(instance.hasMixin(mixValidate)).toBe(true);
+  expect(instance.hasMixin(validateMixin)).toBe(true);
 });
 
 test('model should confirm an existence of Rollback mixin', () => {
   const instance = createSimpleModel();
 
-  expect(instance.hasMixin(mixRollback)).toBe(true);
+  expect(instance.hasMixin(rollbackMixin)).toBe(true);
 });
 
 test('has mixin should return false if mixin doesn`t exist', () => {

@@ -301,7 +301,7 @@ export function validateMixin<
      * @param mixin - mixin function
      */
     hasMixin(mixin: Function): boolean {
-      return mixin === mixValidate || super.hasMixin(mixin);
+      return mixin === validateMixin || super.hasMixin(mixin);
     }
   };
 }

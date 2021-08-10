@@ -152,7 +152,7 @@ export function rollbackMixin<D extends object, C extends Constructor<D, BaseMod
      * @param mixin - mixin function
      */
     hasMixin(mixin: Function): boolean {
-      return mixin === mixRollback || super.hasMixin(mixin);
+      return mixin === rollbackMixin || super.hasMixin(mixin);
     }
 
     /**

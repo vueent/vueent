@@ -1,4 +1,4 @@
-import { BaseModel, SaveOptions, mixRollback, mixSave, mixValidate } from '@vueent/mix-models';
+import { BaseModel, SaveOptions, rollbackMixin, saveMixin, validateMixin } from '@vueent/mix-models';
 
 import { create as createDataModel, Data, DataModel } from './__mocks__/data-model';
 import { create as createDeepModel } from './__mocks__/deep-model';
@@ -54,13 +54,13 @@ test('the base model has no mixins', () => {
   const instance = new DataModel('name', { name: '', official: { first: '', last: '' } });
 
   expect(instance.hasMixin(BaseModel)).toBe(false);
-  expect(instance.hasMixin(mixSave)).toBe(false);
-  expect(instance.hasMixin(mixRollback)).toBe(false);
-  expect(instance.hasMixin(mixValidate)).toBe(false);
+  expect(instance.hasMixin(saveMixin)).toBe(false);
+  expect(instance.hasMixin(rollbackMixin)).toBe(false);
+  expect(instance.hasMixin(validateMixin)).toBe(false);
 });
 
 test('a model with mixins should propagate mixin check requests throw the prototypes list', () => {
   const instance = createDeepModel();
 
-  expect(instance.hasMixin(mixRollback)).toBe(true);
+  expect(instance.hasMixin(rollbackMixin)).toBe(true);
 });

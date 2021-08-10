@@ -339,7 +339,7 @@ export function saveMixin<D extends object, C extends Constructor<D, BaseModel<D
      * @param mixin - mixin function
      */
     hasMixin(mixin: Function): boolean {
-      return mixin === mixSave || super.hasMixin(mixin);
+      return mixin === saveMixin || super.hasMixin(mixin);
     }
   };
 }
