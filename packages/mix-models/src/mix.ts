@@ -13,10 +13,7 @@ import { BaseModel, Constructor } from './model';
  * @param mixins - list of mixins functions
  * @returns - result class
  */
-export function mix<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(
-  root: C,
-  ...mixins: ((parent: C) => C)[]
-) {
+export function mix<D extends object, C extends Constructor<D, BaseModel<D>>>(root: C, ...mixins: ((parent: C) => C)[]) {
   let result = root;
 
   for (const mixin of mixins) {

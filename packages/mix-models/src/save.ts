@@ -172,7 +172,7 @@ const dummy = () => undefined;
  * @param parent - parent model class
  * @returns - mixed model class
  */
-export function saveMixin<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) {
+export function saveMixin<D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C) {
   return class extends parent implements SavePrivate<D> {
     /**
      * Flags that indicate a state of mixin's operations.
@@ -265,7 +265,7 @@ export function saveMixin<D extends object, T extends BaseModel<D>, C extends Co
      *
      * @param resp - storage response
      */
-    processSavedInstance(resp?: T | unknown): void {
+    processSavedInstance(resp?: D | unknown): void {
       if (resp === undefined) return;
       else if (typeof resp === 'object') {
         this._internal.data = resp as D;
@@ -351,8 +351,8 @@ export function saveMixin<D extends object, T extends BaseModel<D>, C extends Co
  *
  * @returns - mixin function
  */
-export function mixSave<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>() {
-  return (parent: C) => saveMixin<D, T, C>(parent);
+export function mixSave<D extends object, C extends Constructor<D, BaseModel<D>>>() {
+  return (parent: C) => saveMixin<D, C>(parent);
 }
 
 /**
@@ -361,5 +361,5 @@ export function mixSave<D extends object, T extends BaseModel<D>, C extends Cons
  * @returns - mixin function
  */
 export function mixSave2() {
-  return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) => saveMixin<D, T, C>(parent);
+  return <D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C) => saveMixin<D, C>(parent);
 }

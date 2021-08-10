@@ -90,7 +90,7 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, DataModel, typeof DataModel>(
+export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(
   DataModel,
   mixRollback(rollbackMask),
   mixValidate(validations)

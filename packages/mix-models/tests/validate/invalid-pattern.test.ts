@@ -30,7 +30,7 @@ test("validate mixin should throw an error if pattern's format is unsupported", 
 });
 
 test('validate mixin should throw an error when the format of some validation rule is not supported', () => {
-  class Model extends validateMixin<Data, DataModel, typeof DataModel>(DataModel, ({
+  class Model extends validateMixin<Data, typeof DataModel>(DataModel, ({
     name: () => true,
     items: 42
   } as unknown) as Pattern) {
@@ -99,7 +99,7 @@ test('pattern checker should break the chain when the $each argument is already 
   ];
 
   patterns.forEach(validations => {
-    class Model extends validateMixin<Data, DataModel, typeof DataModel>(DataModel, validations) {}
+    class Model extends validateMixin<Data, typeof DataModel>(DataModel, validations) {}
 
     let error;
 

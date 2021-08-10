@@ -1,10 +1,10 @@
 import VueCompositionApi from '@vue/composition-api';
-import { Vue, isVue2, createApp, defineComponent } from 'vue-demi';
+import { Vue2, createApp, defineComponent } from 'vue-demi';
 
 let VueInstance: unknown | undefined;
 
 if (!VueInstance) {
-  if (isVue2) Vue.use(VueCompositionApi);
+  if (Vue2) (Vue2 as any).use(VueCompositionApi);
 
   VueInstance = createApp(
     defineComponent({
