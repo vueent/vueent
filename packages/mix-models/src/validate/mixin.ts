@@ -187,7 +187,7 @@ export function validateMixin<
     }
 
     /**
-     * Destroys the model data.
+     * Destroys the model.
      *
      * The destroyed models should not be used, its data reactivity is lost.
      */

@@ -32,9 +32,7 @@ export interface ModelFlags {
   deleted: boolean;
 
   /**
-   * The flag is set to `true` if the model has been destroyed.
-   *
-   * The destroyed models should not be used, its data reactivity is lost.
+   * The flag is set to `true` if the model data has been destroyed in storage.
    */
   destroyed: boolean;
 
@@ -77,9 +75,8 @@ export interface Base<T extends object> {
   readonly deleted: boolean;
 
   /**
-   * The flag is set to `true` if the model has been destroyed.
+   * The flag is set to `true` if the model data has been destroyed in storage.
    *
-   * The destroyed models should not be used, its data reactivity is lost.
    * {@link ModelFlags.destroyed}.
    */
   readonly destroyed: boolean;
@@ -135,7 +132,7 @@ export interface Base<T extends object> {
   delete(): void;
 
   /**
-   * Destroys the model data.
+   * Destroys the model.
    *
    * The destroyed models should not be used, its data reactivity is lost.
    */
@@ -222,9 +219,8 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
-   * The flag is set to `true` if the model has been destroyed.
+   * The flag is set to `true` if the model data has been destroyed in storage.
    *
-   * The destroyed models should not be used, its data reactivity is lost.
    * {@link Base.destroyed}.
    */
   get destroyed(): boolean {
@@ -291,14 +287,14 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
-   * Is called before destroying the model.
+   * Is called before deleting an existing instance from storage.
    */
   beforeDestroy(): void {
     // stub
   }
 
   /**
-   * Is called after destroying the model.
+   * Is called after deleting an existing instance from storage.
    */
   afterDestroy(): void {
     // stub
@@ -326,7 +322,7 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
-   * Destroys the model data.
+   * Destroys the model.
    *
    * The destroyed models should not be used, its data reactivity is lost.
    */
