@@ -1,4 +1,4 @@
-# Mix Models
+# Introduction
 
 This library provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations.
 
@@ -23,6 +23,8 @@ yarn add --dev @vueent/mix-models
 ## Why mixins?
 
 The library provides tools to construct model classes by composing of a base model class and built-in or external custom mixins. A few worlds should be said about this strange solution.
+
+### Classes
 
 Classic class-based inheritance has a strict inheritance tree, which does not allow to append an optional independent functionality.
 
@@ -174,6 +176,8 @@ class MyClass extends B, extends C {} // Ooops, doesn't allowed!
 </code-block>
 </code-group>
 
+### Functions
+
 Yet another method is composing a final object by functions.
 
 Example:
@@ -253,6 +257,8 @@ my.print(); // outputs: 2.22
 ```
 </code-block>
 </code-group>
+
+### Prototypes
 
 Everything works as expected, but each object such `my` contains its own copies of methods. This problem can be worked around using `prototype`.
 
@@ -407,7 +413,11 @@ console.log(ac.n); // outputs: 2.2222
 </code-block>
 </code-group>
 
-Doesn't look clear, right? A few years ago, this was the only way to imitate classes in JavaScript. But for now we have native classes and mixins.
+Doesn't look clear, right? A few years ago, this was the only way to imitate classes in JavaScript.
+
+### Mixins
+
+But for now we have native classes and mixins.
 
 Modern solution:
 
@@ -629,4 +639,3 @@ abc.print(); // outputs:
 </code-group>
 
 Of course, there is no ideal solution, but we hope you agree with us - mixins are the most optimal solution for the task.
-

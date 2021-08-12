@@ -30,7 +30,21 @@ function getGuideSidebar() {
         '',
         'reactive',
         'core',
-        'mix-models'
+      ]
+    },
+    {
+      title: 'Mix-Models',
+      collapsible: true,
+      children: [
+        'mix-models',
+        'base-model',
+        'save-mixin',
+        'private-and-public-types',
+        'rollback-mixin',
+        'validate-mixin',
+        'models-and-components',
+        'mixins-development',
+        'tips-and-tricks'
       ]
     }
   ];
@@ -47,6 +61,7 @@ module.exports = {
     logo: '/img/logo.png',
     repo: 'https://github.com/vueent/vueent',
     sidebar: 'auto',
+    sidebarDepth: 3,
     locales: {
       '/': {
         nav,
