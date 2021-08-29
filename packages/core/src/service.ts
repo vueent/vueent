@@ -1,4 +1,4 @@
-import { useVueent } from './vueent';
+import { BoundUseVueentFunc } from './vueent';
 
 /**
  * An abstract base service class.
@@ -17,11 +17,12 @@ export type Params<T extends Service = Service> = ConstructorParameters<Construc
  * The function will automatically lazy instantiate the service if it hasn't already been instantiated.
  * If the service hasn't been instantiated yet, the parameters will be passed to its constructor.
  *
+ * @param useVueent - Vueent instance accessor
  * @param create - service constructor
  * @param params - constructor parameters
  * @returns - property with a service reference
  */
-export function inject<T extends Service = Service>(create: Constructor<T>, ...params: Params<T>) {
+export function inject<T extends Service = Service>(useVueent: BoundUseVueentFunc, create: Constructor<T>, ...params: Params<T>) {
   return function(target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
@@ -37,9 +38,10 @@ export function inject<T extends Service = Service>(create: Constructor<T>, ...p
  * This operation is necessary to access the service instance via
  * {@link inject} decorator or {@link use} function.
  *
+ * @param useVueent - Vueent instance accessor
  * @param create - service constructor
  */
-export function register<T extends Service = Service>(create: Constructor<T>) {
+export function register<T extends Service = Service>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
   useVueent().registerService(create);
 }
 
@@ -50,10 +52,11 @@ export function register<T extends Service = Service>(create: Constructor<T>) {
  * if it hasn't already been instantiated.
  * If the service hasn't been instantiated yet, the parameters will be passed to its constructor.
  *
+ * @param useVueent - Vueent instance accessor
  * @param create - service constructor
  * @param params - constructor parameters
  * @returns - service instance
  */
-export function use<T extends Service = Service>(create: Constructor<T>, ...params: Params<T>) {
+export function use<T extends Service = Service>(useVueent: BoundUseVueentFunc, create: Constructor<T>, ...params: Params<T>) {
   return useVueent().getService(create, ...params);
 }
