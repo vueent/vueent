@@ -1,6 +1,6 @@
 # @vueent/core
 
-A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: a `Vueent` instance, abstract `Controller` and `Service` classes.
+A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: `Vueent` class, abstract `Controller` and `Service` classes.
 
 ## Installation
 
@@ -12,7 +12,58 @@ This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue c
 
 ## Usage
 
-You may create a `Vueent` instance directly using `useVueent()` call, but it's not necessary, it will be created automatically after the first `useController()` or `useService()` call. `onBeforeMount`, `onBeforeUnmount`, and `onUnmounted` hooks are automatically connected to `init`, `reset`, `destroy` methods of Controller.
+First of all, you should create a module to append `VueenT` into your project. Use `initVueent()` which returns an object with several bound functions.
+
+```ts
+// file: vueent.ts
+import { initVueent } from '@vueent/core';
+
+export const {
+  useVueent,
+  registerService,
+  registerController,
+  useService,
+  useController,
+  injectService,
+  injectController
+} = initVueent();
+```
+
+### registerService
+
+The `registerService` function registers a service class into the service registry of a `Vueent` instance.
+
+### registerController
+
+The `registerController` function registers a controller class into the controller registry of a `Vueent` instance.
+
+### useVueent
+
+The `useVueent` function returns a lazy-initialized instance of the `Vueent` class.
+
+### useService
+
+The `useService` function returns a lazy-initialized instance of a registered service.
+
+### useController
+
+The `useController` function returns a lazy-initialized instance of a registered controller.
+
+### injectService
+
+The `injectService` decorator injects a lazy-initialized instance of a registered service into a class property.
+
+### injectController
+
+The `injectController` decorator injects a lazy-initialized instance of a registered controller into a class property.
+
+### Full example
+
+You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onBeforeUnmount`, and `onUnmounted` hooks are automatically connected to `init`, `reset`, `destroy` methods of Controller.
+
+::: danger
+Do not use the following library provided functions directly: `useVueent`, `registerService`, `registerController`, `useService`, `useController`, `injectService`, `injectController`. That functions have to be bound to a context which contains a `Vueent` class instance. Use functions with the same names provided by the `initVueent` function.
+:::
 
 Let's write a simple example:
 
@@ -32,7 +83,8 @@ Let's write a simple example:
 // file: app.vue
 // section: script
 import { defineComponent, computed } from 'vue';
-import { useController } from '@vueent/core';
+
+import { useController } from '@/vueent';
 
 import AppController from './app';
 
@@ -54,8 +106,9 @@ export default defineComponent({ setup });
 
 ```ts
 // file: app.ts
-import { Controller, registerController, injectService as service } from '@vueent/core';
+import { Controller } from '@vueent/core';
 
+import { registerController, injectService as service } from '@/vueent';
 import ClickerService from '@/services/clicker';
 
 export default class AppController extends Controller {
@@ -94,8 +147,10 @@ registerController(AppController);
 
 ```ts
 // file: services/clicker.ts
-import { Service, registerService } from '@vueent/core';
+import { Service } from '@vueent/core';
 import { tracked } from '@vueent/reactive'; // you may use built-in Vue's `ref`
+
+import { registerService } from '@/vueent';
 
 export default class ClickerService extends Service {
   @tracked private _counter = 0;

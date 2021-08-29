@@ -126,19 +126,21 @@ export class Vueent {
 }
 
 /**
- * Private instance of Vueent.
- */
-let vueent: Vueent | undefined;
-
-/**
  * Returns an instance of Vueent class.
  *
  * An instance will be created automatically.
  *
- * @returns - Vueent instance
+ * @param context - {@link Vueent} instance wrapper
+ * @param context.vueent - {@link Vueent} instance reference
+ * @returns - {@link Vueent} instance
  */
-export function useVueent() {
+export function useVueent({ vueent }: { vueent?: Vueent }) {
   if (!vueent) vueent = new Vueent();
 
   return vueent;
 }
+
+/**
+ * Type of a function which returns a {@link Vueent} instance.
+ */
+export type BoundUseVueentFunc = () => Vueent;
