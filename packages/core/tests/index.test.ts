@@ -1,6 +1,7 @@
-import { useVueent } from '@vueent/core';
+import { initVueent } from '@vueent/core';
 
 test('VueenT instance should be created automatically on the first call', () => {
+  const { useVueent } = initVueent();
   const vueent = useVueent();
 
   expect(vueent).not.toBe(undefined);

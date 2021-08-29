@@ -1,4 +1,4 @@
-import { useVueent } from './vueent';
+import { BoundUseVueentFunc } from './vueent';
 
 /**
  * An abstract base controller class.
@@ -37,10 +37,11 @@ export type Params<T extends Controller = Controller> = ConstructorParameters<Co
  *
  * The function will automatically lazy instantiate the controller if it hasn't already been instantiated.
  *
+ * @param useVueent - Vueent instance accessor
  * @param create - controller constructor
  * @returns - property with a controller reference
  */
-export function inject<T extends Controller = Controller>(create: Constructor<T>) {
+export function inject<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
   return function(target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
@@ -56,9 +57,10 @@ export function inject<T extends Controller = Controller>(create: Constructor<T>
  * This operation is necessary to access the controller instance via
  * {@link inject} decorator or {@link use} function.
  *
+ * @param useVueent - Vueent instance accessor
  * @param create - controller constructor
  */
-export function register<T extends Controller = Controller>(create: Constructor<T>) {
+export function register<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
   useVueent().registerController(create);
 }
 
@@ -69,10 +71,15 @@ export function register<T extends Controller = Controller>(create: Constructor<
  * if it hasn't already been instantiated.
  * If the controller hasn't been instantiated yet, the parameters will be passed to its constructor.
  *
+ * @param useVueent - Vueent instance accessor
  * @param create - controller constructor
  * @param params - constructor parameters
  * @returns - controller instance
  */
-export function use<T extends Controller = Controller>(create: Constructor<T>, ...params: Params<T>) {
+export function use<T extends Controller = Controller>(
+  useVueent: BoundUseVueentFunc,
+  create: Constructor<T>,
+  ...params: Params<T>
+) {
   return useVueent().getController(create, ...params);
 }

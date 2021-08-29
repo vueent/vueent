@@ -17,3 +17,4 @@ export {
 } from './controller';
 
 export { Vueent, ServiceRegistry, ControllerRegistry, useVueent } from './vueent';
+export { initVueent, InitResult } from './init';
