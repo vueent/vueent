@@ -1,0 +1,61 @@
+{
+  "name": "@vueent/store",
+  "description": "Vueent mixin-based models store",
+  "version": "0.0.16",
+  "license": "MIT",
+  "homepage": "https://vueent.github.io/vueent/guide/store",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:vueent/vueent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vueent/vueent/issues"
+  },
+  "keywords": [
+    "vueent",
+    "vue",
+    "composition-api",
+    "typescript",
+    "model",
+    "mix-models",
+    "store"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "scripts": {
+    "build": "rimraf ./dist && bili",
+    "test:clear": "jest --clearCache",
+    "test:unit": "jest",
+    "test:ext": "jest --collect-coverage",
+    "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand",
+    "prepublishOnly": "npm run build && npm run test:unit",
+    "lint": "eslint src/**/*.ts,tests/**/*.ts"
+  },
+  "dependencies": {
+    "vue-demi": "latest"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "@types/lodash": "^4.14.161",
+    "@types/node": "^14.11.2",
+    "bili": "^5.0.5",
+    "eslint": "^7.7.0",
+    "jest": "^26.5.0",
+    "rimraf": "^3.0.2",
+    "rollup-plugin-typescript2": "^0.27.3",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3"
+  },
+  "peerDependencies": {
+    "@vueent/mix-models": "0.0.16",
+    "@vue/composition-api": "^1.0.0-beta.14",
+    "lodash": "^4.17.20",
+    "vue": "^2.6.0 || >=3.0.0-0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -90,6 +90,11 @@ export interface Base<T extends object> {
   readonly data: T;
 
   /**
+   * Model primary key.
+   */
+  readonly pk: unknown;
+
+  /**
    * Is called before creating an instance in storage.
    */
   beforeCreate(): void;
@@ -236,6 +241,10 @@ export abstract class BaseModel<T extends object> {
    */
   get data(): T {
     return this._internal.data;
+  }
+
+  get pk(): unknown {
+    return (this._internal.data as Record<string, unknown>)[this._idKey];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
