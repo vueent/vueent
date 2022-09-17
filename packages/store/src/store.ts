@@ -1,61 +1,21 @@
-import {
-  Base,
-  BaseModel,
-  mix,
-  mixRollback,
-  mixSave,
-  Options,
-  Rollback,
-  RollbackPrivate,
-  Save,
-  SavePrivate
-} from '@vueent/mix-models';
+import { AbstractCollection, AbstractCollectionType, AbstractCollectionConstructor } from './abstract-collection';
 
-import { AbstractColllection } from './abstract_collection';
-import { Collection, CollectionConstructor, ModelWithOptions } from './collection';
+export type AssertCollectionType<T, V> = T extends V ? T : never;
 
-export class Store {
-  private _collections: Set<AbstractColllection>;
+export class Store<Collections extends AbstractCollection> {
+  private _collections: Set<Collections>;
 
-  constructor() {
-    this._collections = new Set();
+  constructor(collections?: Iterable<Collections>) {
+    this._collections = new Set(collections);
   }
 
-  get<
-    Data extends object,
-    EncodedData,
-    ModelType extends Base<Data>,
-    ModelOptions extends Options,
-    Model extends BaseModel<Data> & ModelType & ModelWithOptions<ModelOptions>,
-    T extends Collection<Data, EncodedData, ModelType, ModelOptions, Model>
-  >(collection: CollectionConstructor<Data, EncodedData, ModelType, ModelOptions, Model, T>): T | null {
+  get<C extends AbstractCollectionConstructor<Collections>, T = AssertCollectionType<AbstractCollectionType<C>, Collections>>(
+    collection: C
+  ): T {
     for (const coll of this._collections) {
-      if (coll instanceof collection) return coll as T;
+      if (coll instanceof collection) return (coll as unknown) as T;
     }
 
-    return null;
+    throw new Error('unregistered collection');
   }
 }
-
-type Data = {
-  name: string;
-  official: {
-    first: string;
-    last: string;
-  };
-};
-type EncodedData = Data;
-
-class DataModel extends BaseModel<Data> {}
-
-type ModelType = Base<Data> & Rollback & Save;
-
-interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, SavePrivate<Data> {}
-
-class Model<ModelOptions extends Options> extends mix<Data, DataModel, typeof DataModel>(DataModel, mixRollback(), mixSave()) {
-  constructor(initialData?: Data, ...options: ModelOptions[]) {
-    super('name', initialData ?? { name: '', official: { first: '', last: '' } }, true, ...options);
-  }
-}
-
-// class DataCollection extends Collection<Data, EncodedData, ModelType, Model<infer ModelOptions>

@@ -1,6 +1,8 @@
 import { Base, BaseModel, Constructor, CreateFunc, DestroyFunc, Options, SaveOptions, UpdateFunc } from '@vueent/mix-models';
 
-import { AbstractColllection } from './abstract_collection';
+import { AbstractCollection } from './abstract-collection';
+
+export type GetModelDataType<T> = T extends BaseModel<infer Data> & Base<infer Data> ? Data : never;
 
 export type CreateModelFunc<Data extends object, ModelOptions extends Options, ModelType extends Base<Data>> = (
   initialData?: Data,
@@ -13,8 +15,6 @@ export type LoadManyDataFunc<EncodedData, LoadOptions extends Record<string, unk
 
 export type LoadOneDataFunc<EncodedData> = (pk: unknown) => Promise<EncodedData> | EncodedData;
 
-export type ModelWithOptions<O extends Options> = unknown;
-
 export type PeekOptions<Data> = {
   localFilter?: (data: Data) => boolean;
 };
@@ -26,56 +26,54 @@ export type FindOptions<Data> = PeekOptions<Data> & {
 } & Record<string, unknown>;
 
 export type CollectionConstructor<
-  Data extends object,
-  EncodedData,
-  ModelType extends Base<Data>,
-  ModelOptions extends Options,
-  Model extends BaseModel<Data> & ModelType & ModelWithOptions<ModelOptions>,
-  T extends Collection<Data, EncodedData, ModelType, ModelOptions, Model> = Collection<
+  Model extends BaseModel<Data> & ModelType,
+  Data extends object = GetModelDataType<Model>,
+  EncodedData = unknown,
+  ModelType extends Base<Data> = Base<Data>,
+  ModelOptions extends Options = Options,
+  T extends Collection<Model, Data, EncodedData, ModelType, ModelOptions> = Collection<
+    Model,
     Data,
     EncodedData,
     ModelType,
-    ModelOptions,
-    Model
+    ModelOptions
   >
-> = T extends Collection<Data, EncodedData, ModelType, ModelOptions, Model>
-  ? new (
-      construct: Constructor<Data, Model>,
-      loadOneData?: LoadOneDataFunc<EncodedData>,
-      loadManyData?: LoadManyDataFunc<EncodedData>,
-      createData?: CreateFunc<EncodedData>,
-      updateData?: UpdateFunc<EncodedData>,
-      destroyData?: DestroyFunc<EncodedData>
-    ) => T
-  : never;
+> = T extends Collection<Model, Data, EncodedData, ModelType, ModelOptions> ? new (...args: any[]) => T : never;
 
 /**
  * Collection class unites a model data, and its convertions.
  */
-export class Collection<
-  Data extends object,
-  EncodedData,
-  ModelType extends Base<Data>,
-  ModelOptions extends Options,
-  Model extends BaseModel<Data> & ModelType & ModelWithOptions<ModelOptions>
-> extends AbstractColllection {
-  private readonly _createModel: CreateModelFunc<Data, ModelOptions, ModelType>;
-  private readonly _instances: ModelType[];
-  private readonly _loadOneData?: LoadOneDataFunc<EncodedData>;
-  private readonly _loadManyData?: LoadManyDataFunc<EncodedData>;
-  private readonly _createData?: CreateFunc<Data>;
-  private readonly _updateData?: UpdateFunc<Data>;
-  private readonly _destroyData?: DestroyFunc<Data>;
-  private readonly _applySaveMixinOptions: boolean;
+export abstract class Collection<
+  Model extends BaseModel<Data> & ModelType,
+  Data extends object = GetModelDataType<Model>,
+  EncodedData = unknown,
+  ModelType extends Base<Data> = Base<Data>,
+  ModelOptions extends Options = Options
+> extends AbstractCollection {
+  protected readonly _instances: ModelType[];
+  protected readonly _applySaveMixinOptions: boolean;
+  protected readonly _createModel: CreateModelFunc<Data, ModelOptions, ModelType>;
+  protected readonly _loadOneData?: LoadOneDataFunc<EncodedData>;
+  protected readonly _loadManyData?: LoadManyDataFunc<EncodedData>;
+  protected readonly _create?: CreateFunc<Data>;
+  protected readonly _update?: UpdateFunc<Data>;
+  protected readonly _destroy?: DestroyFunc<Data>;
 
-  constructor(
-    construct: Constructor<Data, Model>,
-    loadOneData?: LoadOneDataFunc<EncodedData>,
-    loadManyData?: LoadManyDataFunc<EncodedData>,
-    createData?: CreateFunc<EncodedData>,
-    updateData?: UpdateFunc<EncodedData>,
-    destroyData?: DestroyFunc<EncodedData>
-  ) {
+  constructor({
+    construct,
+    loadOneData,
+    loadManyData,
+    createData,
+    updateData,
+    destroyData
+  }: {
+    readonly construct: Constructor<Data, Model>;
+    readonly loadOneData?: LoadOneDataFunc<EncodedData>;
+    readonly loadManyData?: LoadManyDataFunc<EncodedData>;
+    readonly createData?: CreateFunc<EncodedData>;
+    readonly updateData?: UpdateFunc<EncodedData>;
+    readonly destroyData?: DestroyFunc<EncodedData>;
+  }) {
     super();
 
     this._instances = [];
@@ -83,22 +81,22 @@ export class Collection<
     this._loadManyData = loadManyData;
 
     if (createData)
-      this._createData = async (data: Data) => this.normalize((await createData(this.denormalize(data))) as EncodedData);
+      this._create = async (data: Data) => this.normalize((await createData(this.denormalize(data))) as EncodedData);
 
     if (updateData)
-      this._updateData = async (pk: unknown, data: Data) =>
+      this._update = async (pk: unknown, data: Data) =>
         this.normalize((await updateData(pk, this.denormalize(data))) as EncodedData);
 
-    if (destroyData) this._destroyData = (pk: unknown, data: Data) => destroyData(pk, this.denormalize(data));
+    if (destroyData) this._destroy = (pk: unknown, data: Data) => destroyData(pk, this.denormalize(data));
 
-    const unloadRecord = this.unloadRecord.bind(this);
+    const unload = this.unload.bind(this);
 
     const cl = class extends construct {
       afterDestroy(): void {
         super.afterDestroy();
 
         this.destroy();
-        unloadRecord(this.uid, false);
+        unload(this.uid, false);
       }
     };
 
@@ -110,9 +108,9 @@ export class Collection<
 
         (options as SaveOptions<Data>[]).push({
           mixinType: 'save',
-          create: this._createData,
-          update: this._updateData,
-          destroy: this._destroyData
+          create: this._create,
+          update: this._update,
+          destroy: this._destroy
         });
 
         return (new cl(initialData, ...options) as unknown) as ModelType; // ToDo: fix type inference
@@ -220,27 +218,52 @@ export class Collection<
    * Converts an encoded data to internal.
    *
    * @param encoded - encoded data
-   * @returns decoded data
+   * @returns - decoded data
    */
   public normalize(encoded: EncodedData): Data {
     return (encoded as unknown) as Data;
   }
 
+  /**
+   * Converts an internal representation to the encoded.
+   *
+   * @param data - decoded data
+   * @returns - encoded data
+   */
   public denormalize(data: Data): EncodedData {
     return (data as unknown) as EncodedData;
   }
 
-  public unloadRecord(uid: string, callDestroy = true) {
-    for (let i = 0; i < this._instances.length; ++i) {
-      const inst = this._instances[i];
+  /**
+   * Unloads an instance.
+   *
+   * @param uid - instance uid
+   * @param callDestroy - call destroy method (do not use with parameter directly)
+   */
+  public unload(uid: string, callDestroy = true): void {
+    const { _instances } = this;
+
+    for (let i = 0; i < _instances.length; ++i) {
+      const inst = _instances[i];
 
       if (inst.uid === uid) {
         if (callDestroy) inst.destroy();
 
-        this._instances.splice(i, 1);
+        _instances.splice(i, 1);
 
         break;
       }
     }
+  }
+
+  /**
+   * Unloads all instances.
+   */
+  public unloadAll(): void {
+    const { _instances } = this;
+
+    for (const inst of _instances) inst.destroy();
+
+    _instances.splice(0, _instances.length);
   }
 }
