@@ -42,7 +42,7 @@ export type Params<T extends Controller = Controller> = ConstructorParameters<Co
  * @returns - property with a controller reference
  */
 export function inject<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
-  return function(target: unknown, propertyKey: string | symbol) {
+  return function (target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
         return useVueent().getController(create);

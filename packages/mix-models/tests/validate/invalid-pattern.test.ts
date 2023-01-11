@@ -11,7 +11,7 @@ test('validate mixin should throw an error if pattern is not defined', () => {
   try {
     createSimpleNoPatternModel();
   } catch (e) {
-    error = e;
+    error = e as any;
   }
 
   expect(error?.message).toBe('Pattern or predefined validations should be set');
@@ -23,17 +23,17 @@ test("validate mixin should throw an error if pattern's format is unsupported", 
   try {
     createSimpleInvalidModel();
   } catch (e) {
-    error = e;
+    error = e as any;
   }
 
   expect(error?.message).toBe('Unsupported pattern format');
 });
 
 test('validate mixin should throw an error when the format of some validation rule is not supported', () => {
-  class Model extends validateMixin<Data, DataModel, typeof DataModel>(DataModel, ({
+  class Model extends validateMixin<Data, DataModel, typeof DataModel>(DataModel, {
     name: () => true,
     items: 42
-  } as unknown) as Pattern) {
+  } as unknown as Pattern) {
     constructor() {
       super('', { name: '', items: [] });
     }
@@ -44,7 +44,7 @@ test('validate mixin should throw an error when the format of some validation ru
   try {
     new Model();
   } catch (e) {
-    error = e;
+    error = e as any;
   }
 
   expect(error?.message).toBe('Unsupported pattern format');
