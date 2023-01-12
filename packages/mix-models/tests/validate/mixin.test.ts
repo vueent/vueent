@@ -5,6 +5,12 @@ import { create as createDeepModel } from '../__mocks__/deep-model';
 import { create as createArrayModel } from '../__mocks__/array-model';
 import '../__mocks__/vue-vm';
 
+const splice = <T = any>(arr: Array<T>, start = 0, count = 1, ...items: T[]) => [
+  ...arr.slice(0, start),
+  ...items,
+  ...arr.slice(start + count)
+];
+
 test('model should confirm an existence of Validate mixin', () => {
   const instance = createSimpleModel();
 
@@ -97,7 +103,7 @@ test('touch should work after reset for a complex model', () => {
   expect(instance.v.c.phones.c[0].c.value.dirty).toBe(false);
   expect(instance.v.c.phones.c[0].c.value.dirtyMessage).toBe('');
 
-  instance.data.phones?.push({ value: '1234567890' });
+  instance.data.phones = [...instance.data.phones, { value: '1234567890' }];
 
   expect(instance.v.c.phones.c[1].c.value.dirtyMessage).toBe('');
 });
@@ -160,7 +166,7 @@ test('array neighbours should not be touched after adding a new neighbour', () =
   expect(instance.v.c.phones.c[0].dirty).toBe(false);
   expect(instance.v.c.phones.c[0].c.value.dirty).toBe(false);
 
-  instance.data.phones.push({ value: '' });
+  instance.data.phones = [...instance.data.phones, { value: '' }];
 
   expect(instance.v.c.phones.c[0].dirty).toBe(false);
   expect(instance.v.c.phones.c[1].dirty).toBe(false);
@@ -176,9 +182,12 @@ test('array neighbours should not be touched after adding a new neighbour', () =
 
   instance = createDeepModel(undefined, true, { mixinType: 'validate', autoTouch: true });
   instance.data.phones = [{ value: '1234567890' }, { value: '1234567890' }];
-  instance.data.phones.push({ value: '' });
+  instance.data.phones = [...instance.data.phones, { value: '' }];
   instance.data.phones[1].value = '123456789';
-  instance.data.phones.splice(1, 1, { value: '' }, instance.data.phones[1]);
+
+  expect(instance.v.c.phones.c[1].dirty).toBe(true);
+
+  instance.data.phones = splice(instance.data.phones, 1, 1, { value: '' }, instance.data.phones[1]);
 
   expect(instance.v.c.phones.c[0].dirty).toBe(false);
   expect(instance.v.c.phones.c[1].dirty).toBe(false);
@@ -219,12 +228,12 @@ test('validation of simple array fields should use special methods', () => {
   expect(instance.v.c.phones.c[0].dirty).toBe(true);
   expect(instance.v.c.phones.c[1].dirty).toBe(true);
 
-  instance.data.phones.push('');
+  instance.data.phones = [...instance.data.phones, ''];
 
   expect(instance.v.c.phones.c[2].dirty).toBe(false);
   expect(instance.v.c.phones.c[2].invalid).toBe(true);
 
-  instance.data.phones.splice(1, 2, instance.data.phones[2], instance.data.phones[1]);
+  instance.data.phones = splice(instance.data.phones, 1, 2, instance.data.phones[2], instance.data.phones[1]);
 
   expect(instance.v.c.phones.c[1].invalid).toBe(true);
   expect(instance.v.c.phones.c[2].invalid).toBe(false);
