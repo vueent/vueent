@@ -50,7 +50,7 @@
     "typescript": "^4.9.4"
   },
   "peerDependencies": {
-    "@vueent/mix-models": "0.0.16",
+    "@vueent/mix-models": "*",
     "@vue/composition-api": "^1.0.0-beta.14",
     "lodash": "^4.17.20",
     "vue": "^2.6.0 || >=3.0.0-0"
