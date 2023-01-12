@@ -1,10 +1,11 @@
 import { Base, BaseModel, Constructor, CreateFunc, DestroyFunc, Options, SaveOptions, UpdateFunc } from '@vueent/mix-models';
 
 import { AbstractCollection } from './abstract-collection';
+import { Store } from './store';
 
 export type GetModelDataType<T> = T extends BaseModel<infer Data> & Base<infer Data> ? Data : never;
 
-export type CreateModelFunc<Data extends object, ModelOptions extends Options, ModelType extends Base<Data>> = (
+export type CreateModelFunc<Data extends object, ModelType extends Base<Data>, ModelOptions extends Options = Options> = (
   initialData?: Data,
   options?: ModelOptions[]
 ) => ModelType;
@@ -25,6 +26,38 @@ export type FindOptions<Data> = PeekOptions<Data> & {
   queryParams?: Record<string, unknown>;
 } & Record<string, unknown>;
 
+export interface CollectionOptions<
+  Model extends BaseModel<Data> & ModelType,
+  Data extends object = GetModelDataType<Model>,
+  EncodedData = unknown,
+  ModelType extends Base<Data> = Base<Data>
+> {
+  /**
+   * Model constructor.
+   */
+  readonly construct: Constructor<Data, Model>;
+  /**
+   * Single record loader.
+   */
+  readonly loadOneData?: LoadOneDataFunc<EncodedData>;
+  /**
+   * Multiple records loader.
+   */
+  readonly loadManyData?: LoadManyDataFunc<EncodedData>;
+  /**
+   * Record creator, which saves a record into the storage.
+   */
+  readonly createData?: CreateFunc<EncodedData>;
+  /**
+   * Record updator, which updates a record in the storage.
+   */
+  readonly updateData?: UpdateFunc<EncodedData>;
+  /**
+   * Record remover, which deletes a record from the storage.
+   */
+  readonly destroyData?: DestroyFunc<EncodedData>;
+}
+
 export type CollectionConstructor<
   Model extends BaseModel<Data> & ModelType,
   Data extends object = GetModelDataType<Model>,
@@ -38,7 +71,9 @@ export type CollectionConstructor<
     ModelType,
     ModelOptions
   >
-> = T extends Collection<Model, Data, EncodedData, ModelType, ModelOptions> ? new (...args: any[]) => T : never;
+> = T extends Collection<Model, Data, EncodedData, ModelType, ModelOptions>
+  ? new (options: CollectionOptions<Model, Data, EncodedData, ModelType>) => T
+  : never;
 
 /**
  * Collection class unites a model data, and its convertions.
@@ -50,15 +85,20 @@ export abstract class Collection<
   ModelType extends Base<Data> = Base<Data>,
   ModelOptions extends Options = Options
 > extends AbstractCollection {
+  protected _store?: Store;
   protected readonly _instances: ModelType[];
   protected readonly _applySaveMixinOptions: boolean;
-  protected readonly _createModel: CreateModelFunc<Data, ModelOptions, ModelType>;
+  protected readonly _createModel: CreateModelFunc<Data, ModelType, ModelOptions>;
   protected readonly _loadOneData?: LoadOneDataFunc<EncodedData>;
   protected readonly _loadManyData?: LoadManyDataFunc<EncodedData>;
   protected readonly _create?: CreateFunc<Data>;
   protected readonly _update?: UpdateFunc<Data>;
   protected readonly _destroy?: DestroyFunc<Data>;
 
+  /**
+   *
+   * @param options - collection options
+   */
   constructor({
     construct,
     loadOneData,
@@ -66,14 +106,7 @@ export abstract class Collection<
     createData,
     updateData,
     destroyData
-  }: {
-    readonly construct: Constructor<Data, Model>;
-    readonly loadOneData?: LoadOneDataFunc<EncodedData>;
-    readonly loadManyData?: LoadManyDataFunc<EncodedData>;
-    readonly createData?: CreateFunc<EncodedData>;
-    readonly updateData?: UpdateFunc<EncodedData>;
-    readonly destroyData?: DestroyFunc<EncodedData>;
-  }) {
+  }: CollectionOptions<Model, Data, EncodedData, ModelType>) {
     super();
 
     this._instances = [];
@@ -113,20 +146,46 @@ export abstract class Collection<
           destroy: this._destroy
         });
 
-        return (new cl(initialData, ...options) as unknown) as ModelType; // ToDo: fix type inference
+        return new cl(initialData, ...options) as unknown as ModelType; // ToDo: fix type inference
       };
     } else {
       this._createModel = (initialData?: Data, options?: ModelOptions[]) =>
-        (new cl(initialData, ...(options ?? [])) as unknown) as ModelType; // ToDo: fix type inference
+        new cl(initialData, ...(options ?? [])) as unknown as ModelType; // ToDo: fix type inference
     }
   }
 
+  /**
+   * Destroys a collection instance and all its local records.
+   */
+  public destroy() {
+    this.unloadAll();
+  }
+
+  /**
+   * Binds a store instance.
+   *
+   * @param store bound store
+   */
+  public setStore(store: Store) {
+    this._store = store;
+  }
+
+  /**
+   * Creates a model instance.
+   *
+   * @param initialData - initial instance data
+   * @param options - model options
+   * @returns record
+   */
   public create(initialData?: Data, options?: ModelOptions[]): ModelType {
     const instance = this._createModel(initialData, options);
 
     if (!instance.new) {
       for (const inst of this._instances) {
-        if (inst.pk === instance.pk) throw new Error('duplicate primary key');
+        if (inst.pk === instance.pk) {
+          instance.destroy();
+          throw new Error('duplicate primary key');
+        }
       }
     }
 
@@ -135,6 +194,14 @@ export abstract class Collection<
     return instance;
   }
 
+  /**
+   * Searches for a multiple records.
+   *
+   * This function scans a local caches if `reload` options is set to `false`.
+   *
+   * @param options - search options
+   * @returns records list
+   */
   public async find(options: FindOptions<Data> = { reload: true }): Promise<ModelType[]> {
     if (!options.reload) {
       const cached = this.peek(options);
@@ -171,6 +238,15 @@ export abstract class Collection<
     return instances;
   }
 
+  /**
+   * Searches for a single record.
+   *
+   * This function scans a local caches if `reload` options is set to `false`.
+   *
+   * @param pk - record primary key
+   * @param options - search options
+   * @returns record
+   */
   public async findOne(pk: unknown, options: FindOptions<Data> = { reload: true }): Promise<ModelType | null> {
     if (!options.reload) {
       const cached = this.peekOne(pk);
@@ -194,6 +270,13 @@ export abstract class Collection<
     return instance;
   }
 
+  /**
+   * Searches for a single record in a local cache.
+   *
+   * @param pk - record primary key
+   * @param options - search options
+   * @returns record
+   */
   public peekOne(pk: unknown, options: PeekOptions<Data> = {}): ModelType | null {
     for (const inst of this._instances) {
       if (inst.pk === pk && (!options.localFilter || options.localFilter(inst.data))) return inst;
@@ -202,6 +285,12 @@ export abstract class Collection<
     return null;
   }
 
+  /**
+   * Searches for some records in a local cache.
+   *
+   * @param options - search options
+   * @returns records list
+   */
   public peek(options: PeekOptions<Data> = {}): ModelType[] {
     if (!options.localFilter) return this._instances.slice();
 
@@ -221,7 +310,7 @@ export abstract class Collection<
    * @returns - decoded data
    */
   public normalize(encoded: EncodedData): Data {
-    return (encoded as unknown) as Data;
+    return { ...encoded } as unknown as Data;
   }
 
   /**
@@ -231,7 +320,7 @@ export abstract class Collection<
    * @returns - encoded data
    */
   public denormalize(data: Data): EncodedData {
-    return (data as unknown) as EncodedData;
+    return { ...(data as unknown as EncodedData) };
   }
 
   /**
