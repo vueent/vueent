@@ -31,7 +31,7 @@ export interface CollectionOptions<
   Data extends object = GetModelDataType<Model>,
   EncodedData = unknown,
   ModelType extends Base<Data> = Base<Data>
-> {
+> extends Record<string, unknown> {
   /**
    * Model constructor.
    */
