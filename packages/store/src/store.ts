@@ -3,19 +3,25 @@ import { AbstractCollection, AbstractCollectionType, AbstractCollectionConstruct
 export type AssertCollectionType<T, V> = T extends V ? T : never;
 
 export class Store<Collections extends AbstractCollection = AbstractCollection> {
-  private _collections: Set<Collections>;
+  private _collections: Map<AbstractCollectionConstructor<Collections>, Collections>;
 
   constructor(collections?: Iterable<Collections>) {
-    this._collections = new Set(collections);
+    this._collections = new Map();
+
+    if (!collections) return;
+
+    for (const collection of collections) {
+      this._collections.set(Object.getPrototypeOf(collection), collection);
+    }
   }
 
   get<C extends AbstractCollectionConstructor<Collections>, T = AssertCollectionType<AbstractCollectionType<C>, Collections>>(
     collection: C
   ): T {
-    for (const coll of this._collections) {
-      if (coll instanceof collection) return coll as unknown as T;
-    }
+    const coll = this._collections.get(collection);
 
-    throw new Error('unregistered collection');
+    if (!coll) throw new Error('unregistered collection');
+
+    return coll as unknown as T;
   }
 }
