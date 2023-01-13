@@ -94,6 +94,7 @@ export abstract class Collection<
   protected readonly _create?: CreateFunc<Data>;
   protected readonly _update?: UpdateFunc<Data>;
   protected readonly _destroy?: DestroyFunc<Data>;
+  protected readonly _react = true;
 
   /**
    *
@@ -113,14 +114,18 @@ export abstract class Collection<
     this._loadOneData = loadOneData;
     this._loadManyData = loadManyData;
 
-    if (createData)
+    if (createData) {
       this._create = async (data: Data) => this.normalize((await createData(this.denormalize(data))) as EncodedData);
+    }
 
-    if (updateData)
+    if (updateData) {
       this._update = async (pk: unknown, data: Data) =>
         this.normalize((await updateData(pk, this.denormalize(data))) as EncodedData);
+    }
 
-    if (destroyData) this._destroy = (pk: unknown, data: Data) => destroyData(pk, this.denormalize(data));
+    if (destroyData) {
+      this._destroy = (pk: unknown, data: Data) => destroyData(pk, this.denormalize(data));
+    }
 
     const unload = this.unload.bind(this);
 
@@ -146,11 +151,11 @@ export abstract class Collection<
           destroy: this._destroy
         });
 
-        return new cl(initialData, ...options) as unknown as ModelType; // ToDo: fix type inference
+        return new cl(initialData, this._react, ...options) as unknown as ModelType; // ToDo: fix type inference
       };
     } else {
       this._createModel = (initialData?: Data, options?: ModelOptions[]) =>
-        new cl(initialData, ...(options ?? [])) as unknown as ModelType; // ToDo: fix type inference
+        new cl(initialData, this._react, ...(options ?? [])) as unknown as ModelType; // ToDo: fix type inference
     }
   }
 
@@ -251,7 +256,13 @@ export abstract class Collection<
     if (!options.reload) {
       const cached = this.peekOne(pk);
 
-      if (cached && (!options.localFilter || options.localFilter(cached.data))) return cached;
+      console.log('cached', JSON.stringify(cached?.data), cached?.uid);
+
+      if (cached && (!options.localFilter || options.localFilter(cached.data))) {
+        console.log('return cached');
+
+        return cached;
+      }
     }
 
     if (!this._loadOneData) return null;
