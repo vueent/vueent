@@ -86,7 +86,8 @@ export abstract class Collection<
   ModelOptions extends Options = Options
 > extends AbstractCollection {
   protected _store?: Store;
-  protected readonly _instances: ModelType[];
+  protected readonly _instances: Set<ModelType>;
+  protected readonly _trackedInstances: Map<string, ModelType>;
   protected readonly _applySaveMixinOptions: boolean;
   protected readonly _createModel: CreateModelFunc<Data, ModelType, ModelOptions>;
   protected readonly _loadOneData?: LoadOneDataFunc<EncodedData>;
@@ -110,7 +111,8 @@ export abstract class Collection<
   }: CollectionOptions<Model, Data, EncodedData, ModelType>) {
     super();
 
-    this._instances = [];
+    this._instances = new Set();
+    this._trackedInstances = new Map();
     this._loadOneData = loadOneData;
     this._loadManyData = loadManyData;
 
@@ -192,9 +194,9 @@ export abstract class Collection<
           throw new Error('duplicate primary key');
         }
       }
-    }
+    } else this._instances.add(instance);
 
-    this._instances.push(instance);
+    this._trackedInstances.set(instance.uid, instance);
 
     return instance;
   }
@@ -220,6 +222,7 @@ export abstract class Collection<
     const instances = [];
 
     if (options.localFilter) {
+      // split cycles due to optimization
       for (const encoded of loadedData) {
         const data = this.normalize(encoded);
 
@@ -227,7 +230,7 @@ export abstract class Collection<
 
         const instance = this._createModel(data);
 
-        this._instances.push(instance); // ToDo: check for duplicates.
+        this._trackedInstances.set(instance.uid, instance);
         instances.push(instance);
       }
     } else {
@@ -235,8 +238,17 @@ export abstract class Collection<
         const data = this.normalize(encoded);
         const instance = this._createModel(data);
 
-        this._instances.push(instance); // ToDo: check for duplicates.
+        this._trackedInstances.set(instance.uid, instance);
         instances.push(instance);
+      }
+    }
+
+    for (const instance of instances) {
+      for (const inst of this._instances) {
+        if (inst.pk === instance.pk) {
+          this._instances.delete(inst);
+          break;
+        }
       }
     }
 
@@ -256,13 +268,7 @@ export abstract class Collection<
     if (!options.reload) {
       const cached = this.peekOne(pk);
 
-      console.log('cached', JSON.stringify(cached?.data), cached?.uid);
-
-      if (cached && (!options.localFilter || options.localFilter(cached.data))) {
-        console.log('return cached');
-
-        return cached;
-      }
+      if (cached && (!options.localFilter || options.localFilter(cached.data))) return cached;
     }
 
     if (!this._loadOneData) return null;
@@ -270,13 +276,19 @@ export abstract class Collection<
     const loadedData = await this._loadOneData(pk);
     const data = this.normalize(loadedData);
 
-    if (options.localFilter) {
-      if (!options.localFilter(data)) return null;
-    }
+    if (options.localFilter && !options.localFilter(data)) return null;
 
     const instance = this._createModel(data);
 
-    this._instances.push(instance);
+    for (const inst of this._instances) {
+      if (inst.pk === instance.pk) {
+        this._instances.delete(inst);
+        break;
+      }
+    }
+
+    this._instances.add(instance);
+    this._trackedInstances.set(instance.uid, instance);
 
     return instance;
   }
@@ -289,8 +301,10 @@ export abstract class Collection<
    * @returns record
    */
   public peekOne(pk: unknown, options: PeekOptions<Data> = {}): ModelType | null {
-    for (const inst of this._instances) {
-      if (inst.pk === pk && (!options.localFilter || options.localFilter(inst.data))) return inst;
+    for (const instance of this._instances) {
+      if (instance.pk === pk) {
+        return !options.localFilter || options.localFilter(instance.data) ? instance : null;
+      }
     }
 
     return null;
@@ -303,12 +317,10 @@ export abstract class Collection<
    * @returns records list
    */
   public peek(options: PeekOptions<Data> = {}): ModelType[] {
-    if (!options.localFilter) return this._instances.slice();
-
     const cached = [];
 
-    for (const inst of this._instances) {
-      if (options.localFilter(inst.data)) cached.push(inst);
+    for (const instance of this._instances) {
+      if (!options.localFilter || options.localFilter(instance.data)) cached.push(instance);
     }
 
     return cached;
@@ -341,15 +353,21 @@ export abstract class Collection<
    * @param callDestroy - call destroy method (do not use with parameter directly)
    */
   public unload(uid: string, callDestroy = true): void {
-    const { _instances } = this;
+    const { _instances, _trackedInstances } = this;
 
-    for (let i = 0; i < _instances.length; ++i) {
-      const inst = _instances[i];
+    const trackedInstance = _trackedInstances.get(uid);
 
-      if (inst.uid === uid) {
-        if (callDestroy) inst.destroy();
+    console.log('tracked instance', trackedInstance != null, 'call destroy', callDestroy);
 
-        _instances.splice(i, 1);
+    if (trackedInstance) {
+      if (callDestroy) trackedInstance.destroy();
+
+      _trackedInstances.delete(uid);
+    }
+
+    for (const instance of _instances) {
+      if (instance.uid === uid) {
+        _instances.delete(instance);
 
         break;
       }
@@ -360,10 +378,9 @@ export abstract class Collection<
    * Unloads all instances.
    */
   public unloadAll(): void {
-    const { _instances } = this;
+    for (const [, instance] of this._trackedInstances) instance.destroy();
 
-    for (const inst of _instances) inst.destroy();
-
-    _instances.splice(0, _instances.length);
+    this._trackedInstances.clear();
+    this._instances.clear();
   }
 }

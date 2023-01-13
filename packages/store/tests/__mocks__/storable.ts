@@ -73,18 +73,20 @@ export class StorableCollection extends Collection<Model, Data, EncodedData, Mod
 
         return data;
       },
-      loadManyData: (options: { ids?: number[]; name?: string }): EncodedData[] => {
+      loadManyData: (options: { queryParams?: { ids?: number[]; name?: string } }): EncodedData[] => {
         const items: EncodedData[] = [];
 
-        if (options.ids?.length) {
-          for (const id of options.ids) {
+        const queryParams = options.queryParams;
+
+        if (queryParams?.ids?.length) {
+          for (const id of queryParams.ids) {
             const item = mapStore.get(id);
 
             if (item) items.push(item);
           }
-        } else if (options.name) {
+        } else if (queryParams?.name) {
           for (const [, item] of mapStore) {
-            if (item.name === options.name) items.push(item);
+            if (item.name === queryParams.name) items.push(item);
           }
         }
 
