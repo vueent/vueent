@@ -4,7 +4,7 @@ import '../__mocks__/vue-vm';
 test('validate mixin should support models wth recursive arrays', () => {
   const instance = createResursiveModel();
 
-  instance.data.items.push({ name: 'world', items: [] });
+  instance.data.items = [...instance.data.items, { name: 'world', items: [] }];
 
   expect(instance.v.c.items.c[0].c.name.invalid).toBe(false);
 

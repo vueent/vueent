@@ -240,16 +240,16 @@ export class Validation implements ValidationBase {
     this._props = reactive({
       anyChildDirty,
       selfDirty: false,
-      dirty: (dirty as unknown) as boolean,
+      dirty: dirty as unknown as boolean,
       anyChildInvalid,
       selfInvalid: false,
-      invalid: (invalid as unknown) as boolean,
+      invalid: invalid as unknown as boolean,
       touched: false,
       resetted: false,
       path,
-      actualValue: (actualValue as unknown) as boolean,
-      fullPath: (fullPath as unknown) as string,
-      dirtyMessage: (computed(() => (this._props.dirty && this._props.message) || '') as unknown) as string,
+      actualValue: actualValue as unknown as boolean,
+      fullPath: fullPath as unknown as string,
+      dirtyMessage: computed(() => (this._props.dirty && this._props.message) || '') as unknown as string,
       children,
       message: ''
     });
@@ -280,8 +280,8 @@ export class Validation implements ValidationBase {
       });
     }
 
-    this._props.anyChildDirty = (anyChildDirty as unknown) as boolean;
-    this._props.anyChildInvalid = (anyChildInvalid as unknown) as boolean;
+    this._props.anyChildDirty = anyChildDirty as unknown as boolean;
+    this._props.anyChildInvalid = anyChildInvalid as unknown as boolean;
     this.inspect();
     this._autoTouch = autoTouch;
     this._stopWatcher = watch(

@@ -46,14 +46,14 @@ export interface Validations extends ValidationBase {
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
+export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, DataModel, typeof DataModel>(
+export class Model extends mix<Data, DataModel, typeof DataModel>(
   DataModel,
   mixRollback(rollbackMask),
   mixValidate(validations)
 ) {
-  constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
+  constructor(initialData?: Data, react = true, ...options: Options[]) {
     super('id', initialData ?? { id: undefined, internalData: { id: '2', internalData: undefined } }, react, ...options);
   }
 }

@@ -1,9 +1,9 @@
 {
-  "name": "@vueent/reactive",
-  "description": "Typescript decorators for Vue.js Composition API",
+  "name": "@vueent/store",
+  "description": "Vueent mixin-based models store",
   "version": "0.0.16",
   "license": "MIT",
-  "homepage": "https://vueent.github.io/vueent/guide/reactive",
+  "homepage": "https://vueent.github.io/vueent/guide/store",
   "repository": {
     "type": "git",
     "url": "git@github.com:vueent/vueent.git"
@@ -15,9 +15,10 @@
     "vueent",
     "vue",
     "composition-api",
-    "reactive",
     "typescript",
-    "decorator"
+    "model",
+    "mix-models",
+    "store"
   ],
   "files": [
     "dist"
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
+    "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
     "bili": "^5.0.5",
     "eslint": "^7.7.0",
@@ -48,7 +50,9 @@
     "typescript": "^4.9.4"
   },
   "peerDependencies": {
+    "@vueent/mix-models": "*",
     "@vue/composition-api": "^1.0.0-beta.14",
+    "lodash": "^4.17.20",
     "vue": "^2.6.0 || >=3.0.0-0"
   },
   "peerDependenciesMeta": {

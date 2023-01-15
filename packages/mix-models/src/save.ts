@@ -253,7 +253,7 @@ export function saveMixin<D extends object, T extends BaseModel<D>, C extends Co
         creating: false,
         updating: false,
         destroying: false,
-        saving: (saving as unknown) as boolean
+        saving: saving as unknown as boolean
       });
     }
 

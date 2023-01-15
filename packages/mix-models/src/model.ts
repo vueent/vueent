@@ -32,11 +32,18 @@ export interface ModelFlags {
   deleted: boolean;
 
   /**
-   * The flag is set to `true` if the model has been destroyed.
+   * The flag is set to `true` if the model has been removed from the storage.
+   *
+   * The destroyed models should not be used, because the primary key is not valid anymore.
+   */
+  destroyed: boolean;
+
+  /**
+   * The flag is set to `true` if the model instance has been destroyed.
    *
    * The destroyed models should not be used, its data reactivity is lost.
    */
-  destroyed: boolean;
+  instanceDestroyed: boolean;
 
   /**
    * This flag prevents the {@link ModelFlags.dirty} flag changes.
@@ -77,17 +84,30 @@ export interface Base<T extends object> {
   readonly deleted: boolean;
 
   /**
-   * The flag is set to `true` if the model has been destroyed.
+   * The flag is set to `true` if the model has been removed from the storage.
    *
-   * The destroyed models should not be used, its data reactivity is lost.
+   * The destroyed models should not be used, because the primary key is not valid anymore.
    * {@link ModelFlags.destroyed}.
    */
   readonly destroyed: boolean;
 
   /**
+   * The flag is set to `true` if the model instance has been destroyed.
+   *
+   * The destroyed models should not be used, its data reactivity is lost.
+   * {@link ModelFlags.instanceDestroyed}.
+   */
+  readonly instanceDestroyed: boolean;
+
+  /**
    * A model data object.
    */
   readonly data: T;
+
+  /**
+   * Model primary key.
+   */
+  readonly pk: unknown;
 
   /**
    * Is called before creating an instance in storage.
@@ -222,9 +242,9 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
-   * The flag is set to `true` if the model has been destroyed.
+   * The flag is set to `true` if the model has been removed from the storage.
    *
-   * The destroyed models should not be used, its data reactivity is lost.
+   * The destroyed models should not be used, because the primary key is not valid anymore.
    * {@link Base.destroyed}.
    */
   get destroyed(): boolean {
@@ -232,10 +252,24 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
+   * The flag is set to `true` if the model instance has been destroyed.
+   *
+   * The destroyed models should not be used, its data reactivity is lost.
+   * {@link Base.instanceDestroyed}
+   */
+  get instanceDestroyed(): boolean {
+    return this._flags.instanceDestroyed;
+  }
+
+  /**
    * A model data object.
    */
   get data(): T {
     return this._internal.data;
+  }
+
+  get pk(): unknown {
+    return (this._internal.data as Record<string, unknown>)[this._idKey];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -247,6 +281,7 @@ export abstract class BaseModel<T extends object> {
       new: true,
       deleted: false,
       destroyed: false,
+      instanceDestroyed: false,
       locked: false
     });
 
@@ -332,6 +367,7 @@ export abstract class BaseModel<T extends object> {
    */
   destroy(): void {
     this._stopBaseWatcher();
+    this._flags.instanceDestroyed = true;
   }
 
   /**

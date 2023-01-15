@@ -23,7 +23,7 @@ export type Params<T extends Service = Service> = ConstructorParameters<Construc
  * @returns - property with a service reference
  */
 export function inject<T extends Service = Service>(useVueent: BoundUseVueentFunc, create: Constructor<T>, ...params: Params<T>) {
-  return function(target: unknown, propertyKey: string | symbol) {
+  return function (target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
         return useVueent().getService(create, ...params);
