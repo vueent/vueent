@@ -34,8 +34,8 @@
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {
-    "vue-demi": "latest",
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "vue-demi": "latest"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
