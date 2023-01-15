@@ -18,20 +18,26 @@ import { Collection } from '@vueent/store';
 
 export interface Data {
   id: number;
-  name: string;
+  firstName: string;
+  lastName: string;
+  age: string;
 }
 
 export interface EncodedData {
   id: number;
-  name: string;
+  firstName: string;
+  lastName: string;
+  age: number;
 }
 
 export function makeInitialData(): Data {
-  return { id: 0, name: '' };
+  return { id: 0, firstName: '', lastName: '', age: '' };
 }
 
 export const validations = {
-  name: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected name length')
+  firstName: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected first name length'),
+  lastName: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected last name length'),
+  age: (v: any) => (Number(v) >= 0 && v === String(Number(v)) ? true : 'Age must be an integer value')
 } as const;
 
 export type Validations = PatternAssert<typeof validations, Data>;
@@ -48,7 +54,7 @@ export class Model extends mix<Data, DataModel, typeof DataModel>(DataModel, mix
   }
 }
 
-export class StorableCollection extends Collection<Model, Data, EncodedData, ModelType> {
+export class UserCollection extends Collection<Model, Data, EncodedData, ModelType> {
   constructor(mapStore: Map<number, EncodedData>, getNewPk: () => number) {
     super({
       construct: Model,
@@ -73,7 +79,14 @@ export class StorableCollection extends Collection<Model, Data, EncodedData, Mod
 
         return data;
       },
-      loadManyData: (options: { queryParams?: { ids?: number[]; name?: string } }): EncodedData[] => {
+      loadManyData: (options: {
+        queryParams?: {
+          ids?: number[];
+          firstName?: string;
+          lastName?: string;
+          age?: number;
+        };
+      }): EncodedData[] => {
         const items: EncodedData[] = [];
 
         const queryParams = options.queryParams;
@@ -84,9 +97,19 @@ export class StorableCollection extends Collection<Model, Data, EncodedData, Mod
 
             if (item) items.push(item);
           }
-        } else if (queryParams?.name) {
+        } else if (queryParams) {
+          const filters: Array<(v: EncodedData) => boolean> = [];
+
+          if (queryParams.firstName) {
+            filters.push((v: EncodedData) => v.firstName === queryParams.firstName);
+          } else if (queryParams.lastName) {
+            filters.push((v: EncodedData) => v.lastName === queryParams.lastName);
+          } else if (queryParams.age) {
+            filters.push((v: EncodedData) => v.age === queryParams.age);
+          }
+
           for (const [, item] of mapStore) {
-            if (item.name === queryParams.name) items.push(item);
+            if (filters.every(filter => filter(item))) items.push(item);
           }
         } else {
           for (const [, item] of mapStore) items.push(item);
@@ -95,5 +118,23 @@ export class StorableCollection extends Collection<Model, Data, EncodedData, Mod
         return items;
       }
     });
+  }
+
+  public normalize(encoded: EncodedData): Data {
+    return {
+      id: encoded.id,
+      firstName: encoded.firstName,
+      lastName: encoded.lastName,
+      age: String(encoded.age)
+    };
+  }
+
+  public denormalize(data: Data): EncodedData {
+    return {
+      id: data.id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      age: Number(data.age)
+    };
   }
 }

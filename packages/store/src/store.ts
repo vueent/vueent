@@ -11,7 +11,7 @@ export class Store<Collections extends AbstractCollection = AbstractCollection> 
     if (!collections) return;
 
     for (const collection of collections) {
-      this._collections.set(Object.getPrototypeOf(collection), collection);
+      this._collections.set(Object.getPrototypeOf(collection).constructor, collection);
     }
   }
 

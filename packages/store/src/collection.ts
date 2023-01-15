@@ -250,6 +250,8 @@ export abstract class Collection<
           break;
         }
       }
+
+      this._instances.add(instance);
     }
 
     return instances;
@@ -354,10 +356,7 @@ export abstract class Collection<
    */
   public unload(uid: string, callDestroy = true): void {
     const { _instances, _trackedInstances } = this;
-
     const trackedInstance = _trackedInstances.get(uid);
-
-    console.log('tracked instance', trackedInstance != null, 'call destroy', callDestroy);
 
     if (trackedInstance) {
       if (callDestroy) trackedInstance.destroy();

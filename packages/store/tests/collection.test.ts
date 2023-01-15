@@ -62,6 +62,7 @@ test('CRUD methods working', async () => {
 
   expect(bob.deleted).toBe(true);
   expect(bob.destroyed).toBe(true);
+  expect(bob.instanceDestroyed).toBe(true);
 
   collection.unload(bob.uid);
 
@@ -77,5 +78,13 @@ test('CRUD methods working', async () => {
 
   collection.unload(unsavedJohn.uid);
 
-  // expect(unsavedJohn.destroyed).toBe(true);
+  expect(unsavedJohn.instanceDestroyed).toBe(true);
+
+  const allItems = await collection.find();
+
+  expect(allItems.length).toBe(1);
+
+  const cachedItems = collection.peek();
+
+  expect(cachedItems.length).toBe(1);
 });
