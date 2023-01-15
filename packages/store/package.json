@@ -1,7 +1,7 @@
 {
   "name": "@vueent/store",
   "description": "Vueent mixin-based models store",
-  "version": "0.0.16",
+  "version": "0.1.0",
   "license": "MIT",
   "homepage": "https://vueent.github.io/vueent/guide/store",
   "repository": {
