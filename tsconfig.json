@@ -24,7 +24,9 @@
       "@vueent/mix-models/*": ["packages/mix-models/src/*"],
       "@tests/mix-models/*": ["packages/mix-models/tests/*"],
       "@vueent/reactive/*": ["packages/reactive/src/*"],
-      "@tests/reactive/*": ["packages/reactive/tests/*"]
+      "@tests/reactive/*": ["packages/reactive/tests/*"],
+      "@vueent/store/*": ["packages/store/src/*"],
+      "@tests/store/*": ["packages/store/tests/*"]
     },
     "lib": ["es2020"]
   },

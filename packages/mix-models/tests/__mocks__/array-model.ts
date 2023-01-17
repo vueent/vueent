@@ -40,8 +40,8 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 class RollbackModel extends rollbackMixin<Data, typeof DataModel>(DataModel, rollbackMask) {}
 class ValidateModel extends validateMixin<Data, typeof RollbackModel, Validations>(RollbackModel, validations) {}
 
-export class Model<ModelOptions extends Options> extends ValidateModel {
-  constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
+export class Model extends ValidateModel {
+  constructor(initialData?: Data, react = true, ...options: Options[]) {
     super('id', initialData ?? { id: undefined, phones: undefined }, react, ...options);
   }
 }

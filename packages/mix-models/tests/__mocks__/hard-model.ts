@@ -62,10 +62,8 @@ export type Validations = PatternAssert<typeof validations, Data>;
 
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
-class M<ModelOptions extends Options> extends mixRollback()(
-  mixValidate<Validations>(validations)(class extends BaseModel<Data> {})
-) {
-  constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
+class M extends mixRollback()(mixValidate<Validations>(validations)(class extends BaseModel<Data> {})) {
+  constructor(initialData?: Data, react = true, ...options: Options[]) {
     super(
       'id',
       initialData ?? { id: '', phones: [], credentials: { first: '', second: '', last: '' }, documents: [], items: [] },

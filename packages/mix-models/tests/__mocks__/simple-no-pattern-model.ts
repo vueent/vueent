@@ -18,10 +18,10 @@ export class DataModel extends BaseModel<Data> {}
 
 export type ModelType = Base<Data> & Validate;
 
-export interface Model<ModelOptions extends Options> extends DataModel, ValidatePrivate {}
+export interface Model extends DataModel, ValidatePrivate {}
 
-export class Model<ModelOptions extends Options> extends mix<Data, typeof DataModel>(DataModel, mixValidate()) {
-  constructor(initialData?: Data, react = true, ...options: ModelOptions[]) {
+export class Model extends mix<Data, typeof DataModel>(DataModel, mixValidate()) {
+  constructor(initialData?: Data, react = true, ...options: Options[]) {
     super('', initialData ?? { name: '' }, react, ...options);
   }
 }

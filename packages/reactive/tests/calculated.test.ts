@@ -36,7 +36,7 @@ test('calculated property must have a getter', () => {
 
     new Calculable();
   } catch (e) {
-    error = e;
+    error = e as any;
   }
 
   expect(error && error.message).toBe('Getter must be defined for calculated property');

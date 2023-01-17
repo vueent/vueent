@@ -253,7 +253,7 @@ export function saveMixin<D extends object, C extends Constructor<D, BaseModel<D
         creating: false,
         updating: false,
         destroying: false,
-        saving: (saving as unknown) as boolean
+        saving: saving as unknown as boolean
       });
     }
 
