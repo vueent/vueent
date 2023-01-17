@@ -485,9 +485,12 @@ async function main() {
 
   console.log(instance.deleted); // outputs: true
   console.log(instance.destroyed); // outputs: true
+  console.log(instance.instanceDestroyed); // outputs: false
 
   // destroying the instance
   instance.destroy();
+  
+  console.log(instance.instanceDestroyed); // outputs: true
 }
 
 main();
@@ -595,9 +598,12 @@ async function main() {
 
   console.log(instance.deleted); // outputs: true
   console.log(instance.destroyed); // outputs: true
+  console.log(instance.instanceDestroyed); // outputs: false
 
   // destroying the instance
   instance.destroy();
+
+  console.log(instance.instanceDestroyed); // outputs: true
 }
 
 main();
