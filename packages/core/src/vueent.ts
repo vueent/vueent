@@ -134,10 +134,10 @@ export class Vueent {
  * @param context.vueent - {@link Vueent} instance reference
  * @returns - {@link Vueent} instance
  */
-export function useVueent({ vueent }: { vueent?: Vueent }) {
-  if (!vueent) vueent = new Vueent();
+export function useVueent(context: { vueent?: Vueent }) {
+  if (!context.vueent) context.vueent = new Vueent();
 
-  return vueent;
+  return context.vueent;
 }
 
 /**
