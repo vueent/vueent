@@ -15,9 +15,10 @@ export class Store<Collections extends AbstractCollection = AbstractCollection> 
     }
   }
 
-  get<C extends AbstractCollectionConstructor<Collections>, T = AssertCollectionType<AbstractCollectionType<C>, Collections>>(
-    collection: C
-  ): T {
+  public get<
+    C extends AbstractCollectionConstructor<Collections>,
+    T = AssertCollectionType<AbstractCollectionType<C>, Collections>
+  >(collection: C): T {
     const coll = this._collections.get(collection);
 
     if (!coll) throw new Error('unregistered collection');

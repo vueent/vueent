@@ -204,7 +204,7 @@ export abstract class Collection<
   /**
    * Searches for a multiple records.
    *
-   * This function scans a local caches if `reload` options is set to `false`.
+   * This function scans a local cache if `reload` options is set to `false`.
    *
    * @param options - search options
    * @returns records list
@@ -260,7 +260,7 @@ export abstract class Collection<
   /**
    * Searches for a single record.
    *
-   * This function scans a local caches if `reload` options is set to `false`.
+   * This function scans a local cache if `reload` options is set to `false`.
    *
    * @param pk - record primary key
    * @param options - search options
