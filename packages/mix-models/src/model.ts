@@ -155,7 +155,7 @@ export interface Base<T extends object> {
   delete(): void;
 
   /**
-   * Destroys the model data.
+   * Destroys the model.
    *
    * The destroyed models should not be used, its data reactivity is lost.
    */
@@ -326,14 +326,14 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
-   * Is called before destroying the model.
+   * Is called before deleting an existing instance from storage.
    */
   beforeDestroy(): void {
     // stub
   }
 
   /**
-   * Is called after destroying the model.
+   * Is called after deleting an existing instance from storage.
    */
   afterDestroy(): void {
     // stub
@@ -361,7 +361,7 @@ export abstract class BaseModel<T extends object> {
   }
 
   /**
-   * Destroys the model data.
+   * Destroys the model.
    *
    * The destroyed models should not be used, its data reactivity is lost.
    */

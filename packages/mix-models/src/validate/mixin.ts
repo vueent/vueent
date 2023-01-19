@@ -119,8 +119,7 @@ export interface ValidatePrivate<T extends ValidationBase = ValidationBase> exte
  */
 export function validateMixin<
   D extends object,
-  T extends BaseModel<D>,
-  C extends Constructor<D, T>,
+  C extends Constructor<D, BaseModel<D>>,
   U extends ValidationBase = ValidationBase
 >(parent: C, pattern?: Pattern) {
   return class extends parent implements ValidatePrivate<U> {
@@ -188,7 +187,7 @@ export function validateMixin<
     }
 
     /**
-     * Destroys the model data.
+     * Destroys the model.
      *
      * The destroyed models should not be used, its data reactivity is lost.
      */
@@ -302,7 +301,7 @@ export function validateMixin<
      * @param mixin - mixin function
      */
     hasMixin(mixin: Function): boolean {
-      return mixin === mixValidate || super.hasMixin(mixin);
+      return mixin === validateMixin || super.hasMixin(mixin);
     }
   };
 }
@@ -315,22 +314,6 @@ export function validateMixin<
  * @param pattern - validation pattern, @see {@link Pattern}
  * @returns - mixin function
  */
-export function mixValidate<
-  D extends object,
-  T extends BaseModel<D>,
-  C extends Constructor<D, T>,
-  U extends ValidationBase = ValidationBase
->(pattern?: Pattern) {
-  return (parent: C) => validateMixin<D, T, C, U>(parent, pattern);
-}
-
-/**
- * Returns a typed function that extends a model class with `validate` mixin.
- *
- * @param pattern - validation pattern, @see {@link Pattern}
- * @returns - mixin function
- */
-export function mixValidate2<U extends ValidationBase = ValidationBase>(pattern?: Pattern) {
-  return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) =>
-    validateMixin<D, T, C, U>(parent, pattern);
+export function mixValidate<U extends ValidationBase = ValidationBase>(pattern?: Pattern) {
+  return <D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C) => validateMixin<D, C, U>(parent, pattern);
 }
