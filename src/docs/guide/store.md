@@ -104,7 +104,7 @@ This method does not removes records from the server store.
 Define available collections as an argument of generic type of `StoreService` to support compile time types constrains, e.g.:
 
 ```ts
-store.get(UnknownCollectionClass); // ts: Argument of type 'typeof StorableCollection' is not assignable to parameter of type...
+store.get(UnknownCollectionClass); // compile error: Argument of type 'typeof StorableCollection' is not assignable to parameter of type...
 ```
 
 <code-group>

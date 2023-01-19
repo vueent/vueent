@@ -18,6 +18,10 @@ const nav = [
   {
     text: 'Mix Models',
     link: '/guide/mix-models'
+  },
+  {
+    text: 'Store',
+    link: '/guide/store'
   }
 ];
 
@@ -45,6 +49,13 @@ function getGuideSidebar() {
         'models-and-components',
         'mixins-development',
         'tips-and-tricks'
+      ]
+    },
+    {
+      title: 'Store',
+      collapsible: true,
+      children: [
+        'store'
       ]
     }
   ];
