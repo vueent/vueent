@@ -18,26 +18,38 @@ import { Collection } from '@vueent/store';
 
 export interface Data {
   id: number;
-  firstName: string;
-  lastName: string;
-  age: string;
+  authorId: number;
+  title: string;
+  text: string;
+  publishedAt: number; // unix timestamp
 }
 
-export interface EncodedData {
-  id: number;
-  firstName: string;
-  lastName: string;
-  age: number;
-}
+export type EncodedData = Data;
 
 export function makeInitialData(): Data {
-  return { id: 0, firstName: '', lastName: '', age: '' };
+  return { id: 0, authorId: 0, title: '', text: '', publishedAt: 0 };
 }
 
 export const validations = {
-  firstName: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected first name length'),
-  lastName: (v: any) => ((v as string).length > 0 && (v as string).length < 255 ? true : 'Unexpected last name length'),
-  age: (v: any) => (Number(v) >= 0 && v === String(Number(v)) ? true : 'Age must be an integer value')
+  authorId: (v: any) =>
+    (v as number) > 0
+      ? Number.isInteger(v)
+        ? true
+        : 'Author id must be an integer value'
+      : 'Author id must be a positive number',
+  title: (v: any) =>
+    (v as string).length > 0
+      ? (v as string).length < 255
+        ? true
+        : 'Unexpected title length'
+      : 'Title cannot be an empty string',
+  text: (v: any) =>
+    (v as string).length > 0
+      ? (v as string).length <= 5000
+        ? true
+        : 'Unexpected text length'
+      : 'Text cannot be an empty string',
+  publishedAt: (v: any) => ((v as number) > new Date(2023, 0, 1).getTime() ? true : 'Unexpected publishing date')
 } as const;
 
 export type Validations = PatternAssert<typeof validations, Data>;
@@ -54,7 +66,7 @@ export class Model extends mix<Data, typeof DataModel>(DataModel, mixRollback(),
   }
 }
 
-export class UsersCollection extends Collection<Model, Data, EncodedData, ModelType> {
+export class ArticlesCollection extends Collection<Model, Data, EncodedData, ModelType> {
   constructor(mapStore: Map<number, EncodedData>, getNewPk: () => number) {
     super({
       construct: Model,
@@ -82,9 +94,9 @@ export class UsersCollection extends Collection<Model, Data, EncodedData, ModelT
       loadManyData: (options: {
         queryParams?: {
           ids?: number[];
-          firstName?: string;
-          lastName?: string;
-          age?: number;
+          authorId?: number;
+          title?: string;
+          publishedAt?: number;
         };
       }): EncodedData[] => {
         const items: EncodedData[] = [];
@@ -100,12 +112,12 @@ export class UsersCollection extends Collection<Model, Data, EncodedData, ModelT
         } else if (queryParams) {
           const filters: Array<(v: EncodedData) => boolean> = [];
 
-          if (queryParams.firstName) {
-            filters.push((v: EncodedData) => v.firstName === queryParams.firstName);
-          } else if (queryParams.lastName) {
-            filters.push((v: EncodedData) => v.lastName === queryParams.lastName);
-          } else if (queryParams.age) {
-            filters.push((v: EncodedData) => v.age === queryParams.age);
+          if (queryParams.title) {
+            filters.push((v: EncodedData) => v.title === queryParams.title);
+          } else if (queryParams.publishedAt) {
+            filters.push((v: EncodedData) => v.publishedAt === queryParams.publishedAt);
+          } else if (queryParams.authorId) {
+            filters.push((v: EncodedData) => v.authorId === queryParams.authorId);
           }
 
           for (const [, item] of mapStore) {
@@ -121,20 +133,10 @@ export class UsersCollection extends Collection<Model, Data, EncodedData, ModelT
   }
 
   public normalize(encoded: EncodedData): Data {
-    return {
-      id: encoded.id,
-      firstName: encoded.firstName,
-      lastName: encoded.lastName,
-      age: String(encoded.age)
-    };
+    return { ...encoded };
   }
 
   public denormalize(data: Data): EncodedData {
-    return {
-      id: data.id,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      age: Number(data.age)
-    };
+    return { ...data };
   }
 }
