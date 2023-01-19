@@ -79,6 +79,7 @@ console.log(m.dirty); // outputs: false
 
 ::: tip
 The `destroyed` flag indicating the data state in a storage, it will not be turned on after destroying the instance.
+Check `instanceDestroyed` flag instead.
 :::
 
 ## Unique instance identifier
