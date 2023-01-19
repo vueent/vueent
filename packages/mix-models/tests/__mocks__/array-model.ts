@@ -37,8 +37,8 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 // export interface Model<ModelOptions extends Options> extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-class RollbackModel extends rollbackMixin<Data, DataModel, typeof DataModel>(DataModel, rollbackMask) {}
-class ValidateModel extends validateMixin<Data, RollbackModel, typeof RollbackModel, Validations>(RollbackModel, validations) {}
+class RollbackModel extends rollbackMixin<Data, typeof DataModel>(DataModel, rollbackMask) {}
+class ValidateModel extends validateMixin<Data, typeof RollbackModel, Validations>(RollbackModel, validations) {}
 
 export class Model extends ValidateModel {
   constructor(initialData?: Data, react = true, ...options: Options[]) {

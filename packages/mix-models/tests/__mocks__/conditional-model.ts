@@ -27,7 +27,7 @@ export type ModelType = Base<Data> & Validate<Validations>;
 
 export interface Model extends DataModel, ValidatePrivate<Validations> {}
 
-export class Model extends mix<Data, DataModel, typeof DataModel>(DataModel, mixValidate(validations)) {
+export class Model extends mix<Data, typeof DataModel>(DataModel, mixValidate(validations)) {
   constructor(initialData?: Data, react = true) {
     super('', initialData ?? { name: '', email: '' }, react);
   }

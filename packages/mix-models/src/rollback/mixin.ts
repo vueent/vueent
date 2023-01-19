@@ -60,10 +60,7 @@ export interface RollbackPrivate<T extends object> extends Rollback {
  * @param initialMask - initial rollback mask, @see {@link RollbackMask}
  * @returns - mixed model class
  */
-export function rollbackMixin<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(
-  parent: C,
-  initialMask?: RollbackMask
-) {
+export function rollbackMixin<D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C, initialMask?: RollbackMask) {
   return class extends parent implements RollbackPrivate<D> {
     /**
      * Previous data state.
@@ -155,7 +152,7 @@ export function rollbackMixin<D extends object, T extends BaseModel<D>, C extend
      * @param mixin - mixin function
      */
     hasMixin(mixin: Function): boolean {
-      return mixin === mixRollback || super.hasMixin(mixin);
+      return mixin === rollbackMixin || super.hasMixin(mixin);
     }
 
     /**
@@ -204,17 +201,6 @@ export function rollbackMixin<D extends object, T extends BaseModel<D>, C extend
  * @param initialMask - initial rollback mask, @see {@link RollbackMask}
  * @returns - mixin function
  */
-export function mixRollback<D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(initialMask?: RollbackMask) {
-  return (parent: C) => rollbackMixin<D, T, C>(parent, initialMask);
-}
-
-/**
- * Returns a typed function that extends a model class with `rollback` mixin.
- *
- * @param initialMask - initial rollback mask, @see {@link RollbackMask}
- * @returns - mixin function
- */
-export function mixRollback2(initialMask?: RollbackMask) {
-  return <D extends object, T extends BaseModel<D>, C extends Constructor<D, T>>(parent: C) =>
-    rollbackMixin<D, T, C>(parent, initialMask);
+export function mixRollback(initialMask?: RollbackMask) {
+  return <D extends object, C extends Constructor<D, BaseModel<D>>>(parent: C) => rollbackMixin<D, C>(parent, initialMask);
 }

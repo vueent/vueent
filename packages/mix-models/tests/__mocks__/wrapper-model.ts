@@ -36,7 +36,7 @@ export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
 
-export class Model extends mix<Data, DataModel, typeof DataModel>(DataModel, mixRollback(), mixValidate(validations)) {
+export class Model extends mix<Data, typeof DataModel>(DataModel, mixRollback(), mixValidate(validations)) {
   constructor(initialData?: Data, react = true) {
     super('id', initialData ?? { id: 0, child: { name: '' } }, react);
   }
