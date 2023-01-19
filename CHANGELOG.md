@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/vueent/vueent/compare/v0.1.0...v0.1.1) (2023-01-19)
+
+
+### Bug Fixes
+
+* Use context field to set a `Vueent` instance ([c127c5a](https://github.com/vueent/vueent/commit/c127c5accec694feff6d7af7f07674b1c9dcfd85)), closes [#37](https://github.com/vueent/vueent/issues/37)
+
+
+### Features
+
+* Add service implementation to `@vueent/store` ([39b1240](https://github.com/vueent/vueent/commit/39b12402d917fcdeb87e3968074b2ddaf034cbfa)), closes [#40](https://github.com/vueent/vueent/issues/40)
+
+
+
+
+
 ## [0.0.16](https://github.com/vueent/vueent/compare/v0.0.15...v0.0.16) (2020-10-27)
 
 
