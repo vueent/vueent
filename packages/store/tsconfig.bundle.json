@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.bundle.json",
   "compilerOptions": {
-    "newLine": "LF"
+    "newLine": "LF",
+    "paths": {
+      "@vueent/store/*": ["packages/store/src/*"],
+      "@tests/store/*": ["packages/store/tests/*"]
+    }
   },
   "include": ["src/**/*.ts"]
 }
