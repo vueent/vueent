@@ -31,8 +31,6 @@ import { UsersCollection, ArticlesCollection } from '@/collections';
 import { EncodedData as EncodedUserData } from '@/models/user';
 import { EncodedData as EncodedArticleData } from '@/models/article';
 
-import { StoreService } from '@vueent/store';
-
 export class ProjectStoreService extends StoreService<UsersCollection | ArticlesCollection> {
   constructor(serverStores: {
     users: {
