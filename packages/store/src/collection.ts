@@ -130,6 +130,7 @@ export abstract class Collection<
     }
 
     const unload = this.unload.bind(this);
+    const appendCreatedToInstances = this.appendCreatedToInstances.bind(this);
 
     const cl = class extends construct {
       afterDestroy(): void {
@@ -137,6 +138,12 @@ export abstract class Collection<
 
         this.destroy();
         unload(this.uid, false);
+      }
+
+      afterCreate(): void {
+        super.afterCreate();
+
+        appendCreatedToInstances(this as unknown as ModelType);
       }
     };
 
@@ -194,7 +201,9 @@ export abstract class Collection<
           throw new Error('duplicate primary key');
         }
       }
-    } else this._instances.add(instance);
+
+      this._instances.add(instance);
+    }
 
     this._trackedInstances.set(instance.uid, instance);
 
@@ -381,5 +390,18 @@ export abstract class Collection<
 
     this._trackedInstances.clear();
     this._instances.clear();
+  }
+
+  protected appendCreatedToInstances(instance: ModelType): void {
+    const { _instances } = this;
+
+    for (const inst of _instances) {
+      if (inst.pk === instance.pk) {
+        this._instances.delete(inst);
+        break;
+      }
+    }
+
+    _instances.add(instance);
   }
 }
