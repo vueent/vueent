@@ -1,7 +1,7 @@
 {
   "name": "@vueent/store",
   "description": "Vueent mixin-based models store",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "license": "MIT",
   "homepage": "https://vueent.github.io/vueent/guide/store",
   "repository": {
@@ -35,8 +35,8 @@
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {
-    "@vueent/core": "^0.1.1",
-    "@vueent/mix-models": "^0.1.1",
+    "@vueent/core": "^0.2.0",
+    "@vueent/mix-models": "^0.2.0",
     "vue-demi": "latest"
   },
   "devDependencies": {
