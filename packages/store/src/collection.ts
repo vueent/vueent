@@ -17,12 +17,28 @@ export type LoadManyDataFunc<EncodedData, LoadOptions extends Record<string, unk
 export type LoadOneDataFunc<EncodedData> = (pk: unknown) => Promise<EncodedData> | EncodedData;
 
 export type PeekOptions<Data> = {
+  /**
+   * Filter loaded items locally.
+   */
   localFilter?: (data: Data) => boolean;
 };
 
 export type FindOptions<Data> = PeekOptions<Data> & {
+  /**
+   * Do not search in a local cache.
+   */
   reload?: boolean;
+  /**
+   * Unload replaced instances.
+   */
+  force?: boolean;
+  /**
+   * Path parameters.
+   */
   params?: Record<string, unknown>;
+  /**
+   * Query parameters.
+   */
   queryParams?: Record<string, unknown>;
 } & Record<string, unknown>;
 
@@ -218,7 +234,10 @@ export abstract class Collection<
    * @param options - search options
    * @returns records list
    */
-  public async find(options: FindOptions<Data> = { reload: true }): Promise<ModelType[]> {
+  public async find(options: FindOptions<Data> = { reload: true, force: false }): Promise<ModelType[]> {
+    options.reload = options.reload ?? true;
+    options.force = options.force ?? false;
+
     if (!options.reload) {
       const cached = this.peek(options);
 
@@ -256,6 +275,12 @@ export abstract class Collection<
       for (const inst of this._instances) {
         if (inst.pk === instance.pk) {
           this._instances.delete(inst);
+
+          if (options.force) {
+            this._trackedInstances.delete(inst.uid);
+            inst.destroy();
+          }
+
           break;
         }
       }
@@ -275,7 +300,10 @@ export abstract class Collection<
    * @param options - search options
    * @returns record
    */
-  public async findOne(pk: unknown, options: FindOptions<Data> = { reload: true }): Promise<ModelType | null> {
+  public async findOne(pk: unknown, options: FindOptions<Data> = { reload: true, force: false }): Promise<ModelType | null> {
+    options.reload = options.reload ?? true;
+    options.force = options.force ?? false;
+
     if (!options.reload) {
       const cached = this.peekOne(pk);
 
@@ -294,6 +322,12 @@ export abstract class Collection<
     for (const inst of this._instances) {
       if (inst.pk === instance.pk) {
         this._instances.delete(inst);
+
+        if (options.force) {
+          this._trackedInstances.delete(inst.uid);
+          inst.destroy();
+        }
+
         break;
       }
     }
