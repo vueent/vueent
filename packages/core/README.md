@@ -1,6 +1,6 @@
 # @vueent/core
 
-A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: `Vueent` class, abstract `Controller` and `Service` classes.
+A small library (part of [_VueEnt_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: `Vueent` class, abstract `Controller` and `Service` classes.
 
 ## Installation
 
@@ -12,21 +12,14 @@ This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue c
 
 ## Usage
 
-First of all, you should create a module to append `VueenT` into your project. Use `initVueent()` which returns an object with several bound functions.
+First of all, you should create a module to append `VueEnt` into your project. Use `initVueent()` which returns an object with several bound functions.
 
 ```ts
 // file: vueent.ts
 import { initVueent } from '@vueent/core';
 
-export const {
-  useVueent,
-  registerService,
-  registerController,
-  useService,
-  useController,
-  injectService,
-  injectController
-} = initVueent();
+export const { useVueent, registerService, registerController, useService, useController, injectService, injectController } =
+  initVueent();
 ```
 
 ### registerService

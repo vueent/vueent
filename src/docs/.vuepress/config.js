@@ -51,7 +51,7 @@ function getGuideSidebar() {
 }
 
 module.exports = {
-  title: 'VueenT',
+  title: 'VueEnt',
   description: ' A library for building scalable Vue.js applications',
   base: '/vueent/',
   head: [

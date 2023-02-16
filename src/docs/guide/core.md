@@ -20,7 +20,7 @@ yarn add --dev @vueent/core
 
 ## Usage
 
-First of all, you should create a module to append `VueenT` into your project. Use `initVueent()` which returns an object with several bound functions.
+First of all, you should create a module to append `VueEnt` into your project. Use `initVueent()` which returns an object with several bound functions.
 
 ```ts
 // file: vueent.ts

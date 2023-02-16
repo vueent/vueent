@@ -11,6 +11,6 @@ features:
   - title: Complex data models
     details: Mix Models allows you to write complex data models with build-in validations in declarative style.
 footer:
-  MIT License | Copyright © 2020 VueenT team
+  MIT License | Copyright © 2020 VueEnt team
 ---
 

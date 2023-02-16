@@ -8,11 +8,11 @@
 
 The main goal of this project is to provide tools and typical approaches for building scalable web applications using Vue.
 
-In the future, maybe, we'll replace a Vue 3/Vue Composition API dependency with [`@vue/reactivity`](https://www.npmjs.com/package/@vue/reactivity) and it will be possible to use VueenT with React.
+In the future, maybe, we'll replace a Vue 3/Vue Composition API dependency with [`@vue/reactivity`](https://www.npmjs.com/package/@vue/reactivity) and it will be possible to use VueEnt with React.
 
 ## Non-goals
 
-Although VueenT offers its own version of the file structure for projects, it is not the goal to enforce any strict structure. The creation of yet another all-in-one framework based on Vue is not the VueenT's goal too.
+Although VueEnt offers its own version of the file structure for projects, it is not the goal to enforce any strict structure. The creation of yet another all-in-one framework based on Vue is not the VueEnt's goal too.
 
 ## Installation
 
@@ -36,7 +36,7 @@ This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue c
 
 ## Packages
 
-VueenT consists of three independent parts that can be used separately.
+VueEnt consists of three independent parts that can be used separately.
 
 ### Reactive
 
