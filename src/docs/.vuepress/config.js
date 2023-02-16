@@ -52,7 +52,7 @@ function getGuideSidebar() {
 
 module.exports = {
   title: 'VueenT',
-  description: 'A library which may help to create a scalable Vue.js application',
+  description: ' A library for building scalable Vue.js applications',
   base: '/vueent/',
   head: [
     ['link', { rel: 'icon', href: '/img/logo.png' }]
