@@ -34,9 +34,25 @@ export interface ControllerRegistry<T extends Controller = Controller> {
 }
 
 /**
+ * Vueent initialization options.
+ */
+export interface VueentOptions {
+  /**
+   * Do not remove controllers of unmounted routes.
+   */
+  persistentControllers?: boolean;
+}
+
+/**
  *
  */
 export class Vueent {
+  private readonly _options: VueentOptions;
+
+  constructor(options: VueentOptions) {
+    this._options = options;
+  }
+
   /**
    * A list of registered services.
    */
@@ -118,7 +134,8 @@ export class Vueent {
     onBeforeUnmount(() => controller.instance?.reset());
     onUnmounted(() => {
       controller.instance?.destroy();
-      controller.instance = undefined;
+
+      if (!this._options.persistentControllers) controller.instance = undefined;
     });
 
     return controller.instance as T;
@@ -132,10 +149,11 @@ export class Vueent {
  *
  * @param context - {@link Vueent} instance wrapper
  * @param context.vueent - {@link Vueent} instance reference
+ * @param context.options = {@link VueentOptions} instance options
  * @returns - {@link Vueent} instance
  */
-export function useVueent(context: { vueent?: Vueent }) {
-  if (!context.vueent) context.vueent = new Vueent();
+export function useVueent(context: { vueent?: Vueent; options: VueentOptions }) {
+  if (!context.vueent) context.vueent = new Vueent(context.options);
 
   return context.vueent;
 }

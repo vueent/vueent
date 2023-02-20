@@ -1,4 +1,4 @@
-import { Vueent, useVueent } from './vueent';
+import { Vueent, useVueent, VueentOptions } from './vueent';
 import {
   Service,
   Constructor as ServiceConstructor,
@@ -103,10 +103,11 @@ export interface InitResult {
 /**
  * Prepares a project-bound vueent context.
  *
+ * @param options - vueent options
  * @returns - project-bound functions
  */
-export function initVueent(): InitResult {
-  const context: { vueent?: Vueent } = { vueent: undefined };
+export function initVueent(options: VueentOptions = {}): InitResult {
+  const context: { vueent?: Vueent; options: VueentOptions } = { vueent: undefined, options };
   const use = useVueent.bind(undefined, context);
 
   return {
