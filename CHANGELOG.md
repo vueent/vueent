@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/vueent/vueent/compare/v0.2.0...v0.3.0) (2023-02-20)
+
+
+### Features
+
+* Persistent controllers mode ([1336bed](https://github.com/vueent/vueent/commit/1336bed5167cbb81ad28e1fe85fbbf671c65e204))
+
+
+
+
+
 # [0.2.0](https://github.com/vueent/vueent/compare/v0.1.3...v0.2.0) (2023-02-16)
 
 
