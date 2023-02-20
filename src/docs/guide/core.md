@@ -37,6 +37,14 @@ export const {
 } = initVueent();
 ```
 
+If you want to use injection of subling controllers, you have to make your controllers persistent by setting the `persistentControllers` VueEnt option:
+
+```ts
+initVueent({ persistentControllers: true });
+```
+
+After that, all controllers will not be removed from the VueEnt instance along with its route components.
+
 ### registerService
 
 The `registerService` function registers a service class into the service registry of a `Vueent` instance.
