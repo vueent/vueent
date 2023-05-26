@@ -10,16 +10,21 @@ import { Provider } from './provider';
 /**
  * Save mixin options.
  */
-export interface ValidateOptions extends Options {
+export interface ValidateOptions<P extends Pattern = Pattern> extends Options {
   /**
    * Mixin name.
    */
   readonly mixinType: 'validate';
 
   /**
-   * Validations configuration.
+   * Validations instance.
    */
   readonly validations?: ValidationBase;
+
+  /**
+   * Validations configuration.
+   */
+  readonly pattern?: P;
 
   /**
    * Set the {@link ValidationBase.dirty} flag automatically when data changes.
@@ -154,17 +159,20 @@ export function validateMixin<
 
       if (options?.autoTouch) this._validationProps.autoTouch = true;
 
+      let instancePattern = pattern;
+
       if (options?.validations) {
         this._validationProps.validations = options.validations;
 
         return;
-      } else if (!pattern) throw new Error('Pattern or predefined validations should be set');
+      } else if (options?.pattern) instancePattern = options.pattern;
+      else if (!instancePattern) throw new Error('Pattern or predefined validations should be set');
 
-      pattern = asPattern(pattern);
+      instancePattern = asPattern(instancePattern);
 
-      if (!pattern) throw new Error('Unsupported pattern format');
+      if (!instancePattern) throw new Error('Unsupported pattern format');
 
-      const objectPattern: ObjectPattern = { $sub: pattern };
+      const objectPattern: ObjectPattern = { $sub: instancePattern };
       const provider = new Provider(
         computed(() => this.data),
         computed(() => this._validationProps.locked),
