@@ -29,6 +29,14 @@ export const validations = {
 
 export type Validations = PatternAssert<typeof validations, Data>;
 
+export const weakValidations = {
+  first: () => true,
+  second: () => true,
+  last: () => true
+} as const;
+
+export type WeakValidations = PatternAssert<typeof weakValidations, Data>;
+
 export type ModelType = Base<Data> & Rollback & Validate<Validations>;
 
 export interface Model extends DataModel, RollbackPrivate<Data>, ValidatePrivate<Validations> {}
