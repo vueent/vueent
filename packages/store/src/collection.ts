@@ -208,7 +208,7 @@ export abstract class Collection<
    * @returns record
    */
   public create(initialData?: Data, options?: ModelOptions[]): ModelType {
-    const instance = this._createModel(initialData, options);
+    const instance = this.createInstance(initialData, options);
 
     if (!instance.new) {
       for (const inst of this._instances) {
@@ -256,7 +256,7 @@ export abstract class Collection<
 
         if (!options.localFilter(data)) continue;
 
-        const instance = this._createModel(data);
+        const instance = this.createInstance(data);
 
         this._trackedInstances.set(instance.uid, instance);
         instances.push(instance);
@@ -264,7 +264,7 @@ export abstract class Collection<
     } else {
       for (const encoded of loadedData) {
         const data = this.normalize(encoded);
-        const instance = this._createModel(data);
+        const instance = this.createInstance(data);
 
         this._trackedInstances.set(instance.uid, instance);
         instances.push(instance);
@@ -317,7 +317,7 @@ export abstract class Collection<
 
     if (options.localFilter && !options.localFilter(data)) return null;
 
-    const instance = this._createModel(data);
+    const instance = this.createInstance(data);
 
     for (const inst of this._instances) {
       if (inst.pk === instance.pk) {
@@ -437,5 +437,18 @@ export abstract class Collection<
     }
 
     _instances.add(instance);
+  }
+
+  /**
+   * Creates a model instance, but does not save to collection.
+   *
+   * This method is used by `create`, `find`, and `findOne` methods.
+   *
+   * @param initialData - initial instance data
+   * @param options - model options
+   * @returns record
+   */
+  protected createInstance(initialData?: Data, options?: ModelOptions[]): ModelType {
+    return this._createModel(initialData, options);
   }
 }
