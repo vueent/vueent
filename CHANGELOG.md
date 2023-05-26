@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/vueent/vueent/compare/v0.3.0...v0.4.0) (2023-05-26)
+
+
+### Features
+
+* Protected `createInstance` wrapper for `Collection` class ([5b09505](https://github.com/vueent/vueent/commit/5b09505979d5d570befc050ca9bf41d7b79890bd))
+* validate mixin `pattern` options ([b15cf07](https://github.com/vueent/vueent/commit/b15cf0716c56c5bdd67c2c4b81c634203c65a4b1))
+
+
+
+
+
 # [0.3.0](https://github.com/vueent/vueent/compare/v0.2.0...v0.3.0) (2023-02-20)
 
 
