@@ -1,5 +1,3 @@
-import { onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue-demi';
-
 import { Controller, Constructor as ControllerConstructor, Params as ControllerParams } from './controller';
 import { Service, Constructor as ServiceConstructor, Params as ServiceParams } from './service';
 
@@ -41,6 +39,38 @@ export interface VueentOptions {
    * Do not remove controllers of unmounted routes.
    */
   persistentControllers?: boolean;
+
+  /**
+   * `Before mount` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onBeforeMount?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Mounted` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onMounted?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Before unmount` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onBeforeUnmount?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Unmounted` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onUnmounted?: (fn: () => void, target?: any) => void;
 }
 
 /**
@@ -118,10 +148,15 @@ export class Vueent {
    * If the controller hasn't been instantiated yet, the parameters will be passed to its constructor.
    *
    * @param create - controller constructor
+   * @param inSetupContext - marks that the controller is used inside the component's setup function
    * @param params - constructor parameters
    * @returns - controller instance
    */
-  public getController<T extends Controller = Controller>(create: ControllerConstructor<T>, ...params: ControllerParams) {
+  public getController<T extends Controller = Controller>(
+    create: ControllerConstructor<T>,
+    inSetupContext = true,
+    ...params: ControllerParams
+  ) {
     const index = this._controllers.findIndex(s => s.create === create);
 
     if (index === -1) throw new Error('Controller with that name is not registered');
@@ -130,13 +165,19 @@ export class Vueent {
 
     if (!controller.instance) controller.instance = new controller.create(...params);
 
-    onBeforeMount(() => controller.instance?.init());
-    onBeforeUnmount(() => controller.instance?.reset());
-    onUnmounted(() => {
-      controller.instance?.destroy();
+    if (inSetupContext) {
+      if (this._options.onBeforeMount) this._options.onBeforeMount(() => controller.instance?.init());
+      if (this._options.onMounted) this._options.onMounted(() => controller.instance?.mounted());
+      if (this._options.onBeforeUnmount) this._options.onBeforeUnmount(() => controller.instance?.reset());
 
-      if (!this._options.persistentControllers) controller.instance = undefined;
-    });
+      if (this._options.onUnmounted) {
+        this._options.onUnmounted(() => {
+          controller.instance?.destroy();
+
+          if (!this._options.persistentControllers) controller.instance = undefined;
+        });
+      }
+    }
 
     return controller.instance as T;
   }

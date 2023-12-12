@@ -14,6 +14,13 @@ export abstract class Controller {
   }
 
   /**
+   * Is called when the component is mounted, i.e. `onMounted`.
+   */
+  public mounted() {
+    // nope
+  }
+
+  /**
    * Is called when the component is being prepated to be unmounted, i.e. `onBeforeUnmount`.
    */
   public reset() {
@@ -45,7 +52,7 @@ export function inject<T extends Controller = Controller>(useVueent: BoundUseVue
   return function (target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
-        return useVueent().getController(create);
+        return useVueent().getController(create, false);
       }
     });
   };
@@ -73,13 +80,15 @@ export function register<T extends Controller = Controller>(useVueent: BoundUseV
  *
  * @param useVueent - Vueent instance accessor
  * @param create - controller constructor
+ * @param inSetupContext - marks that the controller is used inside the component's setup function
  * @param params - constructor parameters
  * @returns - controller instance
  */
 export function use<T extends Controller = Controller>(
   useVueent: BoundUseVueentFunc,
   create: Constructor<T>,
+  inSetupContext = true,
   ...params: Params<T>
 ) {
-  return useVueent().getController(create, ...params);
+  return useVueent().getController(create, inSetupContext, ...params);
 }

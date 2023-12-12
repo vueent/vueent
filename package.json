@@ -36,7 +36,6 @@
       "@vueent/docs/**"
     ]
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.191",

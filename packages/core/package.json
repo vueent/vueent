@@ -46,15 +46,6 @@
     "ts-jest": "^26.4.1",
     "typescript": "^4.9.4"
   },
-  "peerDependencies": {
-    "@vue/composition-api": "^1.0.0-beta.14",
-    "vue": "^2.6.0 || >=3.0.0-0"
-  },
-  "peerDependenciesMeta": {
-    "@vue/composition-api": {
-      "optional": true
-    }
-  },
   "publishConfig": {
     "access": "public"
   }
