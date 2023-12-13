@@ -200,63 +200,37 @@ export class Vueent {
     if (inSetupContext) {
       // Applying lifecycle hooks if they have been overridden by the controller class.
 
-      if (this._options.onBeforeMount) {
-        this._options.onBeforeMount(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).init !== Controller.prototype.init)
-            controller.instance.init();
-        });
-      }
+      if (this._options.onBeforeMount && (create as any).prototype.init !== Controller.prototype.init)
+        this._options.onBeforeMount(() => controller.instance?.init());
 
-      if (this._options.onMounted) {
-        this._options.onMounted(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).mounted !== Controller.prototype.mounted)
-            controller.instance.mounted();
-        });
-      }
+      if (this._options.onMounted && (create as any).prototype.mounted !== Controller.prototype.mounted)
+        this._options.onMounted(() => controller.instance?.mounted());
 
-      if (this._options.onBeforeUnmount) {
-        this._options.onBeforeUnmount(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).reset !== Controller.prototype.reset)
-            controller.instance.reset();
-        });
-      }
+      if (this._options.onBeforeUnmount && (create as any).prototype.reset !== Controller.prototype.reset)
+        this._options.onBeforeUnmount(() => controller.instance?.reset());
 
-      if (this._options.onUnmounted) {
+      if (
+        this._options.onUnmounted &&
+        (!this._options.persistentControllers || (create as any).prototype.destroy !== Controller.prototype.destroy)
+      ) {
         this._options.onUnmounted(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).destroy !== Controller.prototype.destroy)
-            controller.instance.destroy();
+          controller.instance?.destroy();
 
           if (!this._options.persistentControllers) controller.instance = undefined;
         });
       }
 
-      if (this._options.onBeforeUpdate) {
-        this._options.onBeforeUpdate(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).willUpdate !== Controller.prototype.willUpdate)
-            controller.instance.willUpdate();
-        });
-      }
+      if (this._options.onBeforeUpdate && (create as any).prototype.willUpdate !== Controller.prototype.willUpdate)
+        this._options.onBeforeUpdate(() => controller.instance?.willUpdate());
 
-      if (this._options.onUpdated) {
-        this._options.onUpdated(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).updated !== Controller.prototype.updated)
-            controller.instance.updated();
-        });
-      }
+      if (this._options.onUpdated && (create as any).prototype.updated !== Controller.prototype.updated)
+        this._options.onUpdated(() => controller.instance?.updated());
 
-      if (this._options.onActivated) {
-        this._options.onActivated(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).activated !== Controller.prototype.activated)
-            controller.instance.activated();
-        });
-      }
+      if (this._options.onActivated && (create as any).prototype.activated !== Controller.prototype.activated)
+        this._options.onActivated(() => controller.instance?.activated());
 
-      if (this._options.onDeactivated) {
-        this._options.onDeactivated(() => {
-          if (controller.instance && Object.getPrototypeOf(controller.instance).deactivated !== Controller.prototype.deactivated)
-            controller.instance.deactivated();
-        });
-      }
+      if (this._options.onDeactivated && (create as any).prototype.deactivated !== Controller.prototype.deactivated)
+        this._options.onDeactivated(() => controller.instance?.deactivated());
     }
 
     return controller.instance as T;
