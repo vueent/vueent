@@ -71,6 +71,38 @@ export interface VueentOptions {
    * @param target - target component
    */
   onUnmounted?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Before update` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onBeforeUpdate?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Updated` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onUpdated?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Activated` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onActivated?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Deactivated` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onDeactivated?: (fn: () => void, target?: any) => void;
 }
 
 /**
@@ -166,15 +198,63 @@ export class Vueent {
     if (!controller.instance) controller.instance = new controller.create(...params);
 
     if (inSetupContext) {
-      if (this._options.onBeforeMount) this._options.onBeforeMount(() => controller.instance?.init());
-      if (this._options.onMounted) this._options.onMounted(() => controller.instance?.mounted());
-      if (this._options.onBeforeUnmount) this._options.onBeforeUnmount(() => controller.instance?.reset());
+      // Applying lifecycle hooks if they have been overridden by the controller class.
+
+      if (this._options.onBeforeMount) {
+        this._options.onBeforeMount(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).init !== Controller.prototype.init)
+            controller.instance.init();
+        });
+      }
+
+      if (this._options.onMounted) {
+        this._options.onMounted(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).mounted !== Controller.prototype.mounted)
+            controller.instance.mounted();
+        });
+      }
+
+      if (this._options.onBeforeUnmount) {
+        this._options.onBeforeUnmount(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).reset !== Controller.prototype.reset)
+            controller.instance.reset();
+        });
+      }
 
       if (this._options.onUnmounted) {
         this._options.onUnmounted(() => {
-          controller.instance?.destroy();
+          if (controller.instance && Object.getPrototypeOf(controller.instance).destroy !== Controller.prototype.destroy)
+            controller.instance.destroy();
 
           if (!this._options.persistentControllers) controller.instance = undefined;
+        });
+      }
+
+      if (this._options.onBeforeUpdate) {
+        this._options.onBeforeUpdate(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).willUpdate !== Controller.prototype.willUpdate)
+            controller.instance.willUpdate();
+        });
+      }
+
+      if (this._options.onUpdated) {
+        this._options.onUpdated(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).updated !== Controller.prototype.updated)
+            controller.instance.updated();
+        });
+      }
+
+      if (this._options.onActivated) {
+        this._options.onActivated(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).activated !== Controller.prototype.activated)
+            controller.instance.activated();
+        });
+      }
+
+      if (this._options.onDeactivated) {
+        this._options.onDeactivated(() => {
+          if (controller.instance && Object.getPrototypeOf(controller.instance).deactivated !== Controller.prototype.deactivated)
+            controller.instance.deactivated();
         });
       }
     }

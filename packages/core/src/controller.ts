@@ -28,9 +28,37 @@ export abstract class Controller {
   }
 
   /**
-   * Is called when the component is has been unmounted, i.e. `onUnmounted`.
+   * Is called when the component has been unmounted, i.e. `onUnmounted`.
    */
   public destroy() {
+    // nope
+  }
+
+  /**
+   * Is called when the component is being prepared to be updated, i.e. `onBeforeUpdate`.
+   */
+  public willUpdate() {
+    // nope
+  }
+
+  /**
+   * Is called when the component has been updated, i.e. `onUpdated`.
+   */
+  public updated() {
+    // nope
+  }
+
+  /**
+   * Is called when the component is inserted into the DOM as part of a tree cached by `<KeepAlive>`, i.e. `onActivated`.
+   */
+  public activated() {
+    // nope
+  }
+
+  /**
+   * Is called when the component is removed from the DOM as part of a tree cached by `<KeepAlive>`, i.e. `onDeactivated`.
+   */
+  public deactivated() {
     // nope
   }
 }
