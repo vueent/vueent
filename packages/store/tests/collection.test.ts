@@ -87,4 +87,13 @@ test('CRUD methods working', async () => {
   const cachedItems = collection.peek();
 
   expect(cachedItems.length).toBe(1);
+
+  expect(allItems.every(item => !item.instanceDestroyed)).toBe(true);
+
+  const reloadedItems = await collection.find({ force: true });
+
+  expect(reloadedItems.length).toBe(1);
+  expect(reloadedItems[0].pk === allItems[0].pk).toBe(true);
+  expect(reloadedItems[0].uid !== allItems[0].uid).toBe(true);
+  expect(allItems.every(item => item.instanceDestroyed)).toBe(true);
 });

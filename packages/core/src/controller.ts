@@ -14,6 +14,13 @@ export abstract class Controller {
   }
 
   /**
+   * Is called when the component is mounted, i.e. `onMounted`.
+   */
+  public mounted() {
+    // nope
+  }
+
+  /**
    * Is called when the component is being prepated to be unmounted, i.e. `onBeforeUnmount`.
    */
   public reset() {
@@ -21,9 +28,37 @@ export abstract class Controller {
   }
 
   /**
-   * Is called when the component is has been unmounted, i.e. `onUnmounted`.
+   * Is called when the component has been unmounted, i.e. `onUnmounted`.
    */
   public destroy() {
+    // nope
+  }
+
+  /**
+   * Is called when the component is being prepared to be updated, i.e. `onBeforeUpdate`.
+   */
+  public willUpdate() {
+    // nope
+  }
+
+  /**
+   * Is called when the component has been updated, i.e. `onUpdated`.
+   */
+  public updated() {
+    // nope
+  }
+
+  /**
+   * Is called when the component is inserted into the DOM as part of a tree cached by `<KeepAlive>`, i.e. `onActivated`.
+   */
+  public activated() {
+    // nope
+  }
+
+  /**
+   * Is called when the component is removed from the DOM as part of a tree cached by `<KeepAlive>`, i.e. `onDeactivated`.
+   */
+  public deactivated() {
     // nope
   }
 }
@@ -45,7 +80,7 @@ export function inject<T extends Controller = Controller>(useVueent: BoundUseVue
   return function (target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
-        return useVueent().getController(create);
+        return useVueent().getController(create, false);
       }
     });
   };
@@ -73,13 +108,15 @@ export function register<T extends Controller = Controller>(useVueent: BoundUseV
  *
  * @param useVueent - Vueent instance accessor
  * @param create - controller constructor
+ * @param inSetupContext - marks that the controller is used inside the component's setup function
  * @param params - constructor parameters
  * @returns - controller instance
  */
 export function use<T extends Controller = Controller>(
   useVueent: BoundUseVueentFunc,
   create: Constructor<T>,
+  inSetupContext = true,
   ...params: Params<T>
 ) {
-  return useVueent().getController(create, ...params);
+  return useVueent().getController(create, inSetupContext, ...params);
 }

@@ -18,9 +18,13 @@ yarn add --dev @vueent/core
 </code-block>
 </code-group>
 
+::: tip
+This library has no [Vue](https://v3.vuejs.org/) dependencies.
+:::
+
 ## Usage
 
-First of all, you should create a module to append `VueenT` into your project. Use `initVueent()` which returns an object with several bound functions.
+First of all, you should create a module to append `VueEnt` into your project. Use `initVueent()` which returns an object with several bound functions.
 
 ```ts
 // file: vueent.ts
@@ -36,6 +40,14 @@ export const {
   injectController
 } = initVueent();
 ```
+
+If you want to use injection of subling controllers, you have to make your controllers persistent by setting the `persistentControllers` VueEnt option:
+
+```ts
+initVueent({ persistentControllers: true });
+```
+
+After that, all controllers will not be removed from the VueEnt instance along with its route components.
 
 ### registerService
 
@@ -67,7 +79,7 @@ The `injectController` decorator injects a lazy-initialized instance of a regist
 
 ### Full example
 
-You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onBeforeUnmount`, and `onUnmounted` hooks are automatically connected to `init`, `reset`, `destroy` methods of Controller.
+You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onMounted`, `onBeforeUnmount`, `onUnmounted`, `onBeforeUpdate`, `onUpdated`, `onActivated`, and `onDeactivated` hooks are automatically connected to `init`, `mounted`, `reset`, `destroy`, `willUpdated`, `updated`, `activated`, and `deactivated` methods of Controller.
 
 ::: danger
 Do not use the following library provided functions directly: `useVueent`, `registerService`, `registerController`, `useService`, `useController`, `injectService`, `injectController`. That functions have to be bound to a context which contains a `Vueent` class instance. Use functions with the same names provided by the `initVueent` function.
@@ -138,12 +150,32 @@ export default class AppController extends Controller {
     console.log('onBeforeMount');
   }
 
+  public mounted() {
+    console.log('onMounted');
+  }
+
   public reset() {
     console.log('onBeforeUnmount');
   }
 
   public destroy() {
     console.log('onUnmounted'); // stop watchers, timers, etc.
+  }
+
+  public willUpdate() {
+    console.log('onBeforeUpdate');
+  }
+
+  public updated() {
+    console.log('onUpdated');
+  }
+
+  public activated() {
+    console.log('onActivated');
+  }
+
+  public deactivated() {
+    console.log('onDeactivated');
   }
 
   public increment() {

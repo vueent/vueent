@@ -1,6 +1,6 @@
 # @vueent/mix-models
 
-A part of [_VueenT_](https://github.com/vueent/vueent) that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations.
+A part of [_VueEnt_](https://github.com/vueent/vueent) that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations.
 
 ## Installation
 

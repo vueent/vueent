@@ -268,7 +268,12 @@ export function saveMixin<D extends object, C extends Constructor<D, BaseModel<D
     processSavedInstance(resp?: D | unknown): void {
       if (resp === undefined) return;
       else if (typeof resp === 'object') {
-        this._internal.data = resp as D;
+        // prevent the data object replacement
+        for (const key in resp as D) this._internal.data[key] = (resp as D)[key];
+
+        for (const key in this._internal.data) {
+          if (!(key in (resp as D))) (this._internal.data as any)[key] = undefined;
+        }
       } else {
         (this.data as Record<string, unknown>)[this._idKey] = resp; // due to https://github.com/microsoft/TypeScript/issues/31661
       }
