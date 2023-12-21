@@ -8,7 +8,7 @@ A small library (part of [_VueEnt_](https://github.com/vueent/vueent)) that inte
 npm install -D @vueent/core
 ```
 
-This library have no [Vue](https://v3.vuejs.org/) dependencies.
+This library has no [Vue](https://v3.vuejs.org/) dependencies.
 
 ## Usage
 
@@ -72,7 +72,8 @@ The `injectController` decorator injects a lazy-initialized instance of a regist
 
 ### Full example
 
-You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onMounted`, `onBeforeUnmount`, `onUnmounted`, `onBeforeUpdate`, `onUpdated`, `onActivated`, and `onDeactivated` hooks are automatically connected to `init`, `mounted`, `reset`, `destroy`, `willUpdated`, `updated`, `activated`, and `deactivated` methods of Controller. `persistentControllers` option prevents controllers instances to be cleared by garbage collact
+You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onMounted`, `onBeforeUnmount`, `onUnmounted`, `onBeforeUpdate`, `onUpdated`, `onActivated`, and `onDeactivated` hooks are automatically connected to `init`, `mounted`, `reset`, `destroy`, `willUpdated`, `updated`, `activated`, and `deactivated` methods of Controller.
+`persistentControllers` option prevents controllers instances to be cleared by garbage collector.
 
 > Do not use the following library provided functions directly: `useVueent`, `registerService`, `registerController`, `useService`, `useController`, `injectService`, `injectController`. That functions have to be bound to a context which contains a `Vueent` class instance. Use functions with the same names provided by the `initVueent` function.
 
