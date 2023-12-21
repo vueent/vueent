@@ -19,8 +19,8 @@ This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue c
 The package provides two decorators. `tracked` makes a `ref` from the class `field`. `calculated` wrapps a getter/setter pair and makes a `computed` property.
 
 > [!WARNING]
+>
 > `isRef` and `toRef` functions don't work with decorated fields, but decorated fields are not mutated within `reactive` objects as a benefit.
-
 
 Let's look at the trivial example:
 
