@@ -49,3 +49,14 @@ VueEnt consists of three independent parts that can be used separately.
 ### Mix Models
 
 [`@vueent/mix-models`](./mix-models) is a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations.
+
+## Quick start
+
+If you want to try VueEnt and don't want to read all the documentation, see [this](https://github.com/vueent/vueent-quick-start) special project.
+
+```sh
+git clone https://github.com/vueent/vueent-quick-start.git
+cd vueent-quick-start
+npm i
+npm run dev
+```
