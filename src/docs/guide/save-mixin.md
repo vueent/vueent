@@ -4,7 +4,7 @@ The `save` mixin allows to append [`CRUD`](https://en.wikipedia.org/wiki/Create,
 
 ## Model definition
 
-The mixin provides a factory function that returns a mixin function. It is a general interface that allows to send arguments or to the factory only once.
+The mixin provides a factory function that returns a mixin function. It is a general interface that allows to send arguments to the factory only once.
 
 <code-group>
 <code-block title="TS">
@@ -30,6 +30,7 @@ class Model<ModelOptions extends Options> extends SaveModel {
   }
 }
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -47,6 +48,7 @@ class Model extends SaveModel {
   }
 }
 ```
+
 </code-block>
 </code-group>
 
@@ -70,6 +72,7 @@ class Model<ModelOptions extends Options> extends mixSave()(class extends BaseMo
   }
 }
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -83,6 +86,7 @@ class Model extends mixSave()(BaseModel) {
   }
 }
 ```
+
 </code-block>
 </code-group>
 
@@ -166,6 +170,7 @@ async function create(data: Data): Promise<Data> {
   return await axios.post('/accounts/', data);
 }
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -177,6 +182,7 @@ async function create(data) {
   return await axios.post('/accounts/', data);
 }
 ```
+
 </code-block>
 </code-group>
 
@@ -233,6 +239,7 @@ const existingInstance = new Model({ id: 10, firstName: 'John', lastName: 'Doe' 
 
 console.log(existingInstance.new); // outputs: false
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -254,6 +261,7 @@ const existingInstance = new Model({ id: 10, firstName: 'John', lastName: 'Doe' 
 
 console.log(existingInstance.new); // outputs: false
 ```
+
 </code-block>
 </code-group>
 
@@ -281,6 +289,7 @@ async function update(id: number, data: Exclude<Data, 'id'>): Promise<Data> {
   return await axios.put(`/accounts/${id}/`, data);
 }
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -292,6 +301,7 @@ async function update(id, data) {
   return await axios.put(`/accounts/${id}/`, data);
 }
 ```
+
 </code-block>
 </code-group>
 
@@ -359,6 +369,7 @@ async function destroy(id: number): Promise<void> {
   await axios.delete(`/accounts/${id}/`);
 }
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -370,6 +381,7 @@ async function destroy(id) {
   await axios.delete(`/accounts/${id}/`);
 }
 ```
+
 </code-block>
 </code-group>
 
@@ -468,7 +480,7 @@ async function main() {
   instance.data.lastName = 'Smith';
 
   console.log(instance.dirty); // outputs: true
-  
+
   await tryToSave(instance);
 
   // deleting the record
@@ -489,12 +501,13 @@ async function main() {
 
   // destroying the instance
   instance.destroy();
-  
+
   console.log(instance.instanceDestroyed); // outputs: true
 }
 
 main();
 ```
+
 </code-block>
 
 <code-block title="JS">
@@ -608,5 +621,6 @@ async function main() {
 
 main();
 ```
+
 </code-block>
 </code-group>
