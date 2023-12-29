@@ -12,7 +12,9 @@ const value = isRef(this.field) ? this.field.value : this.field);
 npm install -D @vueent/reactive
 ```
 
-This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+> [!IMPORTANT]
+>
+> This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html), Vue 2.7 or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
 
 ## Usage
 

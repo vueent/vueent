@@ -12,14 +12,16 @@ The library is experimental, API breaking changes may be occured.
 npm install --save-dev @vueent/core
 ```
 
-This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+> [!IMPORTANT]
+>
+> This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html), Vue 2.7 or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
 
 ## Using store service
 
 Define available collections as an argument of generic type of `StoreService` to support compile time types constrains, e.g.:
 
 ```ts
-store.get(UnknownCollectionClass); // ts: Argument of type 'typeof StorableCollection' is not assignable to parameter of type...
+store.get(UnknownCollectionClass); // ts: Argument of type 'typeof UnknownCollectionClass' is not assignable to parameter of type...
 ```
 
 ```ts

@@ -28,15 +28,12 @@ Although VueEnt offers its own version of the file structure for projects, it is
 npm install --save-dev @vueent/<package_name>
 ```
 
-VueEnt consists of three independent parts that can be used separately:
+VueEnt consists of four parts that can be used separately:
 
 - [`@vueent/reactive`](./packages/reactive) - typescript decorators which allows to use `ref` and `computed` properties transparently inside of classes
-- [`@vueent/core`](./packages/core) - a small library that integrates controllers and services patterns to the application
+- [`@vueent/core`](./packages/core) - a small library that integrates controllers and services patterns to the application (Vue-independent)
 - [`@vueent/mix-models`](./packages/mix-models) - a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations
-
-## Usage
-
-## Toubleshooting
+- [`@vueent/store`](./packages/store) - a library that provides collections of models
 
 ## LICENSE
 
