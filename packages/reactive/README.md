@@ -18,6 +18,21 @@ npm install -D @vueent/reactive
 
 ## Usage
 
+> [!IMPORTANT]
+>
+> As of TypeScript 4.3, support of experimental decorators must be allowed by the following `tsconfig.json` options:
+>
+> ```json
+> {
+>   "compilerOptions": {
+>     // ...
+>     "moduleResolution": "node",
+>     "useDefineForClassFields": false,
+>     "experimentalDecorators": true
+>   }
+> }
+> ```
+
 The package provides two decorators. `tracked` makes a `ref` from the class `field`. `calculated` wrapps a getter/setter pair and makes a `computed` property.
 
 > [!WARNING]
