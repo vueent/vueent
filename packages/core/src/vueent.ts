@@ -116,14 +116,14 @@ export class Vueent {
   }
 
   /**
-   * A list of registered services.
+   * Registered services.
    */
-  private readonly _services: ServiceRegistry[] = [];
+  private readonly _services = new Map<ServiceConstructor<Service>, ServiceRegistry>();
 
   /**
-   * A list of registered controllers.
+   * Registered controllers.
    */
-  private readonly _controllers: ControllerRegistry[] = [];
+  private readonly _controllers = new Map<ControllerConstructor<Controller>, ControllerRegistry>();
 
   /**
    * Appends a service to the list {@link Vueent._services}.
@@ -133,9 +133,9 @@ export class Vueent {
    * @param create - service constructor
    */
   public registerService<T extends Service = Service>(create: ServiceConstructor<T>) {
-    if (this._services.some(s => s.create === create)) throw new Error('Service with the same name is already registered');
+    if (this._services.has(create)) throw new Error('Service with the same name is already registered');
 
-    this._services.push({ create, instance: undefined });
+    this._services.set(create, { create, instance: undefined });
   }
 
   /**
@@ -146,9 +146,9 @@ export class Vueent {
    * @param create - controller constructor
    */
   public registerController<T extends Controller = Controller>(create: ControllerConstructor<T>) {
-    if (this._controllers.some(s => s.create === create)) throw new Error('Controller with the same name is already registered');
+    if (this._controllers.has(create)) throw new Error('Controller with the same name is already registered');
 
-    this._controllers.push({ create, instance: undefined });
+    this._controllers.set(create, { create, instance: undefined });
   }
 
   /**
@@ -163,7 +163,7 @@ export class Vueent {
    * @returns - service instance
    */
   public getService<T extends Service = Service>(create: ServiceConstructor<T>, ...params: ServiceParams<T>) {
-    const service = this._services.find(s => s.create === create);
+    const service = this._services.get(create);
 
     if (!service) throw new Error('Service with that name is not registered');
 
@@ -189,11 +189,9 @@ export class Vueent {
     inSetupContext = true,
     ...params: ControllerParams
   ) {
-    const index = this._controllers.findIndex(s => s.create === create);
+    const controller = this._controllers.get(create);
 
-    if (index === -1) throw new Error('Controller with that name is not registered');
-
-    const controller = this._controllers[index];
+    if (!controller) throw new Error('Controller with that name is not registered');
 
     if (!controller.instance) controller.instance = new controller.create(...params);
 
