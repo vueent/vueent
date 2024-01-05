@@ -906,4 +906,93 @@ function create<ModelOptions extends Options>(initialData?: Data, react = true, 
 ```
 
 </code-block>
+
+<code-block title="JS">
+
+```js
+import { BaseModel, mixValidate, mix, mixRollback, mixSave } from '@vueent/mix-models';
+import { v9s, simplify } from 'v9s';
+
+/**
+ * @typedef {import('@vueent/mix-models').Options} Options
+ */
+
+/**
+ * @typedef Data
+ * @property {number} id
+ * @property {number} age
+ * @property {{ firstName: string; lastName: string }} credentials
+ * @property {Array<{ value: string }>} phones
+ */
+
+function makeInitialData() {
+  return {
+    id: 0,
+    age: 0,
+    credentials: {
+      firstName: '',
+      lastName: ''
+    },
+    phones: []
+  };
+}
+
+const phone = value => !/^\+?[1-9]{1}[0-9]{10,12}$/.test(value);
+
+const rollbackMask = {
+  age: true,
+  credentials: true,
+  phones: true
+};
+
+const validations = {
+  age: simplify(
+    v9s()
+      .number('Age must be a number.', Number)
+      .use(Number.isInteger, 'Age must be an integer value.')
+      .gte(0, 'Age cannot be a negative value.')
+  ),
+  credentials: {
+    $sub: {
+      firstName: simplify(
+        v9s()
+          .string('First name must be a string.')
+          .minLength(1, 'Enter first name.')
+          .maxLength(255, 'First name length exceeds 255 characters.')
+      ),
+      lastName: simplify(
+        v9s()
+          .string('Last name must be a string.')
+          .minLength(1, 'Enter last name.')
+          .maxLength(255, 'Last name length exceeds 255 characters.')
+      )
+    },
+    $self: v => v !== undefined || 'Invalid credentials.'
+  },
+  phones: {
+    $each: {
+      value: simplify(
+        v9s()
+          .string('The phone number must be a string.')
+          .minLength(1, 'Enter the phone number.')
+          .use(phone, 'Invalid phone number format.')
+      )
+    },
+    $self: v => (Array.isArray(v) && v.length > 0) || 'No enough phone numbers.'
+  }
+};
+
+class Model extends mix(BaseModel, mixRollback(rollbackMask), mixSave(), mixValidate(validations)) {
+  /**
+   * @param {Data=} initialData
+   * @param {boolean=} react
+   * @param {...Options} options
+   */
+  constructor(initialData = undefined, react = true, ...options) {
+    super('id', initialData ?? makeInitialData(), react, ...options);
+  }
+}
+```
+
+</code-block>
 </code-group>
