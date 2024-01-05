@@ -52,15 +52,15 @@ A factory function should return a function like a class generating function, bu
 
 ## Private interface
 
-The private interface is required to add protected fields and methods to a final model class.
+A private interface is required to add protected fields and methods to a final model class.
 
 ## Public interface
 
-The public interface contains public fields and methods only. These fields and methods can be used by the user of the model instance.
+A public interface contains public fields and methods only. These fields and methods can be used by the user of the model instance.
 
 ## Constructor arguments
 
-Of course, a mixin can override a constructor, but it must have arguments that are compatible with the `BaseModel` constructor.
+Of course, a mixin can override the constructor, but it must have arguments that are compatible with the `BaseModel` constructor.
 
 ## Usage
 
