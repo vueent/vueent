@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/vueent/vueent/compare/v0.4.0...v0.5.0) (2024-01-05)
+
+
+### Bug Fixes
+
+* Vue lifecycle hooks runs only inside a setup context ([e197cae](https://github.com/vueent/vueent/commit/e197cae18f1d992968c3ff38014cdaa19941a639))
+
+
+### Documentation
+
+* Core package README update ([d4ddc6a](https://github.com/vueent/vueent/commit/d4ddc6a89a7af4674fc35a4e6ba6f70487bb1f84))
+
+
+### Reverts
+
+* Revert "BREAKING CHANGE: core package refactored" (#67) ([c6a7f7f](https://github.com/vueent/vueent/commit/c6a7f7f8947846945f922f71841b76dfbd732311)), closes [#67](https://github.com/vueent/vueent/issues/67)
+
+
+### BREAKING CHANGES
+
+* core package refactored
+
+
+
+
+
 # [0.4.0](https://github.com/vueent/vueent/compare/v0.3.0...v0.4.0) (2023-05-26)
 
 **Note:** Version bump only for package @vueent/core

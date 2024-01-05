@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/vueent/vueent/compare/v0.4.0...v0.5.0) (2024-01-05)
+
+
+### Bug Fixes
+
+* Validation after the model saving ([77e4644](https://github.com/vueent/vueent/commit/77e46441e31e8e0ca089af1e1726f46758bec8f0))
+
+
+
+
+
 # [0.4.0](https://github.com/vueent/vueent/compare/v0.3.0...v0.4.0) (2023-05-26)
 
 
