@@ -4,7 +4,7 @@
   <img src="src/docs/.vuepress/public/img/logo.png">
 </p>
 
-_VueenT_ is a library which may help to create a scalable Vue application. See the [documentation](https://vueent.github.io/vueent/) for more information.
+_VueEnt_ is a library for building scalable Vue applications. See the [documentation](https://vueent.github.io/vueent/) for more information.
 
 [![Build Status](https://travis-ci.com/vueent/vueent.svg?branch=main)](https://travis-ci.com/vueent/vueent) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
@@ -16,11 +16,11 @@ _VueenT_ is a library which may help to create a scalable Vue application. See t
 
 The main goal of this project is to provide tools and typical approaches for building scalable web applications using Vue.
 
-In the future, maybe, we'll replace a Vue 3/Vue Composition API dependency with [`@vue/reactivity`](https://www.npmjs.com/package/@vue/reactivity) and it will be possible to use VueenT with React.
+In the future, maybe, we'll replace a Vue 3/Vue Composition API dependency with [`@vue/reactivity`](https://www.npmjs.com/package/@vue/reactivity) and it will be possible to use VueEnt with React.
 
 ## Non-goals
 
-Although VueenT offers its own version of the file structure for projects, it is not the goal to enforce any strict structure. The creation of yet another all-in-one framework based on Vue is not the VueenT's goal too.
+Although VueEnt offers its own version of the file structure for projects, it is not the goal to enforce any strict structure. The creation of yet another all-in-one framework based on Vue is not the VueEnt's goal too.
 
 ## Installation
 
@@ -28,15 +28,23 @@ Although VueenT offers its own version of the file structure for projects, it is
 npm install --save-dev @vueent/<package_name>
 ```
 
-VueenT consists of three independent parts that can be used separately:
+VueEnt consists of four parts that can be used separately:
 
 - [`@vueent/reactive`](./packages/reactive) - typescript decorators which allows to use `ref` and `computed` properties transparently inside of classes
-- [`@vueent/core`](./packages/core) - a small library that integrates controllers and services patterns to the application
+- [`@vueent/core`](./packages/core) - a small library that integrates controllers and services patterns to the application (Vue-independent)
 - [`@vueent/mix-models`](./packages/mix-models) - a library that provides reactive models classes for _nosql_ models with optionally saving, rollback and live validations
+- [`@vueent/store`](./packages/store) - a library that provides collections of models
 
-## Usage
+## Quick start
 
-## Toubleshooting
+If you want to try VueEnt and don't want to read all the documentation, see [this](https://github.com/vueent/vueent-quick-start) special project.
+
+```sh
+git clone https://github.com/vueent/vueent-quick-start.git
+cd vueent-quick-start
+npm i
+npm run dev
+```
 
 ## LICENSE
 

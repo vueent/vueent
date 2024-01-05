@@ -1,7 +1,7 @@
 {
   "name": "@vueent/store",
   "description": "Vueent mixin-based models store",
-  "version": "0.1.1",
+  "version": "0.4.0",
   "license": "MIT",
   "homepage": "https://vueent.github.io/vueent/guide/store",
   "repository": {
@@ -35,11 +35,12 @@
     "lint": "eslint src/**/*.ts,tests/**/*.ts"
   },
   "dependencies": {
+    "@vueent/core": "^0.4.0",
+    "@vueent/mix-models": "^0.4.0",
     "vue-demi": "latest"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
-    "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
     "bili": "^5.0.5",
     "eslint": "^7.7.0",
@@ -51,9 +52,6 @@
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-beta.14",
-    "@vueent/core": "*",
-    "@vueent/mix-models": "*",
-    "lodash": "^4.17.20",
     "vue": "^2.6.0 || >=3.0.0-0"
   },
   "peerDependenciesMeta": {

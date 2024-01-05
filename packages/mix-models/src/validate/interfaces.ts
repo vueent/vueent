@@ -68,7 +68,7 @@ export interface ValidationBase {
   readonly c?: unknown;
 
   /**
-   * Mark the current data field as dirty.
+   * Marks the current data field as dirty.
    */
   touch(): void;
 

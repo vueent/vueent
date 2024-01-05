@@ -1,6 +1,6 @@
 # @vueent/core
 
-A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: `Vueent` class, abstract `Controller` and `Service` classes.
+A small library (part of [_VueEnt_](https://github.com/vueent/vueent)) that integrates controllers and services patterns to the application. The package provides three main elements: `Vueent` class, abstract `Controller` and `Service` classes.
 
 ## Installation
 
@@ -8,25 +8,40 @@ A small library (part of [_VueenT_](https://github.com/vueent/vueent)) that inte
 npm install -D @vueent/core
 ```
 
-This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+> [!IMPORTANT]
+>
+> This library has no [Vue](https://v3.vuejs.org/) dependencies.
 
 ## Usage
 
-First of all, you should create a module to append `VueenT` into your project. Use `initVueent()` which returns an object with several bound functions.
+First of all, you should create a module to append `VueEnt` into your project. Use `initVueent()` which returns an object with several bound functions.
 
 ```ts
 // file: vueent.ts
+import {
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  onBeforeUpdate,
+  onUpdated,
+  onActivated,
+  onDeactivated
+} from 'vue';
 import { initVueent } from '@vueent/core';
 
-export const {
-  useVueent,
-  registerService,
-  registerController,
-  useService,
-  useController,
-  injectService,
-  injectController
-} = initVueent();
+export const { useVueent, registerService, registerController, useService, useController, injectService, injectController } =
+  initVueent({
+    persistentControllers: true, // do not remove a controller instance together with its component
+    onBeforeMount,
+    onBeforeUnmount,
+    onMounted,
+    onUnmounted,
+    onBeforeUpdate,
+    onUpdated,
+    onActivated,
+    onDeactivated
+  });
 ```
 
 ### registerService
@@ -59,11 +74,12 @@ The `injectController` decorator injects a lazy-initialized instance of a regist
 
 ### Full example
 
-You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onBeforeUnmount`, and `onUnmounted` hooks are automatically connected to `init`, `reset`, `destroy` methods of Controller.
+You may create a `Vueent` instance directly using `useVueent` call, but it's not necessary, it will be created automatically after the first `useController` or `useService` call. `onBeforeMount`, `onMounted`, `onBeforeUnmount`, `onUnmounted`, `onBeforeUpdate`, `onUpdated`, `onActivated`, and `onDeactivated` hooks are automatically connected to `init`, `mounted`, `reset`, `destroy`, `willUpdated`, `updated`, `activated`, and `deactivated` methods of Controller.
+`persistentControllers` option prevents controllers instances to be cleared by garbage collector.
 
-::: danger
-Do not use the following library provided functions directly: `useVueent`, `registerService`, `registerController`, `useService`, `useController`, `injectService`, `injectController`. That functions have to be bound to a context which contains a `Vueent` class instance. Use functions with the same names provided by the `initVueent` function.
-:::
+> [!CAUTION]
+>
+> Do not use the following library provided functions directly: `useVueent`, `registerService`, `registerController`, `useService`, `useController`, `injectService`, `injectController`. That functions have to be bound to a context which contains a `Vueent` class instance. Use functions with the same names provided by the `initVueent` function.
 
 Let's write a simple example:
 
@@ -129,12 +145,32 @@ export default class AppController extends Controller {
     console.log('onBeforeMount');
   }
 
+  public mounted() {
+    console.log('onMounted');
+  }
+
   public reset() {
     console.log('onBeforeUnmount');
   }
 
   public destroy() {
     console.log('onUnmounted'); // stop watchers, timers, etc.
+  }
+
+  public willUpdate() {
+    console.log('onBeforeUpdate');
+  }
+
+  public updated() {
+    console.log('onUpdated');
+  }
+
+  public activated() {
+    console.log('onActivated');
+  }
+
+  public deactivated() {
+    console.log('onDeactivated');
   }
 
   public increment() {

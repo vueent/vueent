@@ -15,7 +15,7 @@
     "lerna:publish": "lerna publish --conventional-commits",
     "lerna:publish:from-package": "lerna publish from-package",
     "lerna:changed": "lerna changed",
-    "lerna:build": "lerna run build --parallel",
+    "lerna:build": "lerna run build --include-dependencies --stream",
     "lerna:version": "lerna version --conventional-commits",
     "release": "npm run build && npm run publish",
     "release:dry": "npm run build && npm run version --no-push --no-git-tag-version",
@@ -36,14 +36,13 @@
       "@vueent/docs/**"
     ]
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
-    "@vuepress/plugin-back-to-top": "^1.7.1",
+    "@vuepress/plugin-back-to-top": "^1.9.10",
     "bili": "^5.0.5",
     "eslint": "^7.7.0",
     "eslint-plugin-prettier": "^3.1.4",
@@ -55,9 +54,10 @@
     "prettier": "^2.8.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.4.1",
+    "tslib": "^2.6.2",
     "typescript": "^4.9.4",
-    "vue": "^2.7.14",
+    "vue": "^2.7.16",
     "vue-demi": "latest",
-    "vuepress": "^1.7.1"
+    "vuepress": "^1.9.10"
   }
 }

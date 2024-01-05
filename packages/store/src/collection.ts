@@ -17,12 +17,28 @@ export type LoadManyDataFunc<EncodedData, LoadOptions extends Record<string, unk
 export type LoadOneDataFunc<EncodedData> = (pk: unknown) => Promise<EncodedData> | EncodedData;
 
 export type PeekOptions<Data> = {
+  /**
+   * Filter loaded items locally.
+   */
   localFilter?: (data: Data) => boolean;
 };
 
 export type FindOptions<Data> = PeekOptions<Data> & {
+  /**
+   * Do not search in a local cache.
+   */
   reload?: boolean;
+  /**
+   * Unload replaced instances.
+   */
+  force?: boolean;
+  /**
+   * Path parameters.
+   */
   params?: Record<string, unknown>;
+  /**
+   * Query parameters.
+   */
   queryParams?: Record<string, unknown>;
 } & Record<string, unknown>;
 
@@ -130,6 +146,7 @@ export abstract class Collection<
     }
 
     const unload = this.unload.bind(this);
+    const appendCreatedToInstances = this.appendCreatedToInstances.bind(this);
 
     const cl = class extends construct {
       afterDestroy(): void {
@@ -137,6 +154,12 @@ export abstract class Collection<
 
         this.destroy();
         unload(this.uid, false);
+      }
+
+      afterCreate(): void {
+        super.afterCreate();
+
+        appendCreatedToInstances(this as unknown as ModelType);
       }
     };
 
@@ -185,7 +208,7 @@ export abstract class Collection<
    * @returns record
    */
   public create(initialData?: Data, options?: ModelOptions[]): ModelType {
-    const instance = this._createModel(initialData, options);
+    const instance = this.createInstance(initialData, options);
 
     if (!instance.new) {
       for (const inst of this._instances) {
@@ -194,7 +217,9 @@ export abstract class Collection<
           throw new Error('duplicate primary key');
         }
       }
-    } else this._instances.add(instance);
+
+      this._instances.add(instance);
+    }
 
     this._trackedInstances.set(instance.uid, instance);
 
@@ -209,7 +234,10 @@ export abstract class Collection<
    * @param options - search options
    * @returns records list
    */
-  public async find(options: FindOptions<Data> = { reload: true }): Promise<ModelType[]> {
+  public async find(options: FindOptions<Data> = { reload: true, force: false }): Promise<ModelType[]> {
+    options.reload = options.reload ?? true;
+    options.force = options.force ?? false;
+
     if (!options.reload) {
       const cached = this.peek(options);
 
@@ -228,7 +256,7 @@ export abstract class Collection<
 
         if (!options.localFilter(data)) continue;
 
-        const instance = this._createModel(data);
+        const instance = this.createInstance(data);
 
         this._trackedInstances.set(instance.uid, instance);
         instances.push(instance);
@@ -236,7 +264,7 @@ export abstract class Collection<
     } else {
       for (const encoded of loadedData) {
         const data = this.normalize(encoded);
-        const instance = this._createModel(data);
+        const instance = this.createInstance(data);
 
         this._trackedInstances.set(instance.uid, instance);
         instances.push(instance);
@@ -247,6 +275,12 @@ export abstract class Collection<
       for (const inst of this._instances) {
         if (inst.pk === instance.pk) {
           this._instances.delete(inst);
+
+          if (options.force) {
+            this._trackedInstances.delete(inst.uid);
+            inst.destroy();
+          }
+
           break;
         }
       }
@@ -266,7 +300,10 @@ export abstract class Collection<
    * @param options - search options
    * @returns record
    */
-  public async findOne(pk: unknown, options: FindOptions<Data> = { reload: true }): Promise<ModelType | null> {
+  public async findOne(pk: unknown, options: FindOptions<Data> = { reload: true, force: false }): Promise<ModelType | null> {
+    options.reload = options.reload ?? true;
+    options.force = options.force ?? false;
+
     if (!options.reload) {
       const cached = this.peekOne(pk);
 
@@ -280,11 +317,17 @@ export abstract class Collection<
 
     if (options.localFilter && !options.localFilter(data)) return null;
 
-    const instance = this._createModel(data);
+    const instance = this.createInstance(data);
 
     for (const inst of this._instances) {
       if (inst.pk === instance.pk) {
         this._instances.delete(inst);
+
+        if (options.force) {
+          this._trackedInstances.delete(inst.uid);
+          inst.destroy();
+        }
+
         break;
       }
     }
@@ -381,5 +424,31 @@ export abstract class Collection<
 
     this._trackedInstances.clear();
     this._instances.clear();
+  }
+
+  protected appendCreatedToInstances(instance: ModelType): void {
+    const { _instances } = this;
+
+    for (const inst of _instances) {
+      if (inst.pk === instance.pk) {
+        this._instances.delete(inst);
+        break;
+      }
+    }
+
+    _instances.add(instance);
+  }
+
+  /**
+   * Creates a model instance, but does not save to collection.
+   *
+   * This method is used by `create`, `find`, and `findOne` methods.
+   *
+   * @param initialData - initial instance data
+   * @param options - model options
+   * @returns record
+   */
+  protected createInstance(initialData?: Data, options?: ModelOptions[]): ModelType {
+    return this._createModel(initialData, options);
   }
 }

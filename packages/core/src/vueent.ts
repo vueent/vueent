@@ -1,5 +1,3 @@
-import { onBeforeMount, onBeforeUnmount, onUnmounted } from 'vue-demi';
-
 import { Controller, Constructor as ControllerConstructor, Params as ControllerParams } from './controller';
 import { Service, Constructor as ServiceConstructor, Params as ServiceParams } from './service';
 
@@ -34,18 +32,98 @@ export interface ControllerRegistry<T extends Controller = Controller> {
 }
 
 /**
+ * Vueent initialization options.
+ */
+export interface VueentOptions {
+  /**
+   * Do not remove controllers of unmounted routes.
+   */
+  persistentControllers?: boolean;
+
+  /**
+   * `Before mount` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onBeforeMount?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Mounted` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onMounted?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Before unmount` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onBeforeUnmount?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Unmounted` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onUnmounted?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Before update` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onBeforeUpdate?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Updated` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onUpdated?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Activated` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onActivated?: (fn: () => void, target?: any) => void;
+
+  /**
+   * `Deactivated` hook implementation.
+   *
+   * @param fn - handler
+   * @param target - target component
+   */
+  onDeactivated?: (fn: () => void, target?: any) => void;
+}
+
+/**
  *
  */
 export class Vueent {
-  /**
-   * A list of registered services.
-   */
-  private readonly _services: ServiceRegistry[] = [];
+  private readonly _options: VueentOptions;
+
+  constructor(options: VueentOptions) {
+    this._options = options;
+  }
 
   /**
-   * A list of registered controllers.
+   * Registered services.
    */
-  private readonly _controllers: ControllerRegistry[] = [];
+  private readonly _services = new Map<ServiceConstructor<Service>, ServiceRegistry>();
+
+  /**
+   * Registered controllers.
+   */
+  private readonly _controllers = new Map<ControllerConstructor<Controller>, ControllerRegistry>();
 
   /**
    * Appends a service to the list {@link Vueent._services}.
@@ -55,9 +133,9 @@ export class Vueent {
    * @param create - service constructor
    */
   public registerService<T extends Service = Service>(create: ServiceConstructor<T>) {
-    if (this._services.some(s => s.create === create)) throw new Error('Service with the same name is already registered');
+    if (this._services.has(create)) throw new Error('Service with the same name is already registered');
 
-    this._services.push({ create, instance: undefined });
+    this._services.set(create, { create, instance: undefined });
   }
 
   /**
@@ -68,9 +146,9 @@ export class Vueent {
    * @param create - controller constructor
    */
   public registerController<T extends Controller = Controller>(create: ControllerConstructor<T>) {
-    if (this._controllers.some(s => s.create === create)) throw new Error('Controller with the same name is already registered');
+    if (this._controllers.has(create)) throw new Error('Controller with the same name is already registered');
 
-    this._controllers.push({ create, instance: undefined });
+    this._controllers.set(create, { create, instance: undefined });
   }
 
   /**
@@ -85,7 +163,7 @@ export class Vueent {
    * @returns - service instance
    */
   public getService<T extends Service = Service>(create: ServiceConstructor<T>, ...params: ServiceParams<T>) {
-    const service = this._services.find(s => s.create === create);
+    const service = this._services.get(create);
 
     if (!service) throw new Error('Service with that name is not registered');
 
@@ -102,24 +180,56 @@ export class Vueent {
    * If the controller hasn't been instantiated yet, the parameters will be passed to its constructor.
    *
    * @param create - controller constructor
+   * @param inSetupContext - marks that the controller is used inside the component's setup function
    * @param params - constructor parameters
    * @returns - controller instance
    */
-  public getController<T extends Controller = Controller>(create: ControllerConstructor<T>, ...params: ControllerParams) {
-    const index = this._controllers.findIndex(s => s.create === create);
+  public getController<T extends Controller = Controller>(
+    create: ControllerConstructor<T>,
+    inSetupContext = true,
+    ...params: ControllerParams
+  ) {
+    const controller = this._controllers.get(create);
 
-    if (index === -1) throw new Error('Controller with that name is not registered');
-
-    const controller = this._controllers[index];
+    if (!controller) throw new Error('Controller with that name is not registered');
 
     if (!controller.instance) controller.instance = new controller.create(...params);
 
-    onBeforeMount(() => controller.instance?.init());
-    onBeforeUnmount(() => controller.instance?.reset());
-    onUnmounted(() => {
-      controller.instance?.destroy();
-      controller.instance = undefined;
-    });
+    if (inSetupContext) {
+      // Applying lifecycle hooks if they have been overridden by the controller class.
+
+      if (this._options.onBeforeMount && (create as any).prototype.init !== Controller.prototype.init)
+        this._options.onBeforeMount(() => controller.instance?.init());
+
+      if (this._options.onMounted && (create as any).prototype.mounted !== Controller.prototype.mounted)
+        this._options.onMounted(() => controller.instance?.mounted());
+
+      if (this._options.onBeforeUnmount && (create as any).prototype.reset !== Controller.prototype.reset)
+        this._options.onBeforeUnmount(() => controller.instance?.reset());
+
+      if (
+        this._options.onUnmounted &&
+        (!this._options.persistentControllers || (create as any).prototype.destroy !== Controller.prototype.destroy)
+      ) {
+        this._options.onUnmounted(() => {
+          controller.instance?.destroy();
+
+          if (!this._options.persistentControllers) controller.instance = undefined;
+        });
+      }
+
+      if (this._options.onBeforeUpdate && (create as any).prototype.willUpdate !== Controller.prototype.willUpdate)
+        this._options.onBeforeUpdate(() => controller.instance?.willUpdate());
+
+      if (this._options.onUpdated && (create as any).prototype.updated !== Controller.prototype.updated)
+        this._options.onUpdated(() => controller.instance?.updated());
+
+      if (this._options.onActivated && (create as any).prototype.activated !== Controller.prototype.activated)
+        this._options.onActivated(() => controller.instance?.activated());
+
+      if (this._options.onDeactivated && (create as any).prototype.deactivated !== Controller.prototype.deactivated)
+        this._options.onDeactivated(() => controller.instance?.deactivated());
+    }
 
     return controller.instance as T;
   }
@@ -132,10 +242,11 @@ export class Vueent {
  *
  * @param context - {@link Vueent} instance wrapper
  * @param context.vueent - {@link Vueent} instance reference
+ * @param context.options = {@link VueentOptions} instance options
  * @returns - {@link Vueent} instance
  */
-export function useVueent(context: { vueent?: Vueent }) {
-  if (!context.vueent) context.vueent = new Vueent();
+export function useVueent(context: { vueent?: Vueent; options: VueentOptions }) {
+  if (!context.vueent) context.vueent = new Vueent(context.options);
 
   return context.vueent;
 }
