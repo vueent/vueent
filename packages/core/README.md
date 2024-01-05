@@ -8,7 +8,9 @@ A small library (part of [_VueEnt_](https://github.com/vueent/vueent)) that inte
 npm install -D @vueent/core
 ```
 
-This library has no [Vue](https://v3.vuejs.org/) dependencies.
+> [!IMPORTANT]
+>
+> This library has no [Vue](https://v3.vuejs.org/) dependencies.
 
 ## Usage
 

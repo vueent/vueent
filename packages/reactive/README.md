@@ -12,9 +12,26 @@ const value = isRef(this.field) ? this.field.value : this.field);
 npm install -D @vueent/reactive
 ```
 
-This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html) or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
+> [!IMPORTANT]
+>
+> This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html), Vue 2.7 or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
 
 ## Usage
+
+> [!IMPORTANT]
+>
+> As of TypeScript 4.3, support of experimental decorators must be allowed by the following `tsconfig.json` options:
+>
+> ```json
+> {
+>   "compilerOptions": {
+>     // ...
+>     "moduleResolution": "node",
+>     "useDefineForClassFields": false,
+>     "experimentalDecorators": true
+>   }
+> }
+> ```
 
 The package provides two decorators. `tracked` makes a `ref` from the class `field`. `calculated` wrapps a getter/setter pair and makes a `computed` property.
 
