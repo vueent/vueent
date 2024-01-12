@@ -32,6 +32,8 @@ npm install -D @vueent/reactive
 >   }
 > }
 > ```
+>
+> Experimantal decorators are still available as `legacyTracked` and `legacyCalculated`.
 
 The package provides two decorators. `tracked` makes a `ref` from the class `field`. `calculated` wrapps a getter/setter pair and makes a `computed` property.
 
@@ -45,8 +47,8 @@ Let's look at the trivial example:
 import { tracked, calculated } from '@vueent/reactive';
 
 class MyClass {
-  @tracked public num = 2;
-  @tracked public factor = 3;
+  @tracked public accessor num = 2;
+  @tracked public accessor factor = 3;
 
   @calculated public get mul() {
     return this.num * this.factor;

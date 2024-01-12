@@ -8,7 +8,7 @@ function randomInt(max: number) {
 
 test('calculated property should be calculated synchronously', () => {
   class Calculable {
-    @tracked num = 1;
+    @tracked accessor num = 1;
     @calculated get mul() {
       return this.num * 2;
     }
@@ -24,17 +24,17 @@ test('calculated property should be calculated synchronously', () => {
 });
 
 test('calculated property must have a getter', () => {
+  class Calculable {
+    num = 1;
+    @calculated set mul(value: number) {
+      console.log(value);
+    }
+  }
+
   let error;
 
   try {
-    class Calculable {
-      num = 1;
-      @calculated set mul(value: number) {
-        console.log(value);
-      }
-    }
-
-    new Calculable();
+    new Calculable().mul = 1;
   } catch (e) {
     error = e as any;
   }
@@ -45,13 +45,14 @@ test('calculated property must have a getter', () => {
 test('calculated property must support a setter', () => {
   class Calculable {
     factor = 2;
-    @tracked num = 2;
-    @calculated get mul() {
-      return this.num * this.factor;
+    @tracked accessor num = 2;
+
+    @calculated set mul(value: number) {
+      this.factor = value;
     }
 
-    set mul(value: number) {
-      this.factor = value;
+    @calculated get mul() {
+      return this.num * this.factor;
     }
   }
 
@@ -68,12 +69,12 @@ test('calculated property must support a setter', () => {
 
 test('calculated property should be initialized on the first access when the setter is available', () => {
   class Calculable {
-    @tracked num = 2;
+    @tracked accessor num = 2;
     @calculated get mul() {
       return this.num * 2;
     }
 
-    set mul(value: number) {
+    @calculated set mul(value: number) {
       this.num = value;
     }
   }
@@ -89,12 +90,12 @@ test('calculated property should be initialized on the first access when the set
 
 test('calculated property should not be initialized reinitialized on the access', () => {
   class Calculable {
-    @tracked num = 2;
+    @tracked accessor num = 2;
     @calculated get mul() {
       return this.num * 2;
     }
 
-    set mul(value: number) {
+    @calculated set mul(value: number) {
       this.num = value;
     }
   }
@@ -116,7 +117,7 @@ test('calculated property should not be initialized reinitialized on the access'
 
 test('calculated property should be lazy', () => {
   class Calculable {
-    @tracked num = 2;
+    @tracked accessor num = 2;
     calculationsCount = 0;
 
     @calculated get mul() {

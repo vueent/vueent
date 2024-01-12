@@ -4,7 +4,7 @@ import './__mocks__/vue-vm';
 
 test('tracked property should be a ref when it is not defined', () => {
   class Calculable {
-    @tracked num!: number;
+    @tracked accessor num!: number;
   }
 
   const instance = new Calculable();

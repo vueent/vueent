@@ -4,6 +4,7 @@ export {
   Params as ServiceParams,
   register as registerService,
   use as useService,
+  legacyInject as legacyInjectService,
   inject as injectService
 } from './service';
 
@@ -13,6 +14,7 @@ export {
   Params as ControllerParams,
   register as registerController,
   use as useController,
+  legacyInject as legacyInjectController,
   inject as injectController
 } from './controller';
 

@@ -4,6 +4,7 @@ import {
   Constructor as ServiceConstructor,
   Params as ServiceParams,
   register as registerService,
+  legacyInject as legacyInjectService,
   inject as injectService,
   use as useService
 } from './service';
@@ -12,6 +13,7 @@ import {
   Constructor as ControllerConstructor,
   Params as ControllerParams,
   register as registerController,
+  legacyInject as legacyInjectController,
   inject as injectController,
   use as useController
 } from './controller';
@@ -46,10 +48,25 @@ export interface InitResult {
    * @param params - constructor parameters
    * @returns - property with a service reference
    */
-  injectService<T extends Service = Service>(
+  legacyInjectService<T extends Service = Service>(
     create: ServiceConstructor<T>,
     ...params: ServiceParams<T>
   ): (target: unknown, propertyKey: string | symbol) => void;
+
+  /**
+   * Creates a property with a reference to the service.
+   *
+   * The function will automatically lazy instantiate the service if it hasn't already been instantiated.
+   * If the service hasn't been instantiated yet, the parameters will be passed to its constructor.
+   *
+   * @param create - service constructor
+   * @param params - constructor parameters
+   * @returns - property with a service reference
+   */
+  injectService<T extends Service = Service>(
+    create: ServiceConstructor<T>,
+    ...params: ServiceParams<T>
+  ): ReturnType<typeof injectService<T>>;
 
   /**
    * Returns a service instance.
@@ -82,9 +99,19 @@ export interface InitResult {
    * @param create - controller constructor
    * @returns - property with a controller reference
    */
-  injectController<T extends Controller = Controller>(
+  legacyInjectController<T extends Controller = Controller>(
     create: ControllerConstructor<T>
   ): (target: unknown, propertyKey: string | symbol) => void;
+
+  /**
+   * Creates a property with a reference to the controller.
+   *
+   * The function will automatically lazy instantiate the controller if it hasn't already been instantiated.
+   *
+   * @param create - controller constructor
+   * @returns - property with a controller reference
+   */
+  injectController<T extends Controller = Controller>(create: ControllerConstructor<T>): ReturnType<typeof injectController<T>>;
 
   /**
    * Returns a controller instance.
@@ -113,10 +140,12 @@ export function initVueent(options: VueentOptions = {}): InitResult {
   return {
     useVueent: use,
     registerService: registerService.bind(undefined, use),
-    injectService: injectService.bind(undefined, use),
-    useService: useService.bind(undefined, use),
+    legacyInjectService: legacyInjectService.bind(undefined, use),
+    injectService: injectService.bind(undefined, use) as InitResult['injectService'],
+    useService: useService.bind(undefined, use) as InitResult['useService'],
     registerController: registerController.bind(undefined, use),
-    injectController: injectController.bind(undefined, use),
-    useController: useController.bind(undefined, use)
+    legacyInjectController: legacyInjectController.bind(undefined, use),
+    injectController: injectController.bind(undefined, use) as InitResult['injectController'],
+    useController: useController.bind(undefined, use) as InitResult['useController']
   };
 }

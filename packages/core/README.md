@@ -14,6 +14,21 @@ npm install -D @vueent/core
 
 ## Usage
 
+> [!IMPORTANT]
+>
+> As of TypeScript 4.3, support of experimental decorators must be allowed by the following `tsconfig.json` options:
+>
+> ```json
+> {
+>   "compilerOptions": {
+>     // ...
+>     "moduleResolution": "node",
+>     "useDefineForClassFields": false,
+>     "experimentalDecorators": true
+>   }
+> }
+> ```
+
 First of all, you should create a module to append `VueEnt` into your project. Use `initVueent()` which returns an object with several bound functions.
 
 ```ts
@@ -68,9 +83,17 @@ The `useController` function returns a lazy-initialized instance of a registered
 
 The `injectService` decorator injects a lazy-initialized instance of a registered service into a class property.
 
+### legacyInjectService
+
+The `legacyInjectService` experimental decorator injects a lazy-initialized instance of a registered service into a class property.
+
 ### injectController
 
 The `injectController` decorator injects a lazy-initialized instance of a registered controller into a class property.
+
+### legacyInjectController
+
+The `legactInjectController` experimental decorator injects a lazy-initialized instance of a registered controller into a class property.
 
 ### Full example
 
@@ -128,7 +151,7 @@ import { registerController, injectService as service } from '@/vueent';
 import ClickerService from '@/services/clicker';
 
 export default class AppController extends Controller {
-  @service(ClickerService) private readonly clicker!: ClickerService; // lazy service injection
+  @service(ClickerService) private readonly accessor clicker!: ClickerService; // lazy service injection
 
   public readonly date: number;
 
@@ -189,7 +212,7 @@ import { tracked } from '@vueent/reactive'; // you may use built-in Vue's `ref`
 import { registerService } from '@/vueent';
 
 export default class ClickerService extends Service {
-  @tracked private _counter = 0;
+  @tracked private accessor _counter = 0;
 
   public get counter() {
     return this._counter;
