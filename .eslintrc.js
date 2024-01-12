@@ -4,7 +4,7 @@ module.exports = {
     node: true
   },
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/eslint-recommended', 'plugin:@typescript-eslint/recommended'],
-  plugins: ['prettier', '@typescript-eslint'],
+  plugins: ['prettier', '@typescript-eslint', '@stylistic'],
   parserOptions: {
     ecmaVersion: 2020
   },
@@ -12,7 +12,8 @@ module.exports = {
     'prettier/prettier': 'error',
     'generator-star-spacing': 'off',
     semi: [2, 'always'],
-    'space-before-function-paren': [
+    'space-before-function-paren': 'off',
+    '@stylistic/space-before-function-paren': [
       'error',
       {
         anonymous: 'always',
