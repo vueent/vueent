@@ -1,4 +1,4 @@
-import { BoundUseVueentFunc } from './vueent';
+import type { BoundUseVueentFunc } from './vueent';
 
 /**
  * An abstract base controller class.
@@ -72,17 +72,41 @@ export type Params<T extends Controller = Controller> = ConstructorParameters<Co
  *
  * The function will automatically lazy instantiate the controller if it hasn't already been instantiated.
  *
+ * ATTENTION: This is a legacy decorator implementation.
+ *
  * @param useVueent - Vueent instance accessor
  * @param create - controller constructor
  * @returns - property with a controller reference
  */
-export function inject<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
+export function legacyInject<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
   return function (target: unknown, propertyKey: string | symbol) {
     Object.defineProperty(target, propertyKey, {
       get() {
         return useVueent().getController(create, false);
       }
     });
+  };
+}
+
+/**
+ * Creates a property with a reference to the controller.
+ *
+ * The function will automatically lazy instantiate the controller if it hasn't already been instantiated.
+ *
+ * @param useVueent - Vueent instance accessor
+ * @param create - controller constructor
+ * @returns - property with a controller reference
+ */
+export function inject<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
+  return function <This = unknown>(
+    target: ClassAccessorDecoratorTarget<This, T>, // eslint-disable-line @typescript-eslint/no-unused-vars
+    context: ClassAccessorDecoratorContext<This, T> // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): ClassAccessorDecoratorResult<This, T> {
+    return {
+      get(this: This): T {
+        return useVueent().getController(create, false);
+      }
+    };
   };
 }
 

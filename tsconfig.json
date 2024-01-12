@@ -6,8 +6,8 @@
     "strict": true,
     "importHelpers": true,
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "experimentalDecorators": false,
+    "useDefineForClassFields": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -15,7 +15,6 @@
     "declaration": true,
     "declarationMap": true,
     "resolveJsonModule": true,
-    "noStrictGenericChecks": true,
     "paths": {
       "@vueent/*": ["packages/*/src"],
       "@tests/*": ["packages/*/tests"],

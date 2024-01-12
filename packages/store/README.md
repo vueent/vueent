@@ -12,10 +12,6 @@ The library is experimental, API breaking changes may be occured.
 npm install --save-dev @vueent/core
 ```
 
-> [!IMPORTANT]
->
-> This library has [Vue 3](https://v3.vuejs.org/guide/introduction.html), Vue 2.7 or [Vue composition API plugin for Vue 2](https://github.com/vuejs/composition-api) peer dependency, it means that your have to add this dependencies into your project (`package.json`) manually.
-
 ## Using store service
 
 Define available collections as an argument of generic type of `StoreService` to support compile time types constrains, e.g.:
