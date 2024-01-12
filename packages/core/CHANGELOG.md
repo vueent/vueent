@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/vueent/vueent/compare/v0.5.0...v0.6.0) (2024-01-12)
+
+
+* feat!: Stage 3 decorators support ([1247e0f](https://github.com/vueent/vueent/commit/1247e0f69b602b316a116e95cb7794c6cd22db69)), closes [#76](https://github.com/vueent/vueent/issues/76)
+
+
+### BREAKING CHANGES
+
+* Old experimental decorators was renamed to legacy*
+
+docs: Documentation update
+
+* 75-vt Add modern decorators and TypeScript 5 support
+
+* 76-vt Add stylistic eslint plugin
+
+* 76-vt Update docs
+
+* 76-vt Update jest config
+
+* 76-vt Fix core modern decorators and update docs
+
+* 76-vt Add services and controllers injecting tests
+
+
+
+
+
 # [0.5.0](https://github.com/vueent/vueent/compare/v0.4.0...v0.5.0) (2024-01-05)
 
 
