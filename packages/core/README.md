@@ -128,7 +128,8 @@ import { useController } from '@/vueent';
 import AppController from './app';
 
 function setup() {
-  const controller = useController(AppController, new Date().getTime()); // creating a controller instance with parameters.
+  // creating a controller instance with parameters.
+  const controller = useController(AppController, new Date().getTime());
 
   const increment = () => controller.increment();
   const counter = computed(() => controller.counter);
@@ -151,7 +152,8 @@ import { registerController, injectService as service } from '@/vueent';
 import ClickerService from '@/services/clicker';
 
 export default class AppController extends Controller {
-  @service(ClickerService) private readonly accessor clicker!: ClickerService; // lazy service injection
+  // lazy service injection
+  @service(ClickerService) private readonly accessor clicker!: ClickerService;
 
   public readonly date: number;
 

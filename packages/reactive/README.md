@@ -37,6 +37,10 @@ npm install -D @vueent/reactive
 
 The package provides two decorators. `tracked` makes a `ref` from the class `field`. `calculated` wrapps a getter/setter pair and makes a `computed` property.
 
+> [!CAUTION]
+>
+> `calculated` decorator must be applied to both getter and setter method, whereas `legacyCalculated` decorator must only be applied to the getter.
+
 > [!WARNING]
 >
 > `isRef` and `toRef` functions don't work with decorated fields, but decorated fields are not mutated within `reactive` objects as a benefit.

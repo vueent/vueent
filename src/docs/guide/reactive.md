@@ -38,9 +38,14 @@ As of TypeScript 4.3, support of experimental decorators must be allowed by the 
 }
 ```
 
+Experimantal decorators are still available as `legacyTracked` and `legacyCalculated`.
 :::
 
 The package provides two decorators. `tracked` makes a `ref` from the class `field`. `calculated` wrapps a getter/setter pair and makes a `computed` property.
+
+::: danger
+`calculated` decorator must be applied to both getter and setter method, whereas `legacyCalculated` decorator must only be applied to the getter.
+:::
 
 ::: warning
 `isRef` and `toRef` functions don't work with decorated fields, but decorated fields are not mutated within `reactive` objects as a benefit.
@@ -48,8 +53,36 @@ The package provides two decorators. `tracked` makes a `ref` from the class `fie
 
 Let's look at the trivial example:
 
+<code-group>
+<code-block title="Modern">
+
 ```ts
 import { tracked, calculated } from '@vueent/reactive';
+
+class MyClass {
+  @tracked public accessor num = 2;
+  @tracked public accessor factor = 3;
+
+  @calculated public get mul() {
+    return this.num * this.factor;
+  }
+}
+
+const my = new MyClass();
+
+const myObj = reactive({ my });
+
+myObj.my.factor = 4;
+
+console.log(myObj.my.mul); // 8 - everything works fine
+```
+
+</code-block>
+
+<code-block title="Legacy">
+
+```ts
+import { legacyTracked as tracked, legacyCalculated as calculated } from '@vueent/reactive';
 
 class MyClass {
   @tracked public num = 2;
@@ -68,6 +101,9 @@ myObj.my.factor = 4;
 
 console.log(myObj.my.mul); // 8 - everything works fine
 ```
+
+</code-block>
+</code-group>
 
 You may try to write the following code, but it won't work:
 

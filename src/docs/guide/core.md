@@ -24,7 +24,37 @@ This library has no [Vue](https://v3.vuejs.org/) dependencies.
 
 ## Usage
 
+::: warning
+
+As of TypeScript 4.3, support of experimental decorators must be allowed by the following `tsconfig.json` options:
+
+```json
+{
+  "compilerOptions": {
+    // ...
+    "moduleResolution": "node",
+    "useDefineForClassFields": false,
+    "experimentalDecorators": true
+  }
+}
+```
+
 First of all, you should create a module to append `VueEnt` into your project. Use `initVueent()` which returns an object with several bound functions.
+:::
+
+<code-group>
+<code-block title="Modern">
+
+```ts
+// file: vueent.ts
+import { initVueent } from '@vueent/core';
+
+export const { useVueent, registerService, registerController, useService, useController, injectService, injectController } =
+  initVueent();
+```
+
+</code-block>
+<code-block title="Legacy">
 
 ```ts
 // file: vueent.ts
@@ -36,10 +66,13 @@ export const {
   registerController,
   useService,
   useController,
-  injectService,
-  injectController
+  legacyInjectService,
+  legacyInjectController
 } = initVueent();
 ```
+
+</code-block>
+</code-group>
 
 If you want to use injection of subling controllers, you have to make your controllers persistent by setting the `persistentControllers` VueEnt option:
 
@@ -73,9 +106,17 @@ The `useController` function returns a lazy-initialized instance of a registered
 
 The `injectService` decorator injects a lazy-initialized instance of a registered service into a class property.
 
+### legacyInjectService
+
+The `legacyInjectService` experimental decorator injects a lazy-initialized instance of a registered service into a class property.
+
 ### injectController
 
 The `injectController` decorator injects a lazy-initialized instance of a registered controller into a class property.
+
+### legacyInjectController
+
+The `legactInjectController` experimental decorator injects a lazy-initialized instance of a registered controller into a class property.
 
 ### Full example
 
@@ -90,13 +131,13 @@ Let's write a simple example:
 ```vue
 <!-- file: app.vue -->
 <template>
-<div>
-  <div>Started at: {{ timestamp }}</div>
-  <div>Button clicks: {{ counter }}</div>
   <div>
-    <button type="button" @click="increment">Increment</button>
+    <div>Started at: {{ timestamp }}</div>
+    <div>Button clicks: {{ counter }}</div>
+    <div>
+      <button type="button" @click="increment">Increment</button>
+    </div>
   </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -124,11 +165,80 @@ export default defineComponent({ setup });
 </script>
 ```
 
+<code-group>
+<code-block title="Modern">
+
 ```ts
 // file: app.ts
 import { Controller } from '@vueent/core';
 
 import { registerController, injectService as service } from '@/vueent';
+import ClickerService from '@/services/clicker';
+
+export default class AppController extends Controller {
+  // lazy service injection
+  @service(ClickerService) private readonly accessor clicker!: ClickerService;
+
+  public readonly date: number;
+
+  public get counter() {
+    return this.clicker.counter;
+  }
+
+  constructor(date: number) {
+    super();
+    this.date = date;
+  }
+
+  public init() {
+    console.log('onBeforeMount');
+  }
+
+  public mounted() {
+    console.log('onMounted');
+  }
+
+  public reset() {
+    console.log('onBeforeUnmount');
+  }
+
+  public destroy() {
+    console.log('onUnmounted'); // stop watchers, timers, etc.
+  }
+
+  public willUpdate() {
+    console.log('onBeforeUpdate');
+  }
+
+  public updated() {
+    console.log('onUpdated');
+  }
+
+  public activated() {
+    console.log('onActivated');
+  }
+
+  public deactivated() {
+    console.log('onDeactivated');
+  }
+
+  public increment() {
+    this.clicker.increment();
+  }
+}
+
+registerController(AppController);
+```
+
+</code-block>
+
+<code-block title="Legacy">
+
+```ts
+// file: app.ts
+import { Controller } from '@vueent/core';
+
+import { registerController, legacyInjectService as service } from '@/vueent';
 import ClickerService from '@/services/clicker';
 
 export default class AppController extends Controller {
@@ -186,10 +296,42 @@ export default class AppController extends Controller {
 registerController(AppController);
 ```
 
+</code-block>
+</code-group>
+
+<code-group>
+<code-block title="Modern">
+
 ```ts
 // file: services/clicker.ts
 import { Service } from '@vueent/core';
 import { tracked } from '@vueent/reactive'; // you may use built-in Vue's `ref`
+
+import { registerService } from '@/vueent';
+
+export default class ClickerService extends Service {
+  @tracked private accessor _counter = 0;
+
+  public get counter() {
+    return this._counter;
+  }
+
+  public increment() {
+    ++this._counter;
+  }
+}
+
+registerService(ClickerService);
+```
+
+</code-block>
+
+<code-block title="Legacy">
+
+```ts
+// file: services/clicker.ts
+import { Service } from '@vueent/core';
+import { legacyTracked as tracked } from '@vueent/reactive'; // you may use built-in Vue's `ref`
 
 import { registerService } from '@/vueent';
 
@@ -207,3 +349,6 @@ export default class ClickerService extends Service {
 
 registerService(ClickerService);
 ```
+
+</code-block>
+</code-group>
