@@ -50,9 +50,12 @@ export function legacyInject<T extends Service = Service>(
  * @returns - property with a service reference
  */
 export function inject<T extends Service = Service>(useVueent: BoundUseVueentFunc, create: Constructor<T>, ...params: Params<T>) {
-  return function () {
+  return function <This = unknown>(
+    target: ClassAccessorDecoratorTarget<This, T>, // eslint-disable-line @typescript-eslint/no-unused-vars
+    context: ClassAccessorDecoratorContext<This, T> // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): ClassAccessorDecoratorResult<This, T> {
     return {
-      get(this): T {
+      get(this: This): T {
         return useVueent().getService(create, ...params);
       }
     };

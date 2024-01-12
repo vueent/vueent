@@ -177,7 +177,7 @@ import ClickerService from '@/services/clicker';
 
 export default class AppController extends Controller {
   // lazy service injection
-  @service(ClickerService) private readonly accessor clicker!: ClickerService;
+  @service(ClickerService) private accessor clicker!: ClickerService;
 
   public readonly date: number;
 

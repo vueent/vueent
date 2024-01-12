@@ -98,9 +98,12 @@ export function legacyInject<T extends Controller = Controller>(useVueent: Bound
  * @returns - property with a controller reference
  */
 export function inject<T extends Controller = Controller>(useVueent: BoundUseVueentFunc, create: Constructor<T>) {
-  return function () {
+  return function <This = unknown>(
+    target: ClassAccessorDecoratorTarget<This, T>, // eslint-disable-line @typescript-eslint/no-unused-vars
+    context: ClassAccessorDecoratorContext<This, T> // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): ClassAccessorDecoratorResult<This, T> {
     return {
-      get(this): T {
+      get(this: This): T {
         return useVueent().getController(create, false);
       }
     };
