@@ -121,10 +121,15 @@ export interface InitResult {
    * If the controller hasn't been instantiated yet, the parameters will be passed to its constructor.
    *
    * @param create - controller constructor
+   * @param inSetupContext - marks that the controller is used inside the component's setup function
    * @param params - constructor parameters
    * @returns - controller instance
    */
-  useController<T extends Controller = Controller>(create: ControllerConstructor<T>, ...params: ControllerParams<T>): T;
+  useController<T extends Controller = Controller>(
+    create: ControllerConstructor<T>,
+    inSetupContext?: boolean,
+    ...params: ControllerParams<T>
+  ): T;
 }
 
 /**
